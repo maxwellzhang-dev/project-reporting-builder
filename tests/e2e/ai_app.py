@@ -18,7 +18,7 @@ from app.config import settings
 from app.main import app, get_ai_provider
 from app.services import ai_extraction
 from app.services.ai_extraction import AIError
-from tests.e2e.ai_markers import DRAFT, FILTERED, MALFORMED, SLOW, TIMEOUT
+from tests.e2e.ai_markers import DRAFT, FILTERED, MALFORMED, NO_METRICS, SLOW, TIMEOUT
 
 settings.ai_enabled = True
 
@@ -46,6 +46,8 @@ class ScriptedProvider:
         # Echo a slice of the source so a test can tell one answer from another.
         draft = dict(DRAFT)
         draft["title"] = f"Draft for: {source_text.strip().splitlines()[0][:60]}"
+        if NO_METRICS in source_text:
+            draft["metrics"] = []
         return json.dumps(draft)
 
 

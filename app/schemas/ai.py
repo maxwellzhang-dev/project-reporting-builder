@@ -4,11 +4,17 @@ The draft is a proposal: it carries no status and no card id, because the user
 supplies the status and confirms before a card exists (scope §5).
 """
 
-from pydantic import BaseModel, ConfigDict, Field
+from __future__ import annotations
+
+from math import isfinite
+from typing import Any, Literal
+
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 SOURCE_TEXT_MAX = 8_000
 DRAFT_LIST_MAX = 8
 DRAFT_ITEM_MAX = 300
+DRAFT_METRICS_MAX = 6
 
 
 class ExtractRequest(BaseModel):
@@ -32,6 +38,54 @@ class ProgressDraft(BaseModel):
     risks: DraftList = Field(default_factory=list, max_length=DRAFT_LIST_MAX)
 
 
+class MetricDraft(BaseModel):
+    """A proposed metric card, copied from the text rather than computed.
+
+    `previous` is optional on purpose. Where the source states a current value
+    and no baseline, leaving it empty produces an ordinary metric card showing
+    only the current figure (scope §4). Filling it would mean deriving a
+    number the text does not contain, which is the one thing the model must
+    never do: "847 new users, up 23% from last sprint" names one figure, not
+    two.
+    """
+
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+
+    title: str = Field(min_length=1, max_length=120)
+    current: float
+    previous: float | None = None
+    unit: Literal["number", "percent", "custom"] = "number"
+    unit_label: str = Field(default="", max_length=16)
+
+    # Deliberately the same check MetricCard applies to user input: model
+    # output gets no easier ride than a person typing. It runs before
+    # coercion, because a bool would otherwise arrive here already turned
+    # into 1.0.
+    @model_validator(mode="after")
+    def _label_only_for_custom(self) -> MetricDraft:
+        # The live model tends to fill this in anyway, returning "%" beside
+        # unit "percent" and "users" beside "number". Rendering ignores the
+        # label unless the unit is custom, so it is harmless on screen but
+        # would surface the moment someone switched the unit. Dropping it is
+        # normalisation, not rejection: a stray label is no reason to throw
+        # away an otherwise good draft.
+        if self.unit != "custom":
+            object.__setattr__(self, "unit_label", "")
+        return self
+
+    @field_validator("current", "previous", mode="before")
+    @classmethod
+    def _real_finite_numbers(cls, value: Any) -> Any:
+        if value is None:
+            return value
+        if isinstance(value, bool | str):
+            raise ValueError("must be a number, not a string or boolean")
+        if isinstance(value, float) and not isfinite(value):
+            raise ValueError("must be finite")
+        return value
+
+
 class ExtractResponse(BaseModel):
     draft: ProgressDraft
+    metrics: list[MetricDraft] = Field(default_factory=list, max_length=DRAFT_METRICS_MAX)
     review_notes: list[str] = Field(default_factory=list, max_length=DRAFT_LIST_MAX)

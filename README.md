@@ -37,9 +37,10 @@ Design documents: [`docs/scope.md`](docs/scope.md) ·
 | `POST /api/ai/extract-progress` | Implemented behind a provider interface; verified against a live Azure OpenAI `gpt-5-mini` deployment (see `docs/test-report.md`) |
 | Documented error envelope | Implemented: `{error:{code,message,fields}}`, never echoes submitted input |
 | AI review workflow | Implemented: notes in, an editable draft out, a card only after the user picks a status and confirms |
+| Metric cards proposed from the text | Implemented: figures are copied, never derived; a stated baseline is kept, an absent one stays empty; each proposal is opt-in |
 | Copy as plain text and as rich text | Implemented, with a manual-copy dialog whenever the Clipboard API is absent or refused |
 | PNG export per card | Implemented: isolated snapshot, editing controls excluded, discarded if the card changes mid-export |
-| Playwright browser tests | Implemented: editor, persistence, AI review, sharing and axe-core scans (48 checks) |
+| Playwright browser tests | Implemented: editor, persistence, AI review, metric proposals, sharing and axe-core scans (56 checks) |
 
 ## Planned, not built
 

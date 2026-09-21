@@ -6,7 +6,7 @@
 - Browser / OS: Chromium 140 (Playwright) on macOS 15.6
 - Azure deployment: `gpt-5-mini`, Responses API, api-version `2025-04-01-preview`, Korea Central
 - Hosting: Azure Container Apps, Korea Central, 0.5 vCPU / 1 GiB, max 1 replica, scale to zero
-- Prompt version: `extract_progress_v1`
+- Prompt version: `extract_progress_v2`
 
 Statuses are Passed, Failed, Blocked or Not run. A check that could not be run
 is never recorded as passed.
@@ -17,9 +17,9 @@ is never recorded as passed.
 | --- | --- | --- |
 | `ruff check .` | Passed | All checks passed |
 | `ruff format --check .` | Passed | 38 files already formatted |
-| `pytest tests/unit tests/integration` | Passed | 92 passed |
-| `pytest tests` (both suites in one process) | Passed | 143 passed |
-| `pytest tests/e2e --browser chromium` | Passed | 48 passed, including 8 axe-core scans |
+| `pytest tests/unit tests/integration` | Passed | 115 passed |
+| `pytest tests` (both suites in one process) | Passed | 171 passed |
+| `pytest tests/e2e --browser chromium` | Passed | 56 passed, including 8 axe-core scans |
 | `docker build` and container smoke test | Passed | image built, `/healthz` returned `{"status":"ok"}`, container uid 10001 |
 
 ## Manual Checks
@@ -92,6 +92,28 @@ future factual accuracy.
 4. Reasoning effort measured on one note: `minimal` 2.3s / 0 reasoning tokens,
    `low` 4.4s / 192, the model default 11.6s / 1152. All three extracted the
    same facts, so the default is `low` and the value is configurable.
+
+### Metric proposals (prompt v2)
+
+Run against the live `gpt-5-mini` deployment with a realistic sprint report
+containing four figures. The rule under test is that a proposal copies a
+stated number and never derives one.
+
+| Figure in the source | Proposed as | Verdict |
+| --- | --- | --- |
+| "rose from 67% to 79%" | current 79, previous 67, percent | Both stated, both kept |
+| "reduced from 340ms to 120ms" | current 120, previous 340, custom "ms" | Direction correct, not reversed |
+| "New users: 847, up 23% from last sprint" | current 847, **previous empty** | Correct: 23% describes a change, it does not state the earlier figure |
+| "Uptime: 94%" | current 94, **previous empty** | Correct: no baseline in the text |
+
+847 ÷ 1.23 is roughly 688. That number appears nowhere in the response, and a
+browser test asserts it never does.
+
+One thing the live model does that the prompt does not ask for: it fills
+`unit_label` even for percentages and plain numbers, returning "%" and
+"users". Rendering ignores the label unless the unit is custom, so nothing was
+visibly wrong, but it would have surfaced the moment a user switched the unit.
+The draft model now clears it instead of rejecting the draft over it.
 
 ### Sharing
 

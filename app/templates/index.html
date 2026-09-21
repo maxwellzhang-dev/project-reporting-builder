@@ -126,6 +126,20 @@
       </div>
       <p id="ai-list-hint" class="field__hint">One item per line. Up to 8.</p>
 
+      <!--
+        Proposed metric cards. Each is opt-in and starts unchecked: a figure
+        the model spotted is a suggestion, not a decision. A proposal with no
+        baseline is normal and says so, because the alternative would be the
+        model deriving a number the text never stated (docs/scope.md §5).
+      -->
+      <fieldset id="ai-metrics-block" hidden>
+        <legend id="ai-metrics-heading">Metric cards found in the text</legend>
+        <p class="field__hint">
+          Numbers are copied from your text, never calculated. Tick the ones you want.
+        </p>
+        <ul id="ai-metrics" class="ai-panel__metrics"></ul>
+      </fieldset>
+
       <div id="ai-notes-block" hidden>
         <h4 id="ai-notes-heading">What the model could not confirm</h4>
         <ul id="ai-notes" aria-labelledby="ai-notes-heading" class="ai-panel__notes"></ul>

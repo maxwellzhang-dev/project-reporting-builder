@@ -96,12 +96,20 @@ Azure OpenAI converts pasted text into a progress draft containing:
 - Risks
 - Review notes for missing or ambiguous information
 
-Users review and edit the draft, select the project status, and confirm before creating a card.
+It may also propose metric cards for figures the text states outright. A
+proposal copies the numbers as written and never derives one: where the source
+gives a current value but no baseline, the previous value is left empty, which
+is a normal metric card showing only the current figure (§4). A percentage
+change quoted without its baseline is not enough to reconstruct one.
+
+Users review and edit the draft, select the project status, and confirm before
+creating a card. Metric proposals are reviewed and confirmed one by one, and
+declining them all is an ordinary outcome.
 
 AI assistance:
 - Should preserve source facts, numbers, dates, and uncertainty.
 - Must not intentionally invent missing information.
-- Does not calculate metrics or generate image cards.
+- Does not calculate metrics, derive missing values, or generate image cards.
 - Does not overwrite existing cards or trigger sharing.
 - Preserves the original input when a request fails.
 - Provides retry and manual-entry options.
@@ -142,13 +150,20 @@ Sharing to email, Slack, or Teams uses copy/download workflows, not platform API
 - Azure data handling follows the selected service configuration and applicable policies.
 - Users are advised not to submit sensitive enterprise information to the POC.
 
+> **Changed 2026-09-21.** Metric extraction was previously out of scope. It was
+> reinstated in this narrow form after a realistic status report showed the
+> cost of leaving it out: the figures stayed trapped in prose while the tool's
+> one piece of real computation, the metric comparison, went unused. The
+> boundary that mattered was never "no metrics" but "no invented numbers", and
+> an empty previous value keeps that boundary without losing the feature.
+
 ## 8. Out of Scope
 
 - Authentication, permissions, and collaboration.
 - Automatic email or message delivery.
 - Jira, Notion, Slack, or Teams API integrations.
 - OCR and PDF, Word, Excel, or CSV imports.
-- AI image understanding, metric extraction, or conversational chat.
+- AI image understanding and conversational chat.
 - User-provided API keys and model selection.
 - Freeform canvas editing and full-report image export.
 - Server-side report persistence.

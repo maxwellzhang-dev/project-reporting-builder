@@ -229,3 +229,10 @@ dialog::backdrop { background: rgb(0 0 0 / 45%); }
 }
 #manual-copy { max-width: 560px; width: calc(100vw - 32px); }
 #manual-copy textarea { width: 100%; font-family: inherit; }
+
+/* ---- proposed metric cards in the AI panel ---- */
+#ai-metrics-block { margin: 0 0 12px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; }
+#ai-metrics-block legend { padding: 0 6px; font-size: 14px; font-weight: 600; }
+.ai-panel__metrics { margin: 6px 0 0; padding: 0; list-style: none; }
+.ai-panel__metrics li { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 6px; font-size: 13px; }
+.ai-panel__metrics input { margin-top: 3px; }

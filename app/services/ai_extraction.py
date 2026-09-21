@@ -17,8 +17,8 @@ from pydantic import ValidationError
 from app.config import settings
 from app.schemas.ai import ExtractResponse, ProgressDraft
 
-PROMPT_PATH = Path(__file__).resolve().parent.parent / "prompts" / "extract_progress_v1.txt"
-PROMPT_VERSION = "extract_progress_v1"
+PROMPT_PATH = Path(__file__).resolve().parent.parent / "prompts" / "extract_progress_v2.txt"
+PROMPT_VERSION = "extract_progress_v2"
 
 MAX_CALLS_PER_MINUTE = 6
 MAX_CONCURRENT = 1
@@ -92,10 +92,13 @@ def _parse(raw: str) -> ExtractResponse:
     if not isinstance(payload, dict):
         raise AIError(502, "The model returned something unreadable.")
 
+    # Lifted out before the draft is validated: ProgressDraft forbids extra
+    # fields, and these two belong to the response, not to the progress card.
     notes = payload.pop("review_notes", [])
+    metrics = payload.pop("metrics", [])
     try:
         draft = ProgressDraft.model_validate(payload)
-        return ExtractResponse(draft=draft, review_notes=notes)
+        return ExtractResponse(draft=draft, metrics=metrics, review_notes=notes)
     except ValidationError as error:
         # The provider's raw body never reaches the caller (architecture §6).
         raise AIError(502, "The model's answer did not match the expected shape.") from error

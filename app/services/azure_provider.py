@@ -28,16 +28,41 @@ from app.services.ai_extraction import REQUEST_TIMEOUT_SECONDS, AIError
 # additionalProperties to be false, so an optional list is expressed as an
 # empty array rather than a missing key. Length limits stay in the Pydantic
 # models, which validate the answer afterwards whatever the service enforced.
+METRIC_ITEM_SCHEMA: dict[str, Any] = {
+    "type": "object",
+    "additionalProperties": False,
+    "required": ["title", "current", "previous", "unit", "unit_label"],
+    "properties": {
+        "title": {"type": "string"},
+        "current": {"type": "number"},
+        # Nullable rather than omitted: strict mode requires every property in
+        # `required`, and a null previous is the correct answer whenever the
+        # text states a current figure but no earlier one.
+        "previous": {"type": ["number", "null"]},
+        "unit": {"type": "string", "enum": ["number", "percent", "custom"]},
+        "unit_label": {"type": "string"},
+    },
+}
+
 DRAFT_JSON_SCHEMA: dict[str, Any] = {
     "type": "object",
     "additionalProperties": False,
-    "required": ["title", "summary", "completed_items", "next_steps", "risks", "review_notes"],
+    "required": [
+        "title",
+        "summary",
+        "completed_items",
+        "next_steps",
+        "risks",
+        "metrics",
+        "review_notes",
+    ],
     "properties": {
         "title": {"type": "string"},
         "summary": {"type": "string"},
         "completed_items": {"type": "array", "items": {"type": "string"}},
         "next_steps": {"type": "array", "items": {"type": "string"}},
         "risks": {"type": "array", "items": {"type": "string"}},
+        "metrics": {"type": "array", "items": METRIC_ITEM_SCHEMA},
         "review_notes": {"type": "array", "items": {"type": "string"}},
     },
 }

@@ -30,6 +30,53 @@ const draftSection = document.getElementById("ai-draft");
 const notesBlock = document.getElementById("ai-notes-block");
 const notesList = document.getElementById("ai-notes");
 const statusSelect = document.getElementById("ai-draft-status");
+const metricsBlock = document.getElementById("ai-metrics-block");
+const metricsList = document.getElementById("ai-metrics");
+
+// Proposals currently on screen, alongside the checkbox that accepts each.
+let metricProposals = [];
+
+const UNIT_SUFFIX = { percent: "%", number: "", custom: "" };
+
+/** How a proposed figure reads before it becomes a card. */
+function describeMetric(metric) {
+  const suffix = metric.unit === "custom" ? ` ${metric.unit_label ?? ""}`.trimEnd() : UNIT_SUFFIX[metric.unit] ?? "";
+  const current = `${metric.current}${suffix}`;
+  if (metric.previous === null || metric.previous === undefined) {
+    // Named explicitly. A silent absence would look like an oversight rather
+    // than the deliberate refusal to invent a baseline that it is.
+    return `${current} — no earlier figure stated, so the card shows the current value only`;
+  }
+  return `${current}, from ${metric.previous}${suffix}`;
+}
+
+function showMetrics(metrics) {
+  metricProposals = [];
+  metricsList.replaceChildren();
+  if (!metrics?.length) {
+    metricsBlock.hidden = true;
+    return;
+  }
+
+  for (const [index, metric] of metrics.entries()) {
+    const item = document.createElement("li");
+    const id = `ai-metric-${index}`;
+
+    const box = document.createElement("input");
+    box.type = "checkbox";
+    box.id = id;
+
+    const label = document.createElement("label");
+    label.htmlFor = id;
+    // textContent throughout: a proposed title is model output and stays data.
+    label.textContent = `${metric.title}: ${describeMetric(metric)}`;
+
+    item.append(box, label);
+    metricsList.append(item);
+    metricProposals.push({ metric, box });
+  }
+  metricsBlock.hidden = false;
+}
 
 const fields = {
   title: document.getElementById("ai-draft-title"),
@@ -64,6 +111,7 @@ function hideDraft() {
   for (const control of Object.values(fields)) control.value = "";
   notesList.replaceChildren();
   notesBlock.hidden = true;
+  showMetrics([]);
   statusSelect.value = "";
   createButton.disabled = true;
 }
@@ -95,6 +143,8 @@ function showDraft(body) {
     }),
   );
   notesBlock.hidden = notes.length === 0;
+
+  showMetrics(body.metrics);
 
   // The status is left unchosen on purpose, so confirming is a decision.
   statusSelect.value = "";
@@ -169,9 +219,32 @@ function confirmDraft() {
     return;
   }
 
+  // Ticked metric proposals become ordinary metric cards, in the order they
+  // were proposed. Each is created the same way a hand-made one is, so
+  // nothing downstream can tell them apart, and an unticked proposal simply
+  // never existed.
+  let metricsMade = 0;
+  for (const { metric, box } of metricProposals) {
+    if (!box.checked) continue;
+    const made = addCard("metric", {
+      title: metric.title,
+      current: String(metric.current),
+      previous: metric.previous === null || metric.previous === undefined
+        ? ""
+        : String(metric.previous),
+      unit: metric.unit,
+      unit_label: metric.unit_label ?? "",
+    });
+    if (!made) {
+      showError("Card limit reached, so not every metric was created.");
+      break;
+    }
+    metricsMade += 1;
+  }
+
   close();
   document.getElementById(`f-${card.id}-title`)?.focus();
-  return card;
+  return { card, metricsMade };
 }
 
 function close() {
@@ -205,7 +278,13 @@ export function initAiReview({ announce = () => {} } = {}) {
   });
 
   createButton.addEventListener("click", () => {
-    if (confirmDraft()) announce("Card created from AI draft");
+    const made = confirmDraft();
+    if (!made) return;
+    announce(
+      made.metricsMade
+        ? `Progress card and ${made.metricsMade} metric card${made.metricsMade > 1 ? "s" : ""} created from the AI draft`
+        : "Card created from AI draft",
+    );
   });
 
   // Esc closes a native dialog; treat it as cancelling.
