@@ -55,7 +55,7 @@ absence of something rather than the presence of a feature.
 | Draft carries **no** model-assigned status | Passed |
 | Invalid input returns the error envelope with no internals | Passed |
 | Container runs as non-root (uid 10001) without reload | Passed, from the container smoke test |
-| Cold start from zero replicas | See Known Issues; measured separately |
+| Cold start from zero replicas | Passed, measured: see below |
 | Manual workflows remain available during AI failure | Covered by browser tests against a scripted failure, not re-run against the deployment |
 | Online editing and local recovery | Passed, by hand against the deployed site |
 
@@ -91,6 +91,16 @@ future factual accuracy.
 4. Reasoning effort measured on one note: `minimal` 2.3s / 0 reasoning tokens,
    `low` 4.4s / 192, the model default 11.6s / 1152. All three extracted the
    same facts, so the default is `low` and the value is configurable.
+
+### Cold start
+
+Measured on the deployed app, 2026-09-21. The app scaled from one replica to
+zero after roughly seven minutes idle. The first request after that returned
+in **2.33 s**; a warm request returned in **0.23 s**.
+
+Scale to zero is therefore kept as the default. `deploy/deploy.sh --wake`
+holds a replica warm if a demo cannot spare the first two seconds, but on this
+measurement it is not needed.
 
 ## Known Issues
 
