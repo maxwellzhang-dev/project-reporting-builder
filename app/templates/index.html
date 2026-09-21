@@ -23,6 +23,7 @@
       <button type="button" data-add-card="progress">Add progress card</button>
       <button type="button" data-add-card="metric">Add metric card</button>
       <button type="button" data-add-card="image">Add image card</button>
+      <button type="button" id="open-ai-review">Draft from notes</button>
       <p id="card-count" class="toolbar__count">0 of 20 cards</p>
       <button type="button" id="clear-local-data">Clear local data</button>
     </section>
@@ -46,6 +47,93 @@
         <button value="delete" class="danger">Delete</button>
       </div>
     </form>
+  </dialog>
+
+  <!--
+    The AI draft panel. The draft section stays hidden until a draft exists,
+    and its status starts unchosen: the model is not allowed to assign one
+    (docs/scope.md §5), so the user must, and "Create card" stays disabled
+    until they do.
+  -->
+  <dialog id="ai-review" aria-labelledby="ai-review-title" class="ai-panel">
+    <h2 id="ai-review-title">Draft a progress card from notes</h2>
+
+    <div class="field">
+      <label for="ai-source">Project notes</label>
+      <textarea id="ai-source" rows="7"
+                placeholder="Paste a status update, meeting note or stand-up summary."></textarea>
+      <p id="ai-source-hint" class="field__hint">
+        Sent to Azure OpenAI only when you choose Generate. Do not paste sensitive information.
+      </p>
+    </div>
+
+    <p id="ai-error" role="alert" class="field__error" hidden></p>
+    <p id="ai-busy" role="status" class="ai-panel__status"></p>
+
+    <div class="dialog__actions">
+      <button type="button" id="ai-generate">Generate draft</button>
+      <button type="button" id="ai-cancel">Cancel</button>
+    </div>
+
+    <section id="ai-draft" aria-labelledby="ai-draft-heading" hidden>
+      <h3 id="ai-draft-heading">Draft for review</h3>
+      <p class="ai-panel__warning">
+        Generated text. Check every fact, number and date against your notes before creating
+        the card.
+      </p>
+
+      <div class="field">
+        <label for="ai-draft-title">Draft title</label>
+        <input id="ai-draft-title" type="text">
+      </div>
+
+      <div class="field">
+        <label for="ai-draft-summary">Draft summary</label>
+        <textarea id="ai-draft-summary" rows="4"></textarea>
+      </div>
+
+      <div class="field">
+        <label for="ai-draft-completed">Completed items</label>
+        <textarea id="ai-draft-completed" rows="3" aria-describedby="ai-list-hint"></textarea>
+      </div>
+
+      <div class="field">
+        <label for="ai-draft-next">Next steps</label>
+        <textarea id="ai-draft-next" rows="3" aria-describedby="ai-list-hint"></textarea>
+      </div>
+
+      <div class="field">
+        <label for="ai-draft-risks">Risks</label>
+        <textarea id="ai-draft-risks" rows="3" aria-describedby="ai-list-hint"></textarea>
+      </div>
+      <p id="ai-list-hint" class="field__hint">One item per line. Up to 8.</p>
+
+      <div id="ai-notes-block" hidden>
+        <h4 id="ai-notes-heading">What the model could not confirm</h4>
+        <ul id="ai-notes" aria-labelledby="ai-notes-heading" class="ai-panel__notes"></ul>
+      </div>
+
+      <div class="field">
+        <label for="ai-draft-status">Status</label>
+        <select id="ai-draft-status" aria-describedby="ai-status-hint">
+          <option value="">Choose a status</option>
+          <option value="proposed">Proposed</option>
+          <option value="under_review">Under Review</option>
+          <option value="cleared_to_start">Cleared to Start</option>
+          <option value="in_progress">In Progress</option>
+          <option value="completed">Completed</option>
+          <option value="on_hold">On Hold</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+        <p id="ai-status-hint" class="field__hint">
+          You choose the status. The model is not asked for one.
+        </p>
+      </div>
+
+      <div class="dialog__actions">
+        <button type="button" id="ai-create" disabled>Create card</button>
+      </div>
+    </section>
   </dialog>
 
   <footer class="page__footer">

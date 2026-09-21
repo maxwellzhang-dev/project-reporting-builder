@@ -108,7 +108,7 @@ def test_deleting_a_card_removes_its_stored_image(page: Page, base_url: str):
     expect(page.locator("#save-state")).to_have_text("Saved locally", timeout=5000)
 
     page.get_by_role("button", name="Delete").first.click()
-    page.locator("dialog").get_by_role("button", name="Delete").click()
+    page.locator("#confirm-delete").get_by_role("button", name="Delete").click()
     # "Saved locally" is already on screen from the previous save, so waiting for
     # that text would pass before this write lands. Poll the store itself.
     page.wait_for_function(

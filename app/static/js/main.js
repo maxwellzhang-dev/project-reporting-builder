@@ -1,5 +1,6 @@
 // Wires the page together: toolbar, card list, deletion dialog, status line.
 
+import { initAiReview } from "./ai-review.js";
 import { buildCardEditor, setDeletionConfirmer } from "./editor.js";
 import { Persistence, SaveState } from "./persistence.js";
 import { addCard, clearAll, getBlobs, getCards, MAX_CARDS, replaceAll, subscribe } from "./state.js";
@@ -88,6 +89,8 @@ for (const button of addButtons) {
 }
 
 subscribe(render);
+
+initAiReview({ announce });
 
 // Health check stays from milestone 1: it is the only signal that the API is up.
 (async () => {

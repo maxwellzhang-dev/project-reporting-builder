@@ -52,12 +52,12 @@ def test_move_and_delete_with_confirmation(page: Page, base_url: str):
     )
 
     page.locator(".editor-card").nth(0).get_by_role("button", name="Delete").click()
-    expect(page.locator("dialog")).to_be_visible()
+    expect(page.locator("#confirm-delete")).to_be_visible()
     page.get_by_role("button", name="Cancel").click()
     expect(page.locator(".editor-card")).to_have_count(2)
 
     page.locator(".editor-card").nth(0).get_by_role("button", name="Delete").click()
-    page.locator("dialog").get_by_role("button", name="Delete").click()
+    page.locator("#confirm-delete").get_by_role("button", name="Delete").click()
     expect(page.locator(".editor-card")).to_have_count(1)
     expect(page.locator(".editor-card").nth(0).locator('input[name="title"]')).to_have_value(
         "First"
@@ -84,7 +84,7 @@ def test_a_deleted_card_does_not_reappear_when_its_request_lands(page: Page, bas
     )
     page.fill('input[name="title"]', "Doomed")
     page.get_by_role("button", name="Delete").click()
-    page.locator("dialog").get_by_role("button", name="Delete").click()
+    page.locator("#confirm-delete").get_by_role("button", name="Delete").click()
     page.wait_for_timeout(900)
     expect(page.locator(".editor-card")).to_have_count(0)
     expect(page.locator("#empty-state")).to_be_visible()
@@ -95,7 +95,7 @@ def test_focus_moves_somewhere_sensible_after_deletion(page: Page, base_url: str
     add(page, "progress")
     add(page, "metric")
     page.locator(".editor-card").nth(0).get_by_role("button", name="Delete").click()
-    page.locator("dialog").get_by_role("button", name="Delete").click()
+    page.locator("#confirm-delete").get_by_role("button", name="Delete").click()
     expect(page.locator(".editor-card")).to_have_count(1)
     # Focus lands on a real control inside the card that took its place.
     assert page.evaluate("document.activeElement?.closest('.editor-card') !== null")

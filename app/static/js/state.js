@@ -50,9 +50,18 @@ function blankCard(type) {
   return { ...base, alt_text: "", caption: "", image: null };
 }
 
-export function addCard(type) {
+/**
+ * Add a card, optionally with content already in it.
+ *
+ * `initial` exists for the AI panel: a confirmed draft has to arrive complete,
+ * because only a "structure" change rebuilds the list, so filling a blank card
+ * afterwards would leave the new fields invisible until the next rebuild. The
+ * id, type and revision stay under this module's control whatever is passed.
+ */
+export function addCard(type, initial = {}) {
   if (cards.length >= MAX_CARDS) return null;
-  const card = blankCard(type);
+  const blank = blankCard(type);
+  const card = { ...blank, ...initial, id: blank.id, type: blank.type, revision: 0 };
   cards = [...cards, card];
   emit("structure");
   return card;

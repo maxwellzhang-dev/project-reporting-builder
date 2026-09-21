@@ -1,4 +1,9 @@
-"""Start the real application for browser tests and wait for /healthz."""
+"""Start the application for browser tests and wait for /healthz.
+
+It is started through `tests.e2e.ai_app`, which is the real application with
+the AI provider replaced by a scripted fake. No browser test can reach Azure,
+and none costs money, even on a machine whose `.env` holds real credentials.
+"""
 
 import socket
 import subprocess
@@ -24,7 +29,7 @@ def base_url() -> str:
             sys.executable,
             "-m",
             "uvicorn",
-            "app.main:app",
+            "tests.e2e.ai_app:app",
             "--port",
             str(port),
             "--log-level",

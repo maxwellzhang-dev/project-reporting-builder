@@ -1,6 +1,6 @@
 # Test Report
 
-- Commit: 7b37abc (plus the uncommitted Azure integration recorded below)
+- Commit: 43d3c78 (plus the uncommitted AI review interface recorded below)
 - Date: 2026-09-21
 - Deployment URL: Not deployed yet; all runs are local
 - Browser / OS: Chromium 140 (Playwright) on macOS 15.6
@@ -15,9 +15,9 @@ is never recorded as passed.
 | Check | Status | Evidence |
 | --- | --- | --- |
 | `ruff check .` | Passed | All checks passed |
-| `ruff format --check .` | Passed | 36 files already formatted |
+| `ruff format --check .` | Passed | 38 files already formatted |
 | `pytest tests/unit tests/integration` | Passed | 92 passed |
-| `pytest tests/e2e --browser chromium` | Passed | 21 passed, including 5 axe-core scans |
+| `pytest tests/e2e --browser chromium` | Passed | 35 passed, including 7 axe-core scans |
 | `docker build` and container smoke test | Passed | image built, `/healthz` returned `{"status":"ok"}`, container uid 10001 |
 
 ## Manual Checks
@@ -25,6 +25,8 @@ is never recorded as passed.
 | Scenario | Environment | Status | Notes |
 | --- | --- | --- | --- |
 | One real AI request succeeds | Local, live `gpt-5-mini` | Passed | Schema-valid draft returned through the full service path, not just the raw client |
+| Full AI review workflow in a browser | Chrome 140, macOS, live `gpt-5-mini` | Passed | Notes pasted, draft returned and displayed for review, status chosen, card created with its preview. Create stayed disabled until a status was picked |
+| Note text absent from application logs | Local, live `gpt-5-mini` | Passed | No phrase from the submitted note appeared in the server log. Says nothing about what Azure retains |
 | Clipboard and PNG export | — | Not run | Not built (scope §6 is not yet implemented) |
 | External email / messaging clients | — | Not run | Depends on export, which is not built |
 | Screen reader workflow | — | Not run | No screen reader session performed |
@@ -33,8 +35,9 @@ is never recorded as passed.
 
 ## AI Evaluation
 
-Five live calls on 2026-09-21 against `gpt-5-mini`. This is a small sample and
-does not establish future factual accuracy.
+Five live calls on 2026-09-21 against `gpt-5-mini`, plus the browser run
+recorded under Manual Checks. This is a small sample and does not establish
+future factual accuracy.
 
 | Case | Status | Findings |
 | --- | --- | --- |
@@ -67,7 +70,6 @@ does not establish future factual accuracy.
 
 | Issue | Impact | Workaround |
 | --- | --- | --- |
-| No AI review interface | The endpoint works but the browser cannot reach it; drafts are only observable through the API | Create cards manually |
 | Sample of five AI cases | Too small for a factual-accuracy claim | Treat every draft as requiring review, which the scope already requires |
 | In-process rate limiter | Does not span replicas | Deploy with a single replica, as `test_plan.md` §11 requires |
 | Azure platform logging unverified | The application excludes note text from its own logs; what Azure retains was not checked | Do not submit sensitive content to the POC |

@@ -31,14 +31,14 @@ Design documents: [`docs/scope.md`](docs/scope.md) ·
 | Local draft recovery (IndexedDB) | Implemented: text, order and image blobs, serialised writes, Clear local data |
 | `POST /api/ai/extract-progress` | Implemented behind a provider interface; verified against a live Azure OpenAI `gpt-5-mini` deployment (see `docs/test-report.md`) |
 | Documented error envelope | Implemented: `{error:{code,message,fields}}`, never echoes submitted input |
-| Playwright browser tests | Implemented: editor, persistence and axe-core scans (21 checks) |
+| AI review workflow | Implemented: notes in, an editable draft out, a card only after the user picks a status and confirms |
+| Playwright browser tests | Implemented: editor, persistence, AI review and axe-core scans (35 checks) |
 
 ## Planned, not built
 
-Clipboard and PNG export · example report loading · the AI review interface
-(the endpoint exists; the browser flow does not) · Azure Container Apps
-deployment · a live AI evaluation against the fixed examples in
-`docs/test_plan.md` §7.
+Clipboard and PNG export · example report loading · Azure Container Apps
+deployment · a full evaluation against the fixed examples in
+`docs/test_plan.md` §7 (five live cases are recorded in `docs/test-report.md`).
 
 Nothing in the interface pretends these exist. Scope for each is defined in
 `docs/scope.md`; do not infer support from the page.
@@ -133,12 +133,13 @@ app/
   services/          presentation model, plain text, rendering, AI extraction
   prompts/           the versioned extraction prompt
   templates/         index.html, preview/card.html, email/card.html
-  static/js          state, api, editor, preview, image-assets, persistence, main
+  static/js          state, api, editor, preview, image-assets, persistence, ai-review, main
   static/vendor      pinned axe-core, used by the accessibility tests only
 tests/
   unit/              escaping, metric table, formatting, card validation
   integration/       endpoints, page content, static assets, render API
-  e2e/               editing, deletion, focus, async consistency, persistence, axe scans
+  e2e/               editing, deletion, focus, async consistency, persistence, AI review, axe scans
+  e2e/ai_app.py      the app with a scripted fake provider, so no browser test can reach Azure
 docs/                scope, architecture, test plan
 ```
 

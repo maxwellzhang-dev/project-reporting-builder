@@ -33,8 +33,30 @@ def test_confirmation_dialog(page: Page, base_url: str):
     page.goto(base_url)
     page.click('[data-add-card="progress"]')
     page.get_by_role("button", name="Delete").first.click()
-    expect(page.locator("dialog")).to_be_visible()
+    expect(page.locator("#confirm-delete")).to_be_visible()
     assert_clean(page, "confirmation dialog")
+
+
+def test_ai_review_panel(page: Page, base_url: str):
+    """Both states of the panel: notes only, and a draft awaiting review."""
+    page.goto(base_url)
+    page.get_by_role("button", name="Draft from notes").click()
+    expect(page.locator("#ai-review")).to_be_visible()
+    assert_clean(page, "AI panel, before generating")
+
+    page.fill("#ai-source", "Login refactor done. Payment integration delayed.")
+    page.get_by_role("button", name="Generate draft").click()
+    expect(page.locator("#ai-draft")).to_be_visible()
+    assert_clean(page, "AI panel, draft under review")
+
+
+def test_ai_review_panel_error_state(page: Page, base_url: str):
+    page.goto(base_url)
+    page.get_by_role("button", name="Draft from notes").click()
+    page.fill("#ai-source", "TRIGGER_MALFORMED and some notes")
+    page.get_by_role("button", name="Generate draft").click()
+    expect(page.locator("#ai-error")).to_be_visible()
+    assert_clean(page, "AI panel, failed request")
 
 
 def test_mobile_width(page: Page, base_url: str):
