@@ -19,7 +19,7 @@ Design documents: [`docs/scope.md`](docs/scope.md) ·
 | Field-level validation messages | Implemented, wired to `aria-invalid` and `aria-describedby` |
 | Local image selection | Implemented: PNG/JPEG/WebP, 5 MB, 4096px per side, 12 MP; files never leave the browser |
 | `POST /api/cards/render` | Implemented: preview HTML, email HTML, plain text |
-| AI error contract | Implemented: 503 disabled, 429 rate limited, 502 bad upstream, 504 timeout |
+| AI error contract | Implemented: 503 disabled, 429 rate limited, 422 refused by the content filter, 502 bad upstream, 504 timeout |
 | Progress, metric and image card models | Implemented, discriminated union, extra fields rejected |
 | Metric comparison and formatting | Implemented as pure functions, covered by the table in `docs/test_plan.md` §3 |
 | 64 KiB request limit, `no-store` on responses | Implemented |
@@ -29,7 +29,7 @@ Design documents: [`docs/scope.md`](docs/scope.md) ·
 | Production Docker image, non-root, no reload | Implemented |
 | ruff lint and format, pytest, CI with a container smoke test | Implemented |
 | Local draft recovery (IndexedDB) | Implemented: text, order and image blobs, serialised writes, Clear local data |
-| `POST /api/ai/extract-progress` | Implemented behind a provider interface; **needs an Azure OpenAI deployment to run live** |
+| `POST /api/ai/extract-progress` | Implemented behind a provider interface; verified against a live Azure OpenAI `gpt-5-mini` deployment (see `docs/test-report.md`) |
 | Documented error envelope | Implemented: `{error:{code,message,fields}}`, never echoes submitted input |
 | Playwright browser tests | Implemented: editor, persistence and axe-core scans (21 checks) |
 
@@ -94,6 +94,12 @@ normally and never contacts Azure OpenAI; the AI endpoint then returns 503.
 | `AZURE_OPENAI_ENDPOINT` | `https://<resource>.openai.azure.com/` |
 | `AZURE_OPENAI_DEPLOYMENT` | The deployment name, not the model name |
 | `AZURE_OPENAI_API_KEY` | Key, supplied as a container secret in deployment |
+| `AZURE_OPENAI_API_VERSION` | The gpt-5 family is served by the Responses API and needs a preview version |
+| `AI_MAX_OUTPUT_TOKENS` | On a reasoning model this budget covers reasoning tokens too, so it sits well above the size of the draft |
+| `AI_REASONING_EFFORT` | `minimal`, `low`, `medium`, `high`, or empty to let the model decide |
+
+Nothing about the model is hard-coded: the API version, the token budget and
+the reasoning effort all change with the deployment, so all three are settings.
 
 Tests never call a real model: they inject a fake provider, so the suite runs
 with no credentials and no spend.
