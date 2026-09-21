@@ -34,7 +34,8 @@ is never recorded as passed.
 | Screen reader workflow | — | Not run | No screen reader session performed |
 | 360px width and 200% zoom | — | Not run | |
 | Azure Container Apps deployment checks | Deployed app, `deploy/verify.sh` | Passed | 11 of 11. Listed individually below |
-| Online AI workflow through a browser | — | Not run | The deployed API was exercised by `verify.sh`; the deployed page has not been driven by hand |
+| Online AI workflow through a browser | Chrome 140, macOS, deployed app | Passed | Notes pasted on the live site, real draft returned, status chosen, card created and previewed |
+| Online local recovery | Chrome 140, macOS, deployed app | Passed | Reload restored the card and its preview, and announced when the draft was saved |
 
 ### Deployment checks (docs/test_plan.md §11)
 
@@ -56,6 +57,7 @@ absence of something rather than the presence of a feature.
 | Container runs as non-root (uid 10001) without reload | Passed, from the container smoke test |
 | Cold start from zero replicas | See Known Issues; measured separately |
 | Manual workflows remain available during AI failure | Covered by browser tests against a scripted failure, not re-run against the deployment |
+| Online editing and local recovery | Passed, by hand against the deployed site |
 
 ## AI Evaluation
 
