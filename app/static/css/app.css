@@ -147,7 +147,7 @@ button.danger { color: #8c1d18; border-color: #e3b8b5; }
 .editor-card {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  grid-template-areas: "heading controls" "form preview";
+  grid-template-areas: "heading controls" "form preview" "share share";
   gap: 8px 20px;
   padding: 16px 18px;
   border: 1px solid var(--line);
@@ -188,7 +188,7 @@ dialog::backdrop { background: rgb(0 0 0 / 45%); }
 @media (max-width: 720px) {
   .editor-card {
     grid-template-columns: minmax(0, 1fr);
-    grid-template-areas: "heading" "controls" "form" "preview";
+    grid-template-areas: "heading" "controls" "form" "preview" "share";
   }
   .editor-card__controls { justify-content: flex-start; }
 }
@@ -216,3 +216,16 @@ dialog::backdrop { background: rgb(0 0 0 / 45%); }
 @media (prefers-color-scheme: dark) {
   .ai-panel__warning { border-left-color: #e8c34a; background: rgb(232 195 74 / 12%); }
 }
+
+/* ---- sharing (milestone 6) ---- */
+.editor-card__share {
+  grid-area: share;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+#manual-copy { max-width: 560px; width: calc(100vw - 32px); }
+#manual-copy textarea { width: 100%; font-family: inherit; }

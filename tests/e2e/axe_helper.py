@@ -8,7 +8,7 @@ from pathlib import Path
 
 from playwright.sync_api import Page
 
-AXE_SOURCE = Path(__file__).resolve().parents[2] / "app" / "static" / "vendor" / "axe.min.js"
+AXE_SOURCE = Path(__file__).resolve().parents[1] / "vendor" / "axe.min.js"
 
 
 def audit(page: Page, context: str = "document") -> list[dict]:

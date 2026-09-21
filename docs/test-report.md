@@ -18,8 +18,8 @@ is never recorded as passed.
 | `ruff check .` | Passed | All checks passed |
 | `ruff format --check .` | Passed | 38 files already formatted |
 | `pytest tests/unit tests/integration` | Passed | 92 passed |
-| `pytest tests` (both suites in one process) | Passed | 127 passed |
-| `pytest tests/e2e --browser chromium` | Passed | 35 passed, including 7 axe-core scans |
+| `pytest tests` (both suites in one process) | Passed | 143 passed |
+| `pytest tests/e2e --browser chromium` | Passed | 48 passed, including 8 axe-core scans |
 | `docker build` and container smoke test | Passed | image built, `/healthz` returned `{"status":"ok"}`, container uid 10001 |
 
 ## Manual Checks
@@ -29,8 +29,9 @@ is never recorded as passed.
 | One real AI request succeeds | Local, live `gpt-5-mini` | Passed | Schema-valid draft returned through the full service path, not just the raw client |
 | Full AI review workflow in a browser | Chrome 140, macOS, live `gpt-5-mini` | Passed | Notes pasted, draft returned and displayed for review, status chosen, card created with its preview. Create stayed disabled until a status was picked |
 | Note text absent from application logs | Local, live `gpt-5-mini` | Passed | No phrase from the submitted note appeared in the server log. Says nothing about what Azure retains |
-| Clipboard and PNG export | — | Not run | Not built (scope §6 is not yet implemented) |
-| External email / messaging clients | — | Not run | Depends on export, which is not built |
+| PNG export inspected visually | Chromium, saved files opened and looked at | Passed | Chinese text and a long card both render complete, no cropping, card border closed |
+| PNG saved by a real browser to disk | — | Not run | The automated Chrome used here does not write downloads to disk; a plain anchor-download probe produced no file either, so this says nothing about the code. Needs one click in an ordinary browser |
+| External email / messaging clients | — | Not run | Not attempted |
 | Screen reader workflow | — | Not run | No screen reader session performed |
 | 360px width and 200% zoom | — | Not run | |
 | Azure Container Apps deployment checks | Deployed app, `deploy/verify.sh` | Passed | 11 of 11. Listed individually below |
@@ -91,6 +92,19 @@ future factual accuracy.
 4. Reasoning effort measured on one note: `minimal` 2.3s / 0 reasoning tokens,
    `low` 4.4s / 192, the model default 11.6s / 1152. All three extracted the
    same facts, so the default is `low` and the value is configurable.
+
+### Sharing
+
+The PNG work produced the clearest example in this project of a test that
+passed while the feature was broken. Every dimension assertion succeeded on
+images that were entirely blank: the off-screen positioning used to stage the
+snapshot was being applied to the node being captured, so the content rendered
+outside the canvas at exactly the right size. Opening the file caught it, which
+is what `docs/test_plan.md` §8 says to do and why it says so.
+
+The suite now also asserts bytes-per-pixel, which separates a real card (0.19
+and above) from a blank one (0.03). Reintroducing the bug deliberately turns
+that assertion red, so it is known to catch the thing it was written for.
 
 ### Cold start
 

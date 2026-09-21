@@ -1,6 +1,7 @@
 // Wires the page together: toolbar, card list, deletion dialog, status line.
 
 import { initAiReview } from "./ai-review.js";
+import { setManualFallback } from "./clipboard.js";
 import { buildCardEditor, setDeletionConfirmer } from "./editor.js";
 import { Persistence, SaveState } from "./persistence.js";
 import { addCard, clearAll, getBlobs, getCards, MAX_CARDS, replaceAll, subscribe } from "./state.js";
@@ -91,6 +92,20 @@ for (const button of addButtons) {
 subscribe(render);
 
 initAiReview({ announce });
+
+// The manual copy route, for every browser that refuses the Clipboard API.
+const manualCopy = document.getElementById("manual-copy");
+const manualCopyText = document.getElementById("manual-copy-text");
+setManualFallback((text) => {
+  manualCopyText.value = text;
+  if (manualCopy?.showModal) {
+    manualCopy.showModal();
+    manualCopyText.focus();
+    manualCopyText.select();
+  }
+  announce("Copy it by hand: this browser would not let the page use the clipboard.");
+});
+document.getElementById("manual-copy-close")?.addEventListener("click", () => manualCopy.close());
 
 // Health check stays from milestone 1: it is the only signal that the API is up.
 (async () => {

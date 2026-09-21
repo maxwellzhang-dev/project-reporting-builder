@@ -1,10 +1,12 @@
 // Builds one card's form. Every control is a native element with a real label,
 // so keyboard order, focus and screen-reader naming come for free.
 
+import { copyCard } from "./clipboard.js";
+import { exportCardPng } from "./export-image.js";
 import { acceptImage, ImageRejected } from "./image-assets.js";
 import { rememberBlob } from "./state.js";
-import { cancelPreview, schedulePreview } from "./preview.js";
-import { getCards, moveCard, removeCard, updateCard } from "./state.js";
+import { cancelPreview, ensureRendered, schedulePreview } from "./preview.js";
+import { getCard, getCards, moveCard, removeCard, updateCard } from "./state.js";
 
 const STATUSES = [
   ["proposed", "Proposed"],
@@ -122,6 +124,57 @@ function fieldsFor(card) {
   ];
 }
 
+/** Copy a card, rendering first if the preview on screen is behind the edits. */
+async function shareCard(cardId, { rich }, announce) {
+  const card = getCard(cardId);
+  if (!card) return;
+  try {
+    const current = await ensureRendered(card);
+    if (!current) return; // the card changed again or went away
+    const outcome = await copyCard(current, { rich });
+    if (outcome === "copied") announce(rich ? "Rich text copied" : "Text copied");
+  } catch {
+    announce("Could not prepare this card to copy. Your work is unchanged.");
+  }
+}
+
+/**
+ * Export a card as PNG. The button is disabled while it runs so a second
+ * click cannot start a competing export, and the card's revision is captured
+ * up front so a render that finishes after an edit is discarded rather than
+ * downloaded (docs/architecture.md §7).
+ */
+async function downloadCard(cardId, preview, button, announce) {
+  const card = getCard(cardId);
+  if (!card) return;
+  const previewNode = preview.querySelector(".card");
+  if (!previewNode) {
+    announce("There is nothing to export yet. Wait for the preview.");
+    return;
+  }
+
+  const revision = card.revision;
+  const stillCurrent = () => {
+    const now = getCard(cardId);
+    return Boolean(now) && now.revision === revision;
+  };
+
+  button.disabled = true;
+  announce("Preparing the image…");
+  try {
+    const outcome = await exportCardPng(previewNode, { title: card.title, stillCurrent });
+    announce(
+      outcome === "downloaded"
+        ? "Image downloaded. Add a text description when you share it."
+        : "The card changed while the image was being made. Try again.",
+    );
+  } catch {
+    announce("The image could not be created. Your card is unchanged; try again.");
+  } finally {
+    button.disabled = false;
+  }
+}
+
 export function buildCardEditor(card, { announce, onChanged }) {
   const article = document.createElement("article");
   article.className = "editor-card";
@@ -164,6 +217,21 @@ export function buildCardEditor(card, { announce, onChanged }) {
   preview.className = "preview__body";
   preview.dataset.previewFor = card.id;
 
+  // Sharing (docs/scope.md §6). An image card has a plain-text form but no
+  // rich-text one, so it gets no rich button rather than a disabled one.
+  const share = document.createElement("div");
+  share.className = "editor-card__share";
+  const copyText = makeButton("Copy text", () => shareCard(card.id, { rich: false }, announce));
+  share.append(copyText);
+  if (card.type !== "image") {
+    share.append(makeButton("Copy rich", () => shareCard(card.id, { rich: true }, announce)));
+  }
+  share.append(
+    makeButton("Download PNG", (event) =>
+      downloadCard(card.id, preview, event.currentTarget, announce),
+    ),
+  );
+
   const form = document.createElement("form");
   form.className = "editor-card__form";
   form.addEventListener("submit", (event) => event.preventDefault());
@@ -194,7 +262,7 @@ export function buildCardEditor(card, { announce, onChanged }) {
     form.append(buildImagePicker(card, preview, applyFieldErrors, announce));
   }
 
-  article.append(heading, controls, form, preview);
+  article.append(heading, controls, form, preview, share);
   schedulePreview(card, preview, applyFieldErrors);
   return article;
 }

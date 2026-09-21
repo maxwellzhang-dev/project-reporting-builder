@@ -59,6 +59,20 @@ def test_ai_review_panel_error_state(page: Page, base_url: str):
     assert_clean(page, "AI panel, failed request")
 
 
+def test_manual_copy_fallback(page: Page, base_url: str):
+    page.goto(base_url)
+    page.evaluate("Object.defineProperty(navigator, 'clipboard', {value: undefined})")
+    page.click('[data-add-card="progress"]')
+    page.fill('input[name="title"]', "Payments migration")
+    # A card has to be valid to be copied at all, so it needs its summary and
+    # a settled preview before the clipboard is even reached.
+    page.fill('textarea[name="summary"]', "Login refactor finished.")
+    expect(page.locator(".editor-card .card")).to_contain_text("Payments migration")
+    page.get_by_role("button", name="Copy text").click()
+    expect(page.locator("#manual-copy")).to_be_visible()
+    assert_clean(page, "manual copy fallback")
+
+
 def test_mobile_width(page: Page, base_url: str):
     page.set_viewport_size({"width": 360, "height": 780})
     page.goto(base_url)

@@ -37,13 +37,15 @@ Design documents: [`docs/scope.md`](docs/scope.md) ·
 | `POST /api/ai/extract-progress` | Implemented behind a provider interface; verified against a live Azure OpenAI `gpt-5-mini` deployment (see `docs/test-report.md`) |
 | Documented error envelope | Implemented: `{error:{code,message,fields}}`, never echoes submitted input |
 | AI review workflow | Implemented: notes in, an editable draft out, a card only after the user picks a status and confirms |
-| Playwright browser tests | Implemented: editor, persistence, AI review and axe-core scans (35 checks) |
+| Copy as plain text and as rich text | Implemented, with a manual-copy dialog whenever the Clipboard API is absent or refused |
+| PNG export per card | Implemented: isolated snapshot, editing controls excluded, discarded if the card changes mid-export |
+| Playwright browser tests | Implemented: editor, persistence, AI review, sharing and axe-core scans (48 checks) |
 
 ## Planned, not built
 
-Clipboard and PNG export · example report loading · Azure Container Apps
-deployment · a full evaluation against the fixed examples in
-`docs/test_plan.md` §7 (five live cases are recorded in `docs/test-report.md`).
+Example report loading · a full evaluation against the fixed examples in
+`docs/test_plan.md` §7 (five live cases are recorded in `docs/test-report.md`)
+· external email and messaging client checks.
 
 Nothing in the interface pretends these exist. Scope for each is defined in
 `docs/scope.md`; do not infer support from the page.
@@ -85,8 +87,9 @@ curl -fsS http://localhost:8000/healthz
 
 The image runs as the non-root user `appuser` (uid 10001), binds `0.0.0.0:8000`,
 runs a single uvicorn worker with no reload, and contains neither the test suite
-nor a browser. `.dockerignore` keeps `tests/`, `docs/`, the vendored axe build and
-local environment files out of the build context.
+nor a browser. `.dockerignore` keeps `tests/`, `docs/`, `deploy/` and local
+environment files out of the build context. `app/static/vendor/` is *not*
+excluded: the PNG export library is loaded by the page and has to ship.
 
 ## Configuration
 
@@ -115,7 +118,7 @@ in the image or in any frontend asset.
 ## Deployment
 
 Azure Container Apps, from `deploy/deploy.sh`. The script is idempotent, builds
-the image server side with `az acr build`, tags it with the commit, and stores
+the image for `linux/amd64` and pushes it tagged with the commit, and stores
 the Azure OpenAI key as a Container Apps secret rather than in the image.
 `deploy/verify.sh` then runs the checks in `docs/test_plan.md` §11 against the
 deployed URL, and `deploy/teardown.sh` removes everything.
@@ -155,12 +158,15 @@ app/
   services/          presentation model, plain text, rendering, AI extraction
   prompts/           the versioned extraction prompt
   templates/         index.html, preview/card.html, email/card.html
-  static/js          state, api, editor, preview, image-assets, persistence, ai-review, main
-  static/vendor      pinned axe-core, used by the accessibility tests only
+  static/js          state, api, editor, preview, image-assets, persistence, ai-review,
+                     clipboard, export-image, main
+  static/vendor      pinned html-to-image, loaded by the page on first PNG export
 tests/
   unit/              escaping, metric table, formatting, card validation
   integration/       endpoints, page content, static assets, render API
-  e2e/               editing, deletion, focus, async consistency, persistence, AI review, axe scans
+  e2e/               editing, deletion, focus, async consistency, persistence, AI review,
+                     clipboard and PNG export, axe scans
+  vendor/            pinned axe-core, injected by the accessibility tests only
   e2e/ai_app.py      the app with a scripted fake provider, so no browser test can reach Azure
 docs/                scope, architecture, test plan, test report
 deploy/              deploy, verify and teardown scripts, and what they cost

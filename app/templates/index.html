@@ -50,6 +50,23 @@
   </dialog>
 
   <!--
+    Shown when the clipboard cannot be written to, whether the API is absent
+    or permission was refused (docs/scope.md §6). The text is selected on
+    open so the user can copy it with the keyboard straight away.
+  -->
+  <dialog id="manual-copy" aria-labelledby="manual-copy-title">
+    <h2 id="manual-copy-title">Copy this text</h2>
+    <p id="manual-copy-reason" class="field__hint">
+      This browser would not let the page write to the clipboard. Select the text and copy it.
+    </p>
+    <label class="visually-hidden" for="manual-copy-text">Card text</label>
+    <textarea id="manual-copy-text" rows="10" readonly></textarea>
+    <div class="dialog__actions">
+      <button type="button" id="manual-copy-close">Close</button>
+    </div>
+  </dialog>
+
+  <!--
     The AI draft panel. The draft section stays hidden until a draft exists,
     and its status starts unchosen: the model is not allowed to assign one
     (docs/scope.md §5), so the user must, and "Create card" stays disabled
