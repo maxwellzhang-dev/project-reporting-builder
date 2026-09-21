@@ -27,7 +27,7 @@ def panel(page: Page):
 
 
 def open_panel(page: Page):
-    page.get_by_role("button", name="Draft from notes").click()
+    page.get_by_role("button", name="Paste notes, draft with AI").click()
     expect(panel(page)).to_be_visible()
     return panel(page)
 

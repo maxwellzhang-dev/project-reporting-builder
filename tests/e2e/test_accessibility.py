@@ -40,7 +40,7 @@ def test_confirmation_dialog(page: Page, base_url: str):
 def test_ai_review_panel(page: Page, base_url: str):
     """Both states of the panel: notes only, and a draft awaiting review."""
     page.goto(base_url)
-    page.get_by_role("button", name="Draft from notes").click()
+    page.get_by_role("button", name="Paste notes, draft with AI").click()
     expect(page.locator("#ai-review")).to_be_visible()
     assert_clean(page, "AI panel, before generating")
 
@@ -52,7 +52,7 @@ def test_ai_review_panel(page: Page, base_url: str):
 
 def test_ai_review_panel_error_state(page: Page, base_url: str):
     page.goto(base_url)
-    page.get_by_role("button", name="Draft from notes").click()
+    page.get_by_role("button", name="Paste notes, draft with AI").click()
     page.fill("#ai-source", "TRIGGER_MALFORMED and some notes")
     page.get_by_role("button", name="Generate draft").click()
     expect(page.locator("#ai-error")).to_be_visible()
