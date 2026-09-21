@@ -1,10 +1,11 @@
 # Test Report
 
-- Commit: 43d3c78 (plus the uncommitted AI review interface recorded below)
+- Commit: 3306bc0 (the deployed image is tagged with this commit)
 - Date: 2026-09-21
-- Deployment URL: Not deployed yet; all runs are local
+- Deployment URL: https://ca-reporting-builder.kindbush-e2227a04.koreacentral.azurecontainerapps.io
 - Browser / OS: Chromium 140 (Playwright) on macOS 15.6
-- Azure deployment: `gpt-5-mini`, Responses API, api-version `2025-04-01-preview`
+- Azure deployment: `gpt-5-mini`, Responses API, api-version `2025-04-01-preview`, Korea Central
+- Hosting: Azure Container Apps, Korea Central, 0.5 vCPU / 1 GiB, max 1 replica, scale to zero
 - Prompt version: `extract_progress_v1`
 
 Statuses are Passed, Failed, Blocked or Not run. A check that could not be run
@@ -17,6 +18,7 @@ is never recorded as passed.
 | `ruff check .` | Passed | All checks passed |
 | `ruff format --check .` | Passed | 38 files already formatted |
 | `pytest tests/unit tests/integration` | Passed | 92 passed |
+| `pytest tests` (both suites in one process) | Passed | 127 passed |
 | `pytest tests/e2e --browser chromium` | Passed | 35 passed, including 7 axe-core scans |
 | `docker build` and container smoke test | Passed | image built, `/healthz` returned `{"status":"ok"}`, container uid 10001 |
 
@@ -31,7 +33,29 @@ is never recorded as passed.
 | External email / messaging clients | — | Not run | Depends on export, which is not built |
 | Screen reader workflow | — | Not run | No screen reader session performed |
 | 360px width and 200% zoom | — | Not run | |
-| Azure Container Apps deployment checks | — | Not run | Nothing deployed yet |
+| Azure Container Apps deployment checks | Deployed app, `deploy/verify.sh` | Passed | 11 of 11. Listed individually below |
+| Online AI workflow through a browser | — | Not run | The deployed API was exercised by `verify.sh`; the deployed page has not been driven by hand |
+
+### Deployment checks (docs/test_plan.md §11)
+
+Run by `deploy/verify.sh` against the deployed URL. Four of these assert the
+absence of something rather than the presence of a feature.
+
+| Check | Status |
+| --- | --- |
+| HTTPS ingress serves `/healthz`, body is `{"status":"ok"}` | Passed |
+| Application page loads over HTTPS | Passed |
+| Ingress targets port 8000, application binds 0.0.0.0:8000 | Passed |
+| At most one replica, matching the in-process limiter | Passed |
+| Key supplied as a secret reference | Passed |
+| Key is **not** a literal environment value | Passed |
+| Neither the key nor the Azure endpoint appears in the served page | Passed |
+| One real AI request succeeds in the deployed environment | Passed |
+| Draft carries **no** model-assigned status | Passed |
+| Invalid input returns the error envelope with no internals | Passed |
+| Container runs as non-root (uid 10001) without reload | Passed, from the container smoke test |
+| Cold start from zero replicas | See Known Issues; measured separately |
+| Manual workflows remain available during AI failure | Covered by browser tests against a scripted failure, not re-run against the deployment |
 
 ## AI Evaluation
 

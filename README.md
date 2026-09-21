@@ -5,8 +5,13 @@ snippet cards. Cards can be created, edited, reordered and deleted, each with a 
 server-rendered preview; drafts survive a reload; and the Azure OpenAI draft
 endpoint is implemented behind a provider interface.
 
+**Live:** <https://ca-reporting-builder.kindbush-e2227a04.koreacentral.azurecontainerapps.io>
+— hosted on Azure Container Apps and scaled to zero, so the first request after
+an idle period takes a few seconds to wake the container.
+
 Design documents: [`docs/scope.md`](docs/scope.md) ·
 [`docs/architecture.md`](docs/architecture.md) · [`docs/test_plan.md`](docs/test_plan.md)
+· [`docs/test-report.md`](docs/test-report.md)
 
 ## What works today
 
