@@ -107,6 +107,23 @@ with no credentials and no spend.
 Never commit a filled-in `.env`. Credentials belong in environment secrets, not
 in the image or in any frontend asset.
 
+## Deployment
+
+Azure Container Apps, from `deploy/deploy.sh`. The script is idempotent, builds
+the image server side with `az acr build`, tags it with the commit, and stores
+the Azure OpenAI key as a Container Apps secret rather than in the image.
+`deploy/verify.sh` then runs the checks in `docs/test_plan.md` §11 against the
+deployed URL, and `deploy/teardown.sh` removes everything.
+
+```bash
+az login
+deploy/deploy.sh          # add --wake to keep one replica warm before a demo
+deploy/verify.sh
+```
+
+`deploy/README.md` records what is created, what it costs and the trade-offs
+taken, including the single-replica ceiling the in-process rate limiter needs.
+
 ## Dependencies
 
 `requirements.in` and `requirements-dev.in` list direct dependencies with exact
@@ -140,7 +157,8 @@ tests/
   integration/       endpoints, page content, static assets, render API
   e2e/               editing, deletion, focus, async consistency, persistence, AI review, axe scans
   e2e/ai_app.py      the app with a scripted fake provider, so no browser test can reach Azure
-docs/                scope, architecture, test plan
+docs/                scope, architecture, test plan, test report
+deploy/              deploy, verify and teardown scripts, and what they cost
 ```
 
 ## AI assistance

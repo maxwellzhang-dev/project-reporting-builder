@@ -18,6 +18,7 @@ from app.config import settings
 from app.main import app, get_ai_provider
 from app.services import ai_extraction
 from app.services.ai_extraction import AIError
+from tests.e2e.ai_markers import DRAFT, FILTERED, MALFORMED, SLOW, TIMEOUT
 
 settings.ai_enabled = True
 
@@ -28,24 +29,6 @@ settings.ai_enabled = True
 # real behaviour is covered by tests/integration/test_ai_api.py instead.
 ai_extraction.MAX_CONCURRENT = 50
 ai_extraction.limiter = ai_extraction.RateLimiter(max_per_minute=500)
-
-DRAFT = {
-    "title": "Payments migration, week 38",
-    "summary": "The login refactor is finished and 12 of 18 merchant accounts have moved.",
-    "completed_items": ["Finished the login refactor", "Moved 12 of 18 merchant accounts"],
-    "next_steps": ["Start the reconciliation dry run"],
-    "risks": ["The vendor has not given a date for credential rotation"],
-    "review_notes": [
-        "No date was given for the credential rotation",
-        "The remaining six accounts are not described",
-    ],
-}
-
-# Markers a test types into the source text to choose the outcome.
-TIMEOUT = "TRIGGER_TIMEOUT"
-MALFORMED = "TRIGGER_MALFORMED"
-FILTERED = "TRIGGER_FILTERED"
-SLOW = "TRIGGER_SLOW"
 
 
 class ScriptedProvider:

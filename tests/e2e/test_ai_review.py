@@ -9,7 +9,7 @@ import re
 import pytest
 from playwright.sync_api import Page, expect
 
-from tests.e2e.ai_app import FILTERED, MALFORMED, SLOW, TIMEOUT
+from tests.e2e.ai_markers import FILTERED, MALFORMED, SLOW, TIMEOUT
 
 NOTE = "Week 38 payments migration. Login refactor done, 12 of 18 accounts moved."
 
