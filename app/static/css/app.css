@@ -1,0 +1,198 @@
+/* One token set so contrast can be checked in one place (docs/architecture §11). */
+:root {
+  --ink: #1d1d1f;
+  --muted: #55555c;
+  --line: #d9d9de;
+  --bg: #fbfbfd;
+  --surface: #ffffff;
+  --focus: #0b5fff;
+  --status-in-progress: #1f4d7a;
+  --radius: 12px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: clamp(16px, 4vw, 40px);
+  background: var(--bg);
+  color: var(--ink);
+  font: 400 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+}
+
+h1 { font-size: clamp(22px, 3vw, 28px); margin: 0 0 4px; }
+h2 { font-size: 18px; margin: 32px 0 8px; }
+
+.page__header, main, .page__footer { max-width: 720px; margin-inline: auto; }
+.page__lead, .page__note { color: var(--muted); margin: 0 0 8px; }
+
+/* Focus must stay visible everywhere (docs/test_plan §9). */
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+}
+.skip-link:focus {
+  left: 12px;
+  top: 12px;
+  padding: 8px 12px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  z-index: 10;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0;
+  overflow: hidden; clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+}
+
+.card__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px 14px;
+  margin-bottom: 8px;
+}
+.card__title { margin: 0; font-size: 18px; }
+
+/* Status carries a text label, never colour alone (docs/scope §3). */
+.card__status {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--status-in-progress);
+}
+.card__status-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.card__summary { margin: 0 0 12px; }
+.card__section-title {
+  margin: 12px 0 4px;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+.card__list { margin: 0; padding-left: 20px; }
+.card__list li { margin-bottom: 4px; }
+
+.page__footer {
+  margin-top: 32px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 14px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ink: #f2f2f5; --muted: #a6a6ae; --line: #3a3a40;
+    --bg: #131316; --surface: #1c1c20;
+    --focus: #7aa7ff; --status-in-progress: #8fbae6;
+  }
+}
+
+/* ---- editor (milestone 3) ---- */
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin: 16px 0 8px;
+}
+.toolbar__count { margin: 0 0 0 auto; color: var(--muted); font-size: 13px; }
+
+button {
+  font: inherit;
+  padding: 7px 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+}
+button:hover:not(:disabled) { border-color: var(--muted); }
+button:disabled { opacity: 0.5; cursor: not-allowed; }
+button.danger { color: #8c1d18; border-color: #e3b8b5; }
+@media (prefers-color-scheme: dark) {
+  button.danger { color: #ff9d95; border-color: #5c2f2b; }
+}
+
+.app-status { min-height: 1.4em; margin: 0 0 8px; color: var(--muted); font-size: 14px; }
+
+.card-list { display: flex; flex-direction: column; gap: 16px; }
+
+.editor-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-areas: "heading controls" "form preview";
+  gap: 8px 20px;
+  padding: 16px 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.editor-card__heading { grid-area: heading; margin: 0; font-size: 15px; color: var(--muted); }
+.editor-card__controls { grid-area: controls; display: flex; gap: 6px; justify-content: flex-end; }
+.editor-card__form { grid-area: form; display: flex; flex-direction: column; gap: 10px; }
+.preview__body { grid-area: preview; }
+
+.field { display: flex; flex-direction: column; gap: 4px; }
+.field label { font-size: 13px; font-weight: 600; }
+.field input, .field textarea, .field select {
+  font: inherit;
+  padding: 7px 9px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--ink);
+}
+.field textarea { resize: vertical; }
+.field__hint { margin: 0; font-size: 12px; color: var(--muted); }
+.field__error { margin: 0; font-size: 12px; color: #8c1d18; font-weight: 600; }
+@media (prefers-color-scheme: dark) { .field__error { color: #ff9d95; } }
+[aria-invalid="true"] { border-color: #8c1d18; }
+
+.preview__placeholder { margin: 0; color: var(--muted); font-size: 14px; }
+.card__value { margin: 0; font-size: 26px; font-weight: 600; }
+.card__comparisons { margin: 4px 0 0; padding-left: 18px; color: var(--muted); font-size: 14px; }
+.card__image { max-width: 100%; border-radius: 8px; margin-top: 8px; }
+.card__caption, .card__note { margin: 8px 0 0; color: var(--muted); font-size: 14px; }
+
+dialog { border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; max-width: 380px; }
+dialog::backdrop { background: rgb(0 0 0 / 45%); }
+.dialog__actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 14px; }
+
+@media (max-width: 720px) {
+  .editor-card {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "heading" "controls" "form" "preview";
+  }
+  .editor-card__controls { justify-content: flex-start; }
+}
+
+.save-state { min-height: 1.3em; margin: 0 0 12px; font-size: 13px; color: var(--muted); }
+.save-state[data-state="failed"] { color: #8c1d18; font-weight: 600; }
+@media (prefers-color-scheme: dark) { .save-state[data-state="failed"] { color: #ff9d95; } }

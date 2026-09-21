@@ -1,0 +1,37 @@
+{#- Preview markup: semantic, autoescaped, no user text treated as template. -#}
+<article class="card card--{{ view.kind }}">
+  <header class="card__header">
+    <h3 class="card__title">{{ view.title }}</h3>
+    {% if view.status_label %}
+      <p class="card__status" data-status="{{ view.status_value }}">
+        <span class="card__status-dot" aria-hidden="true"></span>{{ view.status_label }}
+      </p>
+    {% endif %}
+  </header>
+
+  {% if view.summary %}<p class="card__summary">{{ view.summary }}</p>{% endif %}
+
+  {% if view.value %}
+    <p class="card__value">{{ view.value }}</p>
+    {% if view.comparisons %}
+      <ul class="card__comparisons">
+        {% for line in view.comparisons %}<li>{{ line }}</li>{% endfor %}
+      </ul>
+    {% endif %}
+  {% endif %}
+
+  {% if view.alt_text %}
+    <p class="card__image-placeholder" data-image-slot="true">
+      <span class="visually-hidden">Image description: </span>{{ view.alt_text }}
+    </p>
+  {% endif %}
+  {% if view.caption %}<p class="card__caption">{{ view.caption }}</p>{% endif %}
+  {% if view.note %}<p class="card__note">{{ view.note }}</p>{% endif %}
+
+  {% for section in view.sections %}
+    <h4 class="card__section-title">{{ section.heading }}</h4>
+    <ul class="card__list">
+      {% for item in section.items %}<li>{{ item }}</li>{% endfor %}
+    </ul>
+  {% endfor %}
+</article>

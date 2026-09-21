@@ -1,0 +1,15 @@
+.git
+.github
+.venv
+docs
+tests
+app/static/vendor
+.env
+.env.example
+.pytest_cache
+.ruff_cache
+.vscode
+**/__pycache__
+**/*.py[cod]
+.DS_Store
+README.md

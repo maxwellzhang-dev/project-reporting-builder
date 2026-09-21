@@ -1,0 +1,60 @@
+// Owns the preview column: server HTML in, local image attached by DOM.
+
+import { renderCard, RenderError } from "./api.js";
+import { getCard } from "./state.js";
+
+const pending = new Map();
+
+/** Insert the local image into the placeholder the server left for it. */
+function attachImage(node, card) {
+  const slot = node.querySelector("[data-image-slot]");
+  if (!slot || !card.image) return;
+  const img = document.createElement("img");
+  img.src = card.image.objectUrl;
+  img.alt = card.alt_text.trim();
+  img.className = "card__image";
+  slot.replaceWith(img);
+}
+
+export function showError(container, message) {
+  container.innerHTML = "";
+  const p = document.createElement("p");
+  p.className = "preview__placeholder";
+  p.textContent = message;
+  container.append(p);
+}
+
+/**
+ * Refresh one card's preview. Debounced per card so typing does not queue a
+ * request per keystroke, and late answers are dropped by api.renderCard.
+ */
+export function schedulePreview(card, container, onFieldErrors) {
+  clearTimeout(pending.get(card.id));
+  pending.set(
+    card.id,
+    setTimeout(async () => {
+      const latest = getCard(card.id);
+      if (!latest) return;
+      try {
+        const result = await renderCard(latest);
+        if (!result) return; // superseded or deleted
+        if (!getCard(card.id)) return;
+        container.innerHTML = result.preview_html;
+        attachImage(container, getCard(card.id));
+        onFieldErrors({});
+      } catch (error) {
+        if (error instanceof RenderError) {
+          onFieldErrors(error.fieldErrors);
+          showError(container, error.message);
+          return;
+        }
+        showError(container, "Preview unavailable. Your text is safe; try again.");
+      }
+    }, 300),
+  );
+}
+
+export function cancelPreview(cardId) {
+  clearTimeout(pending.get(cardId));
+  pending.delete(cardId);
+}

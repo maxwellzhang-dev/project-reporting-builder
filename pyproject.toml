@@ -1,0 +1,21 @@
+[project]
+name = "project-reporting-builder"
+version = "0.1.0"
+description = "Turn project notes, metrics and images into shareable snippet cards."
+requires-python = ">=3.13"
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+extend-exclude = ["attic"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "S"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101"]  # assert is the point of a test
+"app/main.py" = ["B008"]  # Depends() in a default is how FastAPI declares dependencies
+
+[tool.pytest.ini_options]
+testpaths = ["tests/unit", "tests/integration"]  # e2e runs explicitly: pytest tests/e2e
+addopts = "-q"

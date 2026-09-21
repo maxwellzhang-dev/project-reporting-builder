@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  checks:
+    name: Lint, format and tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install locked dependencies
+        run: pip install -r requirements-dev.lock.txt
+      - run: ruff check .
+      - run: ruff format --check .
+      - run: pytest
+
+  browser:
+    name: Browser and accessibility tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: pip install -r requirements-dev.lock.txt
+      - run: playwright install --with-deps chromium
+      - run: pytest tests/e2e --browser chromium  # includes axe-core accessibility scans
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-traces
+          path: test-results/
+
+  container:
+    name: Docker build and health smoke test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build image
+        run: docker build -t project-reporting-builder:ci .
+      - name: Start container
+        run: docker run -d --name prb -p 8000:8000 project-reporting-builder:ci
+      - name: Wait for /healthz
+        run: |
+          for attempt in $(seq 1 30); do
+            if curl -fsS http://localhost:8000/healthz | grep -q '"status":"ok"'; then
+              echo "healthy after ${attempt} attempt(s)"; exit 0
+            fi
+            sleep 2
+          done
+          echo "container did not become healthy"; docker logs prb; exit 1
+      - name: Check the page and its assets respond
+        run: |
+          curl -fsS http://localhost:8000/ > /dev/null
+          curl -fsS http://localhost:8000/static/css/app.css > /dev/null
+          curl -fsS http://localhost:8000/static/js/main.js > /dev/null
+      - name: Confirm the container does not run as root
+        run: test "$(docker exec prb id -u)" != "0"
+      - name: Stop container
+        if: always()
+        run: docker rm -f prb || true

@@ -1,0 +1,6 @@
+# Development and CI only. Never installed into the production image.
+-r requirements.in
+pytest==8.3.4
+httpx==0.28.1
+ruff==0.8.6
+pytest-playwright==0.6.2

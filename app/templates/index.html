@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ app_name }}</title>
+  <link rel="stylesheet" href="/static/css/app.css">
+  <script type="module" src="/static/js/main.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="page__header">
+    <h1>{{ app_name }}</h1>
+    <p class="page__lead">
+      Turn project notes, metrics and images into shareable snippet cards.
+    </p>
+  </header>
+
+  <main id="main">
+    <section aria-labelledby="toolbar-heading" class="toolbar">
+      <h2 id="toolbar-heading" class="visually-hidden">Add a card</h2>
+      <button type="button" data-add-card="progress">Add progress card</button>
+      <button type="button" data-add-card="metric">Add metric card</button>
+      <button type="button" data-add-card="image">Add image card</button>
+      <p id="card-count" class="toolbar__count">0 of 20 cards</p>
+      <button type="button" id="clear-local-data">Clear local data</button>
+    </section>
+
+    <p id="app-status" role="status" class="app-status"></p>
+    <p id="save-state" role="status" class="save-state"></p>
+
+    <p id="empty-state" class="page__note">
+      No cards yet. Add one to start building your report.
+    </p>
+
+    <section id="card-list" aria-label="Report cards" class="card-list"></section>
+  </main>
+
+  <dialog id="confirm-delete" aria-labelledby="confirm-delete-title">
+    <form method="dialog">
+      <h2 id="confirm-delete-title">Delete card</h2>
+      <p id="confirm-delete-text"></p>
+      <div class="dialog__actions">
+        <button value="cancel">Cancel</button>
+        <button value="delete" class="danger">Delete</button>
+      </div>
+    </form>
+  </dialog>
+
+  <footer class="page__footer">
+    <h2 class="visually-hidden">Service status</h2>
+    <p id="service-status" role="status">Checking service status…</p>
+  </footer>
+</body>
+</html>
