@@ -13,3 +13,4 @@ app/static/vendor
 **/*.py[cod]
 .DS_Store
 README.md
+deploy
