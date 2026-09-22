@@ -19,7 +19,7 @@ Create a card or load examples → Enter content or generate an AI draft → Edi
 | Editing | Field editing, validation, and live preview |
 | Card management | Create, select, delete, move up, and move down |
 | AI assistance | Optional text-to-progress-draft generation through Azure OpenAI |
-| Sharing | Plain text, rich text, and single-card PNG |
+| Sharing | Plain text, rich text, and single-card PNG; whole report as text, HTML or print-to-PDF |
 | Examples | Load a sample report containing all three card types |
 | Accessibility | Keyboard operation, labels, visible focus, and accessible feedback |
 | Responsive layout | Desktop and mobile layouts |
@@ -124,6 +124,28 @@ Manual editing and sharing remain available when AI is unavailable.
 | Progress | Yes | Yes | Yes |
 | Metric | Yes | Yes | Yes |
 | Image | Title, caption, and alternative text | No | Yes |
+
+### Whole report
+
+The report can also be shared in one piece, in the order the cards are
+arranged (§2). This is what makes arranging them worth doing.
+
+| Form | Contents |
+| --- | --- |
+| Plain text | Every card's plain text, in order, separated |
+| HTML file | A self-contained document; each card keeps the same markup the email form uses |
+| PDF | Through the browser's own print-to-PDF, against a print stylesheet. No PDF library |
+
+- A whole-report export is assembled from what each card already rendered, so
+  it cannot differ from the previews on screen.
+- An image card contributes its title, caption and alternative text, matching
+  the per-card rule above. The image file itself is not included, because
+  images never leave the browser (§7). The export says so rather than dropping
+  the card silently.
+- A card that is invalid or has not rendered blocks the export and is named,
+  rather than being omitted from a document that looks complete.
+
+### All sharing
 
 - Sharing uses the current valid content, not an outdated preview.
 - Rich text targets simple email formatting; appearance varies by client.

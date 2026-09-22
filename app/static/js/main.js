@@ -1,7 +1,8 @@
 // Wires the page together: toolbar, card list, deletion dialog, status line.
 
 import { initAiReview } from "./ai-review.js";
-import { setManualFallback } from "./clipboard.js";
+import { copyCard, setManualFallback } from "./clipboard.js";
+import { ReportIncomplete, reportHtml, reportText } from "./export-report.js";
 import { buildCardEditor, setDeletionConfirmer } from "./editor.js";
 import { Persistence, SaveState } from "./persistence.js";
 import { addCard, clearAll, getBlobs, getCards, MAX_CARDS, replaceAll, subscribe } from "./state.js";
@@ -106,6 +107,63 @@ setManualFallback((text) => {
   announce("Copy it by hand: this browser would not let the page use the clipboard.");
 });
 document.getElementById("manual-copy-close")?.addEventListener("click", () => manualCopy.close());
+
+/* ---- whole-report sharing (milestone 7) ---- */
+
+/** Turn a refusal into a sentence that names the cards holding it up. */
+function reportProblem(error) {
+  if (error instanceof ReportIncomplete) {
+    return `The report could not be built: ${error.titles.join(", ")} still needs attention.`;
+  }
+  return "The report could not be built. Your cards are unchanged; try again.";
+}
+
+function guardEmpty() {
+  if (getCards().length) return false;
+  announce("There are no cards to share yet.");
+  return true;
+}
+
+document.getElementById("copy-report")?.addEventListener("click", async () => {
+  if (guardEmpty()) return;
+  try {
+    const text = await reportText();
+    // Reuses the per-card clipboard path, so the manual fallback and the
+    // permission handling are the same ones already tested.
+    const outcome = await copyCard({ plain_text: text });
+    if (outcome === "copied") announce("Report copied");
+  } catch (error) {
+    announce(reportProblem(error));
+  }
+});
+
+document.getElementById("download-report")?.addEventListener("click", async () => {
+  if (guardEmpty()) return;
+  let url;
+  try {
+    const html = await reportHtml(document.title);
+    const blob = new Blob([html], { type: "text/html;charset=utf-8" });
+    url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "project-report.html";
+    document.body.append(link);
+    link.click();
+    link.remove();
+    announce("Report downloaded");
+  } catch (error) {
+    announce(reportProblem(error));
+  } finally {
+    if (url) setTimeout(() => URL.revokeObjectURL(url), 30_000);
+  }
+});
+
+document.getElementById("print-report")?.addEventListener("click", () => {
+  if (guardEmpty()) return;
+  // The print stylesheet does the work; this only opens the dialog, where
+  // the browser's own "Save as PDF" lives.
+  window.print();
+});
 
 // Health check stays from milestone 1: it is the only signal that the API is up.
 (async () => {

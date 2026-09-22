@@ -18,8 +18,8 @@ is never recorded as passed.
 | `ruff check .` | Passed | All checks passed |
 | `ruff format --check .` | Passed | 38 files already formatted |
 | `pytest tests/unit tests/integration` | Passed | 115 passed |
-| `pytest tests` (both suites in one process) | Passed | 171 passed |
-| `pytest tests/e2e --browser chromium` | Passed | 56 passed, including 8 axe-core scans |
+| `pytest tests` (both suites in one process) | Passed | 180 passed |
+| `pytest tests/e2e --browser chromium` | Passed | 65 passed, including 8 axe-core scans |
 | `docker build` and container smoke test | Passed | image built, `/healthz` returned `{"status":"ok"}`, container uid 10001 |
 
 ## Manual Checks
@@ -29,6 +29,7 @@ is never recorded as passed.
 | One real AI request succeeds | Local, live `gpt-5-mini` | Passed | Schema-valid draft returned through the full service path, not just the raw client |
 | Full AI review workflow in a browser | Chrome 140, macOS, live `gpt-5-mini` | Passed | Notes pasted, draft returned and displayed for review, status chosen, card created with its preview. Create stayed disabled until a status was picked |
 | Note text absent from application logs | Local, live `gpt-5-mini` | Passed | No phrase from the submitted note appeared in the server log. Says nothing about what Azure retains |
+| Report HTML and print layout inspected visually | Chromium, saved files opened and looked at | Passed | The exported file renders standalone with inline styles, Chinese intact and computed metric values present; the print view drops every editing control |
 | PNG export inspected visually | Chromium, saved files opened and looked at | Passed | Chinese text and a long card both render complete, no cropping, card border closed |
 | PNG saved by a real browser to disk | — | Not run | The automated Chrome used here does not write downloads to disk; a plain anchor-download probe produced no file either, so this says nothing about the code. Needs one click in an ordinary browser |
 | External email / messaging clients | — | Not run | Not attempted |

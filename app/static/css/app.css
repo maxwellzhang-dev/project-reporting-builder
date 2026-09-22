@@ -236,3 +236,35 @@ dialog::backdrop { background: rgb(0 0 0 / 45%); }
 .ai-panel__metrics { margin: 6px 0 0; padding: 0; list-style: none; }
 .ai-panel__metrics li { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 6px; font-size: 13px; }
 .ai-panel__metrics input { margin-top: 3px; }
+
+/* ---- whole-report actions ---- */
+.toolbar--report { margin-top: -4px; }
+
+/* ---- print: the PDF route (docs/scope.md §6) ---- */
+/* The page is an editor on screen and a report on paper. Everything that
+   exists to change a card is dropped, leaving the rendered previews. */
+@media print {
+  .toolbar,
+  .editor-card__controls,
+  .editor-card__form,
+  .editor-card__share,
+  .app-status,
+  .save-state,
+  .skip-link,
+  /* A product tagline belongs on the page, not in a printed report. */
+  .page__lead,
+  .page__footer,
+  dialog { display: none !important; }
+
+  body { background: #fff; color: #000; }
+  .card-list { display: block; }
+  .editor-card {
+    display: block;
+    border: 0;
+    padding: 0;
+    margin: 0 0 16px;
+    break-inside: avoid;
+  }
+  .editor-card__heading { display: none; }
+  .preview__body { width: 100%; }
+}

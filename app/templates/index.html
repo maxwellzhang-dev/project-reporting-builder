@@ -28,6 +28,19 @@
       <button type="button" id="clear-local-data">Clear local data</button>
     </section>
 
+    <!--
+      Whole-report sharing. Separate from the per-card buttons because this is
+      what makes arranging the cards worth doing (docs/scope.md §2, §6).
+      "Print" is the PDF route: the browser's own, against a print stylesheet,
+      rather than a PDF library.
+    -->
+    <section aria-labelledby="report-actions-heading" class="toolbar toolbar--report">
+      <h2 id="report-actions-heading" class="visually-hidden">Share the whole report</h2>
+      <button type="button" id="copy-report">Copy report</button>
+      <button type="button" id="download-report">Download HTML</button>
+      <button type="button" id="print-report">Print or save as PDF</button>
+    </section>
+
     <p id="app-status" role="status" class="app-status"></p>
     <p id="save-state" role="status" class="save-state"></p>
 

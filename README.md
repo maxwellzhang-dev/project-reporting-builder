@@ -40,11 +40,12 @@ Design documents: [`docs/scope.md`](docs/scope.md) ·
 | Metric cards proposed from the text | Implemented: figures are copied, never derived; a stated baseline is kept, an absent one stays empty; each proposal is opt-in |
 | Copy as plain text and as rich text | Implemented, with a manual-copy dialog whenever the Clipboard API is absent or refused |
 | PNG export per card | Implemented: isolated snapshot, editing controls excluded, discarded if the card changes mid-export |
-| Playwright browser tests | Implemented: editor, persistence, AI review, metric proposals, sharing and axe-core scans (56 checks) |
+| Whole-report export | Implemented: copy as text, download a self-contained HTML file, or print to PDF against a print stylesheet |
+| Playwright browser tests | Implemented: editor, persistence, AI review, metric proposals, sharing, report export and axe-core scans (65 checks) |
 
 ## Planned, not built
 
-Example report loading · a full evaluation against the fixed examples in
+Example report loading · a report title of its own (the exported document is named after the application) · a full evaluation against the fixed examples in
 `docs/test_plan.md` §7 (five live cases are recorded in `docs/test-report.md`)
 · external email and messaging client checks.
 
@@ -160,7 +161,7 @@ app/
   prompts/           the versioned extraction prompt
   templates/         index.html, preview/card.html, email/card.html
   static/js          state, api, editor, preview, image-assets, persistence, ai-review,
-                     clipboard, export-image, main
+                     clipboard, export-image, export-report, main
   static/vendor      pinned html-to-image, loaded by the page on first PNG export
 tests/
   unit/              escaping, metric table, formatting, card validation
