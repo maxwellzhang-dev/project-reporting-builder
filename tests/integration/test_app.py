@@ -32,7 +32,7 @@ def test_index_links_its_local_assets():
 
 def test_static_assets_are_served():
     for path, expected in (
-        ("/static/css/app.css", "--status-in-progress"),
+        ("/static/css/app.css", "--status-in_progress"),
         ("/static/js/main.js", "healthz"),
         ("/static/js/theme.js", "prefers-color-scheme"),
         # Vendored, not fetched from a CDN (docs/architecture.md §1).

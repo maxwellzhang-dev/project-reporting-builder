@@ -10,23 +10,58 @@
  * so contrast is still checked in one place (docs/architecture §11).
  */
 :root {
+  /* Palette: Basecoat's neutral greys with a cool tint, and one indigo accent
+     for the primary action and focus. Hex rather than oklch where a colour
+     also appears in the email template, since mail clients lack oklch. */
+  --background: oklch(0.985 0.004 275);
+  --card: #ffffff;
+  --muted: oklch(0.962 0.007 275);
+  --border: oklch(0.915 0.008 275);
+  --input: oklch(0.9 0.008 275);
+  --primary: #4f46e5;
+  --primary-foreground: #ffffff;
+  --ring: #6366f1;
   /* Basecoat's muted text is about 4.3:1 on its own muted surface; this
      darker grey keeps small print at AA on both white and the sunken panel. */
-  --muted-foreground: oklch(0.48 0 0);
-  --status-in-progress: #1f4d7a;
+  --muted-foreground: oklch(0.48 0.012 275);
   --danger-ink: oklch(0.5 0.2 27);
   --warning-line: #8a6d00;
   --warning-fill: rgb(138 109 0 / 10%);
+  /* One colour per status. Each is at least 4.5:1 on its own 10% tint, and
+     the label is always shown too, so colour is never the only signal
+     (docs/scope §3). The same values are in templates/email/card.html. */
+  --status-proposed: #52525b;
+  --status-under_review: #854d0e;
+  --status-cleared_to_start: #075985;
+  --status-in_progress: #4338ca;
+  --status-completed: #166534;
+  --status-on_hold: #9a3412;
+  --status-cancelled: #b91c1c;
   /* Read by export-image.js for the border of a card saved on its own. */
   --line: var(--border);
   --page-width: 1040px;
 }
 .dark {
-  --muted-foreground: oklch(0.72 0 0);
-  --status-in-progress: #8fbae6;
+  --background: oklch(0.155 0.01 275);
+  --card: oklch(0.2 0.012 275);
+  --muted: oklch(0.235 0.012 275);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  /* Indigo light enough to carry dark text; white on it would fail AA. */
+  --primary: #818cf8;
+  --primary-foreground: #0f0e2a;
+  --ring: #818cf8;
+  --muted-foreground: oklch(0.72 0.01 275);
   --danger-ink: oklch(0.75 0.16 22);
   --warning-line: #e8c34a;
   --warning-fill: rgb(232 195 74 / 12%);
+  --status-proposed: #d4d4d8;
+  --status-under_review: #fcd34d;
+  --status-cleared_to_start: #7dd3fc;
+  --status-in_progress: #a5b4fc;
+  --status-completed: #86efac;
+  --status-on_hold: #fdba74;
+  --status-cancelled: #fca5a5;
 }
 
 body {
@@ -46,6 +81,19 @@ h3, h4 { font-weight: 600; }
 
 .page__header, main, .page__footer { max-width: var(--page-width); margin-inline: auto; }
 .page__header { padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+.page__brand { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
+.page__brand h1 { margin: 0; }
+.page__mark {
+  display: grid;
+  place-items: center;
+  width: 34px; height: 34px;
+  flex-shrink: 0;
+  border-radius: 9px;
+  background: linear-gradient(135deg, #6366f1, #4338ca);
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgb(67 56 202 / 30%);
+}
+.page__mark svg { width: 18px; height: 18px; }
 .page__lead { color: var(--muted-foreground); margin: 0; }
 .page__note {
   color: var(--muted-foreground);
@@ -60,7 +108,7 @@ h3, h4 { font-weight: 600; }
 /* Focus must stay visible everywhere (docs/test_plan §9). Basecoat's own ring
    is a soft halo; this outline is the one that is guaranteed to show. */
 :focus-visible {
-  outline: 2px solid var(--foreground);
+  outline: 2px solid var(--ring);
   outline-offset: 2px;
 }
 /* A text field already shows where typing goes, so a hairline is enough and
@@ -124,12 +172,19 @@ h3, h4 { font-weight: 600; }
   align-items: center;
   gap: 6px;
   padding: 1px 10px;
-  border: 1px solid var(--border);
+  border: 1px solid color-mix(in srgb, currentColor 28%, transparent);
   border-radius: 999px;
+  background: color-mix(in srgb, currentColor 10%, transparent);
   font-size: 12px;
   font-weight: 600;
-  color: var(--status-in-progress);
+  color: var(--status-in_progress);
 }
+.card__status[data-status="proposed"] { color: var(--status-proposed); }
+.card__status[data-status="under_review"] { color: var(--status-under_review); }
+.card__status[data-status="cleared_to_start"] { color: var(--status-cleared_to_start); }
+.card__status[data-status="completed"] { color: var(--status-completed); }
+.card__status[data-status="on_hold"] { color: var(--status-on_hold); }
+.card__status[data-status="cancelled"] { color: var(--status-cancelled); }
 .card__status-dot {
   width: 7px; height: 7px;
   border-radius: 50%;
@@ -317,6 +372,8 @@ dialog::backdrop { background: rgb(0 0 0 / 50%); }
   .skip-link,
   /* A product tagline belongs on the page, not in a printed report. */
   .page__lead,
+  /* Print drops backgrounds by default, which would leave a blank square. */
+  .page__mark,
   .page__footer,
   dialog { display: none !important; }
 

@@ -4,7 +4,12 @@
   <tr><td style="padding:14px 16px;border:1px solid #d9d9de;border-radius:12px">
     <h3 style="margin:0 0 6px;font:600 16px/1.35 inherit">{{ view.title }}</h3>
     {% if view.status_label %}
-      <p style="margin:0 0 8px;font:600 12px/1.4 inherit;color:#1f4d7a">{{ view.status_label }}</p>
+      {#- Same values as the --status-* tokens in app.css, as hex for mail clients. -#}
+      {%- set tone = {"proposed": "#52525b", "under_review": "#854d0e",
+                      "cleared_to_start": "#075985", "in_progress": "#4338ca",
+                      "completed": "#166534", "on_hold": "#9a3412",
+                      "cancelled": "#b91c1c"}.get(view.status_value, "#4338ca") %}
+      <p style="margin:0 0 8px;font:600 12px/1.4 inherit;color:{{ tone }}">{{ view.status_label }}</p>
     {% endif %}
     {% if view.summary %}<p style="margin:0 0 10px;font:400 14px/1.5 inherit">{{ view.summary }}</p>{% endif %}
     {% if view.value %}
