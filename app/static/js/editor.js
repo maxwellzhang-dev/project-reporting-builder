@@ -175,6 +175,18 @@ async function downloadCard(cardId, preview, button, announce) {
   }
 }
 
+const SVG_NS = "http://www.w3.org/2000/svg";
+
+function spriteIcon(name) {
+  const svg = document.createElementNS(SVG_NS, "svg");
+  svg.setAttribute("aria-hidden", "true");
+  svg.setAttribute("focusable", "false");
+  const use = document.createElementNS(SVG_NS, "use");
+  use.setAttribute("href", `/static/vendor/lucide/icons.svg#${name}`);
+  svg.append(use);
+  return svg;
+}
+
 export function buildCardEditor(card, { announce, onChanged }) {
   const article = document.createElement("article");
   article.className = "editor-card";
@@ -191,26 +203,43 @@ export function buildCardEditor(card, { announce, onChanged }) {
   const controls = document.createElement("div");
   controls.className = "editor-card__controls";
 
-  const makeButton = (label, handler, className = "") => {
+  // Basecoat button: `variant` and `size` map onto its data attributes, and
+  // the icon comes from the local Lucide sprite. The icon is decorative, so
+  // the accessible name stays the visible label.
+  const makeButton = (label, handler, { variant = "outline", icon } = {}) => {
     const button = document.createElement("button");
     button.type = "button";
-    button.textContent = label;
-    button.className = className;
+    button.className = "btn";
+    button.dataset.variant = variant;
+    button.dataset.size = "sm";
+    if (icon) button.append(spriteIcon(icon));
+    button.append(label);
     button.addEventListener("click", handler);
     return button;
   };
 
   const index = getCards().findIndex((item) => item.id === card.id);
-  const up = makeButton("Move up", () => {
-    if (moveCard(card.id, -1)) announce(`${heading.textContent} moved up`);
-  });
-  const down = makeButton("Move down", () => {
-    if (moveCard(card.id, 1)) announce(`${heading.textContent} moved down`);
-  });
+  const up = makeButton(
+    "Move up",
+    () => {
+      if (moveCard(card.id, -1)) announce(`${heading.textContent} moved up`);
+    },
+    { variant: "ghost", icon: "arrow-up" },
+  );
+  const down = makeButton(
+    "Move down",
+    () => {
+      if (moveCard(card.id, 1)) announce(`${heading.textContent} moved down`);
+    },
+    { variant: "ghost", icon: "arrow-down" },
+  );
   up.disabled = index === 0;
   down.disabled = index === getCards().length - 1;
 
-  const remove = makeButton("Delete", () => onDelete(card, heading.textContent), "danger");
+  const remove = makeButton("Delete", () => onDelete(card, heading.textContent), {
+    variant: "destructive",
+    icon: "trash-2",
+  });
   controls.append(up, down, remove);
 
   const preview = document.createElement("div");
@@ -221,14 +250,22 @@ export function buildCardEditor(card, { announce, onChanged }) {
   // rich-text one, so it gets no rich button rather than a disabled one.
   const share = document.createElement("div");
   share.className = "editor-card__share";
-  const copyText = makeButton("Copy text", () => shareCard(card.id, { rich: false }, announce));
+  const copyText = makeButton("Copy text", () => shareCard(card.id, { rich: false }, announce), {
+    icon: "copy",
+  });
   share.append(copyText);
   if (card.type !== "image") {
-    share.append(makeButton("Copy rich", () => shareCard(card.id, { rich: true }, announce)));
+    share.append(
+      makeButton("Copy rich", () => shareCard(card.id, { rich: true }, announce), {
+        icon: "clipboard-copy",
+      }),
+    );
   }
   share.append(
-    makeButton("Download PNG", (event) =>
-      downloadCard(card.id, preview, event.currentTarget, announce),
+    makeButton(
+      "Download PNG",
+      (event) => downloadCard(card.id, preview, event.currentTarget, announce),
+      { icon: "download" },
     ),
   );
 

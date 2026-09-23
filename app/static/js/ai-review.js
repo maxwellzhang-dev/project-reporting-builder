@@ -64,6 +64,7 @@ function showMetrics(metrics) {
 
     const box = document.createElement("input");
     box.type = "checkbox";
+    box.className = "input";
     box.id = id;
 
     const label = document.createElement("label");

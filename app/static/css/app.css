@@ -1,51 +1,71 @@
-/* One token set so contrast can be checked in one place (docs/architecture §11). */
+/*
+ * Layout and product-specific styling on top of Basecoat
+ * (app/static/vendor/basecoat, shadcn/ui without React). Basecoat supplies the
+ * palette, buttons and form controls; this file supplies the page layout, the
+ * snippet card and everything print needs.
+ *
+ * This file is unlayered and Basecoat lives in cascade layers, so any rule
+ * here wins over Basecoat regardless of specificity. Colours come from
+ * Basecoat's tokens, adjusted below where a text colour fell short of WCAG AA,
+ * so contrast is still checked in one place (docs/architecture §11).
+ */
 :root {
-  --ink: #1d1d1f;
-  --muted: #55555c;
-  --line: #d9d9de;
-  --bg: #fbfbfd;
-  --surface: #ffffff;
-  --focus: #0b5fff;
+  /* Basecoat's muted text is about 4.3:1 on its own muted surface; this
+     darker grey keeps small print at AA on both white and the sunken panel. */
+  --muted-foreground: oklch(0.48 0 0);
   --status-in-progress: #1f4d7a;
-  --radius: 12px;
-  /* A filled action needs its own pair so contrast is checked here too. */
-  --accent: #0b5fff;
-  --accent-ink: #ffffff;
-  /* The preview sits on this, so input and output read as different things. */
-  --sunken: #f1f1f5;
+  --danger-ink: oklch(0.5 0.2 27);
+  --warning-line: #8a6d00;
+  --warning-fill: rgb(138 109 0 / 10%);
+  /* Read by export-image.js for the border of a card saved on its own. */
+  --line: var(--border);
+  --page-width: 1040px;
 }
-
-* { box-sizing: border-box; }
+.dark {
+  --muted-foreground: oklch(0.72 0 0);
+  --status-in-progress: #8fbae6;
+  --danger-ink: oklch(0.75 0.16 22);
+  --warning-line: #e8c34a;
+  --warning-fill: rgb(232 195 74 / 12%);
+}
 
 body {
   margin: 0;
   padding: clamp(16px, 4vw, 40px);
-  background: var(--bg);
-  color: var(--ink);
-  font: 400 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  background: var(--background);
+  color: var(--foreground);
+  font-size: 15px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
 }
 
-h1 { font-size: clamp(22px, 3vw, 28px); margin: 0 0 4px; }
-h2 { font-size: 18px; margin: 32px 0 8px; }
+/* Basecoat's reset flattens headings; the page states its own. */
+h1 { font-size: clamp(22px, 3vw, 28px); font-weight: 650; letter-spacing: -0.02em; margin: 0 0 4px; }
+h2 { font-size: 18px; font-weight: 600; margin: 32px 0 8px; }
+h3, h4 { font-weight: 600; }
 
-.page__header, main, .page__footer { max-width: 720px; margin-inline: auto; }
-.page__lead { color: var(--muted); margin: 0 0 8px; }
+.page__header, main, .page__footer { max-width: var(--page-width); margin-inline: auto; }
+.page__header { padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+.page__lead { color: var(--muted-foreground); margin: 0; }
 .page__note {
-  color: var(--muted);
+  color: var(--muted-foreground);
   margin: 0 0 8px;
-  padding: 24px 20px;
+  padding: 40px 24px;
   text-align: center;
-  border: 1px dashed var(--line);
-  border-radius: var(--radius);
-  background: var(--surface);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-xl, 14px);
+  background: var(--card);
 }
 
-/* Focus must stay visible everywhere (docs/test_plan §9). */
+/* Focus must stay visible everywhere (docs/test_plan §9). Basecoat's own ring
+   is a soft halo; this outline is the one that is guaranteed to show. */
 :focus-visible {
-  outline: 3px solid var(--focus);
+  outline: 2px solid var(--foreground);
   outline-offset: 2px;
-  border-radius: 4px;
 }
+/* A text field already shows where typing goes, so a hairline is enough and
+   the heavy ring is kept for everything else. */
+:is(input, textarea, select):focus-visible { outline-width: 1px; outline-offset: 1px; }
 
 .skip-link {
   position: absolute;
@@ -55,8 +75,8 @@ h2 { font-size: 18px; margin: 32px 0 8px; }
   left: 12px;
   top: 12px;
   padding: 8px 12px;
-  background: var(--surface);
-  border: 1px solid var(--line);
+  background: var(--background);
+  border: 1px solid var(--border);
   border-radius: 8px;
   z-index: 10;
 }
@@ -69,11 +89,21 @@ h2 { font-size: 18px; margin: 32px 0 8px; }
   white-space: nowrap;
 }
 
+/* ---- snippet card ---- */
+/* Basecoat has a `.card` component too (flex column, gaps, header padding).
+   The snippet card is also what the PNG is made from, so its box is stated
+   in full here instead of inheriting whatever that component does. */
 .card {
-  background: var(--surface);
+  display: block;
+  overflow: visible;
+  padding: 18px 20px;
   border: 1px solid var(--line);
-  border-radius: var(--radius);
-  padding: 16px 18px;
+  border-radius: 12px;
+  background: var(--card);
+  color: var(--card-foreground);
+  font-size: 15px;
+  line-height: 1.55;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 5%);
 }
 
 .card__header {
@@ -82,8 +112,10 @@ h2 { font-size: 18px; margin: 32px 0 8px; }
   align-items: baseline;
   gap: 8px 14px;
   margin-bottom: 8px;
+  padding: 0;
+  container-type: normal;
 }
-.card__title { margin: 0; font-size: 18px; }
+.card__title { margin: 0; font-size: 17px; font-weight: 600; line-height: 1.35; }
 
 /* Status carries a text label, never colour alone (docs/scope §3). */
 .card__status {
@@ -91,203 +123,186 @@ h2 { font-size: 18px; margin: 32px 0 8px; }
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 13px;
+  padding: 1px 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 12px;
   font-weight: 600;
   color: var(--status-in-progress);
 }
 .card__status-dot {
-  width: 8px; height: 8px;
+  width: 7px; height: 7px;
   border-radius: 50%;
   background: currentColor;
 }
 
 .card__summary { margin: 0 0 12px; }
 .card__section-title {
-  margin: 12px 0 4px;
-  font-size: 13px;
+  margin: 14px 0 4px;
+  font-size: 12px;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--muted);
+  letter-spacing: 0.05em;
+  color: var(--muted-foreground);
 }
+/* Basecoat's reset removes list markers; card lists are real lists. */
+.card__list, .card__comparisons { list-style: disc; }
 .card__list { margin: 0; padding-left: 20px; }
 .card__list li { margin-bottom: 4px; }
 
+.card__value { margin: 0; font-size: 30px; font-weight: 650; letter-spacing: -0.02em; line-height: 1.2; }
+.card__comparisons { margin: 6px 0 0; padding-left: 18px; color: var(--muted-foreground); font-size: 14px; }
+.card__image { max-width: 100%; border-radius: 8px; margin-top: 8px; }
+.card__caption, .card__note { margin: 8px 0 0; color: var(--muted-foreground); font-size: 14px; }
+
 .page__footer {
-  margin-top: 32px;
-  padding-top: 12px;
-  border-top: 1px solid var(--line);
-  color: var(--muted);
-  font-size: 14px;
+  margin-top: 40px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+  color: var(--muted-foreground);
+  font-size: 13px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --ink: #f2f2f5; --muted: #a6a6ae; --line: #3a3a40;
-    --bg: #131316; --surface: #1c1c20;
-    --focus: #7aa7ff; --status-in-progress: #8fbae6;
-    --accent: #3d7dff; --accent-ink: #ffffff;
-    --sunken: #16161a;
-  }
-}
-
-/* ---- editor (milestone 3) ---- */
+/* ---- toolbars ---- */
 .toolbar {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   align-items: center;
-  margin: 16px 0 8px;
+  margin: 20px 0 10px;
 }
-.toolbar__count { margin: 0 0 0 auto; color: var(--muted); font-size: 13px; }
-
-button {
-  font: inherit;
-  padding: 7px 14px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: var(--surface);
-  color: var(--ink);
-  cursor: pointer;
-}
-button:hover:not(:disabled) { border-color: var(--muted); }
-/* One filled action per group. Used for the AI entry point, which reviewers
-   could not find when every toolbar button looked identical. */
-button.primary {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: var(--accent-ink);
+.toolbar__count { margin: 0 0 0 auto; color: var(--muted-foreground); font-size: 13px; }
+.toolbar__label {
+  margin-right: 4px;
+  font-size: 12px;
   font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted-foreground);
 }
-button.primary:hover:not(:disabled) { filter: brightness(1.08); }
-button:disabled { opacity: 0.5; cursor: not-allowed; }
-button.danger { color: #8c1d18; border-color: #e3b8b5; }
-@media (prefers-color-scheme: dark) {
-  button.danger { color: #ff9d95; border-color: #5c2f2b; }
+.toolbar--report {
+  margin: 0 0 16px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg, 10px);
+  background: var(--muted);
 }
 
-.app-status { min-height: 1.4em; margin: 0 0 8px; color: var(--muted); font-size: 14px; }
+/* Basecoat's destructive text is a bright red that sits just under AA on
+   its own tinted fill; the darker ink keeps the label readable. */
+.btn[data-variant="destructive"] { color: var(--danger-ink); }
 
-.card-list { display: flex; flex-direction: column; gap: 16px; }
+.app-status { min-height: 1.4em; margin: 0 0 8px; color: var(--muted-foreground); font-size: 14px; }
+.save-state { min-height: 1.3em; margin: 0 0 12px; font-size: 13px; color: var(--muted-foreground); }
+.save-state[data-state="failed"] { color: var(--danger-ink); font-weight: 600; }
+
+/* ---- editor ---- */
+.card-list { display: flex; flex-direction: column; gap: 20px; }
 
 .editor-card {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   grid-template-areas: "heading controls" "form preview" "share share";
-  gap: 12px 20px;
-  padding: 18px 20px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--surface);
+  gap: 14px 24px;
+  padding: 20px 22px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl, 14px);
+  background: var(--card);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 6%);
 }
 .editor-card__heading {
   grid-area: heading;
   margin: 0;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--muted);
+  color: var(--muted-foreground);
   align-self: center;
 }
-.editor-card__controls { grid-area: controls; display: flex; gap: 6px; justify-content: flex-end; }
-.editor-card__form { grid-area: form; display: flex; flex-direction: column; gap: 10px; }
+.editor-card__controls { grid-area: controls; display: flex; gap: 4px; justify-content: flex-end; }
+.editor-card__form { grid-area: form; display: flex; flex-direction: column; gap: 14px; }
+/* The preview sits on a sunken panel so input and output read as different
+   things. The card keeps its own border on it: that is also how it looks
+   saved as a PNG, where there is no panel. */
 .preview__body {
   grid-area: preview;
   /* Grid stretches its items by default, which left the panel running the
      full height of the form with empty space under a short card. */
   align-self: start;
-  padding: 12px;
-  border-radius: 10px;
-  background: var(--sunken);
+  padding: 14px;
+  border-radius: var(--radius-lg, 10px);
+  background: var(--muted);
 }
-/* The card already has its own border; inside the sunken panel that reads as
-   a double frame, so it loses one. */
-.preview__body .card { border-color: transparent; }
+.preview__placeholder { margin: 0; color: var(--muted-foreground); font-size: 14px; }
 
-.field { display: flex; flex-direction: column; gap: 4px; }
-.field label { font-size: 13px; font-weight: 600; }
-.field input, .field textarea, .field select {
-  font: inherit;
-  padding: 7px 9px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: var(--bg);
-  color: var(--ink);
-}
-.field textarea { resize: vertical; }
-.field__hint { margin: 0; font-size: 12px; color: var(--muted); }
-.field__error { margin: 0; font-size: 12px; color: #8c1d18; font-weight: 600; }
-@media (prefers-color-scheme: dark) { .field__error { color: #ff9d95; } }
-[aria-invalid="true"] { border-color: #8c1d18; }
-
-.preview__placeholder { margin: 0; color: var(--muted); font-size: 14px; }
-.card__value { margin: 0; font-size: 26px; font-weight: 600; }
-.card__comparisons { margin: 4px 0 0; padding-left: 18px; color: var(--muted); font-size: 14px; }
-.card__image { max-width: 100%; border-radius: 8px; margin-top: 8px; }
-.card__caption, .card__note { margin: 8px 0 0; color: var(--muted); font-size: 14px; }
-
-dialog { border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; max-width: 380px; }
-dialog::backdrop { background: rgb(0 0 0 / 45%); }
-.dialog__actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 14px; }
-
-@media (max-width: 720px) {
-  .editor-card {
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-areas: "heading" "controls" "form" "preview" "share";
-  }
-  .editor-card__controls { justify-content: flex-start; }
-}
-
-.save-state { min-height: 1.3em; margin: 0 0 12px; font-size: 13px; color: var(--muted); }
-.save-state[data-state="failed"] { color: #8c1d18; font-weight: 600; }
-@media (prefers-color-scheme: dark) { .save-state[data-state="failed"] { color: #ff9d95; } }
-
-/* ---- AI draft panel (milestone 5) ---- */
-/* Wider than the confirmation dialog: it holds a whole editable draft. The
-   max-height keeps it usable at 200% zoom and on a short window. */
-.ai-panel { max-width: 640px; width: calc(100vw - 32px); max-height: 88vh; overflow-y: auto; }
-.ai-panel .field { margin-bottom: 12px; }
-.ai-panel__status { min-height: 1.3em; margin: 0; font-size: 13px; color: var(--muted); }
-.ai-panel__warning {
-  margin: 0 0 12px;
-  padding: 8px 10px;
-  border-left: 3px solid #8a6d00;
-  background: rgb(138 109 0 / 10%);
-  font-size: 13px;
-}
-.ai-panel__notes { margin: 0 0 12px; padding-left: 18px; font-size: 13px; color: var(--muted); }
-.ai-panel h3 { margin: 18px 0 4px; font-size: 16px; }
-.ai-panel h4 { margin: 0 0 4px; font-size: 14px; }
-@media (prefers-color-scheme: dark) {
-  .ai-panel__warning { border-left-color: #e8c34a; background: rgb(232 195 74 / 12%); }
-}
-
-/* ---- sharing (milestone 6) ---- */
 .editor-card__share {
   grid-area: share;
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px solid var(--line);
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
 }
+
+/* Form controls are Basecoat's `.field`; only the error line is ours. */
+.field__hint { margin: 0; font-size: 12px; color: var(--muted-foreground); }
+.field__error { margin: 0; font-size: 12px; color: var(--danger-ink); font-weight: 600; }
+.field textarea { resize: vertical; }
+
+@media (max-width: 760px) {
+  .editor-card {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "heading" "controls" "form" "preview" "share";
+  }
+  .editor-card__controls { justify-content: flex-start; }
+  .toolbar__count { margin-left: 0; width: 100%; order: 10; }
+}
+
+/* ---- dialogs ---- */
+dialog {
+  /* A modal dialog centres itself through margin: auto, which Basecoat's
+     reset sets to 0; without this it opens in the top-left corner. */
+  margin: auto;
+  max-width: 400px;
+  padding: 24px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl, 14px);
+  background: var(--background);
+  color: var(--foreground);
+  box-shadow: 0 20px 50px rgb(0 0 0 / 20%);
+}
+dialog h2 { margin: 0 0 8px; font-size: 18px; }
+dialog::backdrop { background: rgb(0 0 0 / 50%); }
+.dialog__actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
+
+/* ---- AI draft panel ---- */
+/* Wider than the confirmation dialog: it holds a whole editable draft. The
+   max-height keeps it usable at 200% zoom and on a short window. */
+.ai-panel { max-width: 640px; width: calc(100vw - 32px); max-height: 88vh; overflow-y: auto; }
+.ai-panel .field { margin-bottom: 14px; }
+.ai-panel__status { min-height: 1.3em; margin: 0; font-size: 13px; color: var(--muted-foreground); }
+.ai-panel__warning {
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  border-left: 3px solid var(--warning-line);
+  border-radius: 6px;
+  background: var(--warning-fill);
+  font-size: 13px;
+}
+.ai-panel__notes { margin: 0 0 12px; padding-left: 18px; list-style: disc; font-size: 13px; color: var(--muted-foreground); }
+.ai-panel h3 { margin: 20px 0 6px; font-size: 16px; }
+.ai-panel h4 { margin: 0 0 4px; font-size: 14px; }
+
 #manual-copy { max-width: 560px; width: calc(100vw - 32px); }
 #manual-copy textarea { width: 100%; font-family: inherit; }
 
-/* ---- proposed metric cards in the AI panel ---- */
-#ai-metrics-block { margin: 0 0 12px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; }
+/* Proposed metric cards in the AI panel. */
+#ai-metrics-block { margin: 0 0 14px; padding: 10px 14px; border: 1px solid var(--border); border-radius: var(--radius-lg, 10px); }
 #ai-metrics-block legend { padding: 0 6px; font-size: 14px; font-weight: 600; }
 .ai-panel__metrics { margin: 6px 0 0; padding: 0; list-style: none; }
-.ai-panel__metrics li { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 6px; font-size: 13px; }
-.ai-panel__metrics input { margin-top: 3px; }
-
-/* ---- whole-report actions ---- */
-.toolbar--report {
-  margin: 0 0 16px;
-  padding-top: 12px;
-  border-top: 1px solid var(--line);
-}
+.ai-panel__metrics li { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 8px; font-size: 13px; }
+.ai-panel__metrics input { margin-top: 2px; flex-shrink: 0; }
 
 /* ---- print: the PDF route (docs/scope.md §6) ---- */
 /* The page is an editor on screen and a report on paper. Everything that
@@ -306,22 +321,24 @@ dialog::backdrop { background: rgb(0 0 0 / 45%); }
   dialog { display: none !important; }
 
   body { background: #fff; color: #000; }
+  .page__header { border-bottom: 0; padding-bottom: 8px; }
   .card-list { display: block; }
   .editor-card {
     display: block;
     border: 0;
     padding: 0;
     margin: 0 0 16px;
+    box-shadow: none;
     break-inside: avoid;
   }
   .editor-card__heading { display: none; }
   /* The sunken panel exists to separate input from output on screen. On
-     paper there is no input, so it is only a grey box that costs ink. The
-     card takes its own border back, since the panel is no longer framing it. */
+     paper there is no input, so it is only a grey box that costs ink. */
   .preview__body {
     width: 100%;
     padding: 0;
     background: none;
   }
-  .preview__body .card { border-color: var(--line); }
+  /* Paper is white whatever the screen's theme is. */
+  .card { box-shadow: none; background: #fff; color: #000; }
 }

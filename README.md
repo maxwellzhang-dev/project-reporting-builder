@@ -30,6 +30,7 @@ Design documents: [`docs/scope.md`](docs/scope.md) ·
 | 64 KiB request limit, `no-store` on responses | Implemented |
 | Explicit Jinja2 autoescaping | Implemented, covered by tests |
 | Same-origin CSS and ES module JavaScript, no build step | Implemented |
+| shadcn/ui-style interface (Basecoat) with Lucide icons, light and dark mode | Implemented |
 | Semantic markup, skip link, visible focus, status shown as text | Implemented |
 | Production Docker image, non-root, no reload | Implemented |
 | ruff lint and format, pytest, CI with a container smoke test | Implemented |

@@ -31,7 +31,14 @@ def test_index_links_its_local_assets():
 
 
 def test_static_assets_are_served():
-    for path, expected in (("/static/css/app.css", "--ink"), ("/static/js/main.js", "healthz")):
+    for path, expected in (
+        ("/static/css/app.css", "--status-in-progress"),
+        ("/static/js/main.js", "healthz"),
+        ("/static/js/theme.js", "prefers-color-scheme"),
+        # Vendored, not fetched from a CDN (docs/architecture.md §1).
+        ("/static/vendor/basecoat/basecoat.min.css", ".btn"),
+        ("/static/vendor/lucide/icons.svg", 'id="sparkles"'),
+    ):
         response = client.get(path)
         assert response.status_code == 200, path
         assert expected in response.text

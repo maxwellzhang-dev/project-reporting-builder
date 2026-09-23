@@ -11,6 +11,7 @@
 | Backend | FastAPI + Pydantic v2 |
 | Rendering | Jinja2 |
 | Frontend | HTML, CSS, JavaScript ES Modules |
+| UI components | Basecoat (shadcn/ui design system, precompiled CSS) and a Lucide icon subset |
 | AI | Azure OpenAI through the official Python SDK |
 | Local persistence | IndexedDB |
 | PNG export | Browser-side library |
@@ -19,6 +20,8 @@
 | Deployment | Docker on Azure Container Apps |
 
 The frontend has no build pipeline. Browser dependencies are pinned and served locally rather than loaded from a runtime CDN.
+
+Basecoat was chosen over React- or Tailwind-based component kits because it ships as a precompiled stylesheet, so it keeps that rule. It is loaded first and lives in cascade layers; `app.css` is unlayered and loaded second, so the application's own rules always win. Two consequences are handled in `app.css` rather than left to chance: Basecoat's reset removes list markers and dialog centring, and it defines a `.card` component whose layout the snippet card must not inherit, since the PNG export is taken from that card. Dark mode follows the operating system through a `dark` class set by `theme.js` before first paint.
 
 ## 2. System Design
 
@@ -81,6 +84,7 @@ app/
       app.css
     js/
       main.js
+      theme.js
       state.js
       api.js
       editor.js
@@ -90,7 +94,7 @@ app/
       ai-editor.js
       clipboard.js
       export-image.js
-    vendor/
+    vendor/            basecoat/, lucide/, html-to-image.js
     examples/
 tests/
   unit/

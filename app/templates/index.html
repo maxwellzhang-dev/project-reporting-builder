@@ -4,10 +4,17 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{ app_name }}</title>
+  <!-- Basecoat (shadcn/ui without React) is precompiled, so the page still
+       has no build step; app.css comes second and only adjusts it. -->
+  <link rel="stylesheet" href="/static/vendor/basecoat/basecoat.min.css">
   <link rel="stylesheet" href="/static/css/app.css">
+  <script src="/static/js/theme.js"></script>
   <script type="module" src="/static/js/main.js"></script>
 </head>
 <body>
+  {%- macro icon(name) -%}
+    <svg aria-hidden="true" focusable="false"><use href="/static/vendor/lucide/icons.svg#{{ name }}"></use></svg>
+  {%- endmacro %}
   <a class="skip-link" href="#main">Skip to content</a>
 
   <header class="page__header">
@@ -20,12 +27,12 @@
   <main id="main">
     <section aria-labelledby="toolbar-heading" class="toolbar">
       <h2 id="toolbar-heading" class="visually-hidden">Add a card</h2>
-      <button type="button" data-add-card="progress">Add progress card</button>
-      <button type="button" data-add-card="metric">Add metric card</button>
-      <button type="button" data-add-card="image">Add image card</button>
-      <button type="button" id="open-ai-review" class="primary">Paste notes, draft with AI</button>
+      <button type="button" class="btn" data-variant="outline" data-add-card="progress">{{ icon("file-text") }}Add progress card</button>
+      <button type="button" class="btn" data-variant="outline" data-add-card="metric">{{ icon("chart-column") }}Add metric card</button>
+      <button type="button" class="btn" data-variant="outline" data-add-card="image">{{ icon("image") }}Add image card</button>
+      <button type="button" id="open-ai-review" class="btn">{{ icon("sparkles") }}Paste notes, draft with AI</button>
       <p id="card-count" class="toolbar__count">0 of 20 cards</p>
-      <button type="button" id="clear-local-data">Clear local data</button>
+      <button type="button" class="btn" data-variant="ghost" data-size="sm" id="clear-local-data">{{ icon("trash-2") }}Clear local data</button>
     </section>
 
     <!--
@@ -36,9 +43,10 @@
     -->
     <section aria-labelledby="report-actions-heading" class="toolbar toolbar--report">
       <h2 id="report-actions-heading" class="visually-hidden">Share the whole report</h2>
-      <button type="button" id="copy-report">Copy report</button>
-      <button type="button" id="download-report">Download HTML</button>
-      <button type="button" id="print-report">Print or save as PDF</button>
+      <span class="toolbar__label" aria-hidden="true">Whole report</span>
+      <button type="button" class="btn" data-variant="outline" data-size="sm" id="copy-report">{{ icon("copy") }}Copy report</button>
+      <button type="button" class="btn" data-variant="outline" data-size="sm" id="download-report">{{ icon("file-down") }}Download HTML</button>
+      <button type="button" class="btn" data-variant="outline" data-size="sm" id="print-report">{{ icon("printer") }}Print or save as PDF</button>
     </section>
 
     <p id="app-status" role="status" class="app-status"></p>
@@ -57,8 +65,8 @@
       <h2 id="confirm-delete-title">Delete card</h2>
       <p id="confirm-delete-text"></p>
       <div class="dialog__actions">
-        <button value="cancel">Cancel</button>
-        <button value="delete" class="danger">Delete</button>
+        <button value="cancel" class="btn" data-variant="outline">Cancel</button>
+        <button value="delete" class="btn" data-variant="destructive">Delete</button>
       </div>
     </form>
   </dialog>
@@ -76,7 +84,7 @@
     <label class="visually-hidden" for="manual-copy-text">Card text</label>
     <textarea id="manual-copy-text" rows="10" readonly></textarea>
     <div class="dialog__actions">
-      <button type="button" id="manual-copy-close">Close</button>
+      <button type="button" class="btn" data-variant="outline" id="manual-copy-close">Close</button>
     </div>
   </dialog>
 
@@ -102,8 +110,8 @@
     <p id="ai-busy" role="status" class="ai-panel__status"></p>
 
     <div class="dialog__actions">
-      <button type="button" id="ai-generate" class="primary">Generate draft</button>
-      <button type="button" id="ai-cancel">Cancel</button>
+      <button type="button" id="ai-generate" class="btn">{{ icon("sparkles") }}Generate draft</button>
+      <button type="button" id="ai-cancel" class="btn" data-variant="outline">Cancel</button>
     </div>
 
     <section id="ai-draft" aria-labelledby="ai-draft-heading" hidden>
@@ -176,7 +184,7 @@
       </div>
 
       <div class="dialog__actions">
-        <button type="button" id="ai-create" class="primary" disabled>Create card</button>
+        <button type="button" id="ai-create" class="btn" disabled>Create card</button>
       </div>
     </section>
   </dialog>
