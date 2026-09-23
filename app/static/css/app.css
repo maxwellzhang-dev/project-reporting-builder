@@ -8,6 +8,11 @@
   --focus: #0b5fff;
   --status-in-progress: #1f4d7a;
   --radius: 12px;
+  /* A filled action needs its own pair so contrast is checked here too. */
+  --accent: #0b5fff;
+  --accent-ink: #ffffff;
+  /* The preview sits on this, so input and output read as different things. */
+  --sunken: #f1f1f5;
 }
 
 * { box-sizing: border-box; }
@@ -24,7 +29,16 @@ h1 { font-size: clamp(22px, 3vw, 28px); margin: 0 0 4px; }
 h2 { font-size: 18px; margin: 32px 0 8px; }
 
 .page__header, main, .page__footer { max-width: 720px; margin-inline: auto; }
-.page__lead, .page__note { color: var(--muted); margin: 0 0 8px; }
+.page__lead { color: var(--muted); margin: 0 0 8px; }
+.page__note {
+  color: var(--muted);
+  margin: 0 0 8px;
+  padding: 24px 20px;
+  text-align: center;
+  border: 1px dashed var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
 
 /* Focus must stay visible everywhere (docs/test_plan §9). */
 :focus-visible {
@@ -111,6 +125,8 @@ h2 { font-size: 18px; margin: 32px 0 8px; }
     --ink: #f2f2f5; --muted: #a6a6ae; --line: #3a3a40;
     --bg: #131316; --surface: #1c1c20;
     --focus: #7aa7ff; --status-in-progress: #8fbae6;
+    --accent: #3d7dff; --accent-ink: #ffffff;
+    --sunken: #16161a;
   }
 }
 
@@ -134,6 +150,15 @@ button {
   cursor: pointer;
 }
 button:hover:not(:disabled) { border-color: var(--muted); }
+/* One filled action per group. Used for the AI entry point, which reviewers
+   could not find when every toolbar button looked identical. */
+button.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 600;
+}
+button.primary:hover:not(:disabled) { filter: brightness(1.08); }
 button:disabled { opacity: 0.5; cursor: not-allowed; }
 button.danger { color: #8c1d18; border-color: #e3b8b5; }
 @media (prefers-color-scheme: dark) {
@@ -148,16 +173,36 @@ button.danger { color: #8c1d18; border-color: #e3b8b5; }
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   grid-template-areas: "heading controls" "form preview" "share share";
-  gap: 8px 20px;
-  padding: 16px 18px;
+  gap: 12px 20px;
+  padding: 18px 20px;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--surface);
 }
-.editor-card__heading { grid-area: heading; margin: 0; font-size: 15px; color: var(--muted); }
+.editor-card__heading {
+  grid-area: heading;
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  align-self: center;
+}
 .editor-card__controls { grid-area: controls; display: flex; gap: 6px; justify-content: flex-end; }
 .editor-card__form { grid-area: form; display: flex; flex-direction: column; gap: 10px; }
-.preview__body { grid-area: preview; }
+.preview__body {
+  grid-area: preview;
+  /* Grid stretches its items by default, which left the panel running the
+     full height of the form with empty space under a short card. */
+  align-self: start;
+  padding: 12px;
+  border-radius: 10px;
+  background: var(--sunken);
+}
+/* The card already has its own border; inside the sunken panel that reads as
+   a double frame, so it loses one. */
+.preview__body .card { border-color: transparent; }
 
 .field { display: flex; flex-direction: column; gap: 4px; }
 .field label { font-size: 13px; font-weight: 600; }
@@ -238,7 +283,11 @@ dialog::backdrop { background: rgb(0 0 0 / 45%); }
 .ai-panel__metrics input { margin-top: 3px; }
 
 /* ---- whole-report actions ---- */
-.toolbar--report { margin-top: -4px; }
+.toolbar--report {
+  margin: 0 0 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
 
 /* ---- print: the PDF route (docs/scope.md §6) ---- */
 /* The page is an editor on screen and a report on paper. Everything that
@@ -266,5 +315,13 @@ dialog::backdrop { background: rgb(0 0 0 / 45%); }
     break-inside: avoid;
   }
   .editor-card__heading { display: none; }
-  .preview__body { width: 100%; }
+  /* The sunken panel exists to separate input from output on screen. On
+     paper there is no input, so it is only a grey box that costs ink. The
+     card takes its own border back, since the panel is no longer framing it. */
+  .preview__body {
+    width: 100%;
+    padding: 0;
+    background: none;
+  }
+  .preview__body .card { border-color: var(--line); }
 }

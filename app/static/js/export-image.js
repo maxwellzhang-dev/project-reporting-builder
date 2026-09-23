@@ -82,6 +82,12 @@ function stage(previewNode) {
   const copy = previewNode.cloneNode(true);
   copy.style.maxHeight = "none";
   copy.style.overflow = "visible";
+  // On screen the card has no border of its own: the panel behind it does the
+  // framing. Alone in a file there is no panel, so it takes the border back.
+  // Stated here rather than left to the cloned node falling out of the
+  // descendant selector that removed it.
+  copy.style.borderColor = getComputedStyle(document.body).getPropertyValue("--line").trim()
+    || "#d9d9de";
   target.append(copy);
   outer.append(target);
   document.body.append(outer);

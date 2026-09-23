@@ -23,7 +23,7 @@
       <button type="button" data-add-card="progress">Add progress card</button>
       <button type="button" data-add-card="metric">Add metric card</button>
       <button type="button" data-add-card="image">Add image card</button>
-      <button type="button" id="open-ai-review">Paste notes, draft with AI</button>
+      <button type="button" id="open-ai-review" class="primary">Paste notes, draft with AI</button>
       <p id="card-count" class="toolbar__count">0 of 20 cards</p>
       <button type="button" id="clear-local-data">Clear local data</button>
     </section>
@@ -102,7 +102,7 @@
     <p id="ai-busy" role="status" class="ai-panel__status"></p>
 
     <div class="dialog__actions">
-      <button type="button" id="ai-generate">Generate draft</button>
+      <button type="button" id="ai-generate" class="primary">Generate draft</button>
       <button type="button" id="ai-cancel">Cancel</button>
     </div>
 
@@ -176,7 +176,7 @@
       </div>
 
       <div class="dialog__actions">
-        <button type="button" id="ai-create" disabled>Create card</button>
+        <button type="button" id="ai-create" class="primary" disabled>Create card</button>
       </div>
     </section>
   </dialog>
