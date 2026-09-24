@@ -141,7 +141,15 @@ def test_clear_local_data_removes_the_draft_and_autosave_cannot_recreate_it(
     page.fill('input[name="title"]', "Temporary")
     expect(page.locator("#save-state")).to_have_text("Saved locally", timeout=5000)
 
+    # It asks first: one stray click must not wipe the report.
     page.click("#clear-local-data")
+    dialog = page.locator("#confirm-delete")
+    expect(dialog).to_contain_text("Delete all 1 card")
+    dialog.get_by_role("button", name="Cancel").click()
+    expect(page.locator(".editor-card")).to_have_count(1)
+
+    page.click("#clear-local-data")
+    dialog.get_by_role("button", name="Clear all").click()
     expect(page.locator(".editor-card")).to_have_count(0)
     expect(page.locator("#app-status")).to_contain_text("cleared")
 

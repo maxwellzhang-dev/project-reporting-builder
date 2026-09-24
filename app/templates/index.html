@@ -58,11 +58,20 @@
       rather than a PDF library.
     -->
     <section aria-labelledby="report-actions-heading" class="toolbar toolbar--report">
-      <h2 id="report-actions-heading" class="visually-hidden">Share the whole report</h2>
-      <span class="toolbar__label" aria-hidden="true">Whole report</span>
-      <button type="button" class="btn" data-variant="outline" data-size="sm" id="copy-report">{{ icon("copy") }}Copy report</button>
-      <button type="button" class="btn" data-variant="outline" data-size="sm" id="download-report">{{ icon("file-down") }}Download HTML</button>
-      <button type="button" class="btn" data-variant="outline" data-size="sm" id="print-report">{{ icon("printer") }}Print or save as PDF</button>
+      <h2 id="report-actions-heading" class="visually-hidden">Share the report or selected cards</h2>
+      <!--
+        Exports act on exactly the selected cards, in report order. With
+        nothing selected they are disabled; Select all is how to take the
+        whole report. The scope line says what an action will cover.
+      -->
+      <span class="toolbar__label" id="report-scope" role="status">No cards yet</span>
+      <button type="button" class="btn" data-variant="outline" data-size="sm" id="copy-report" disabled>{{ icon("copy") }}Copy selected</button>
+      <button type="button" class="btn" data-variant="outline" data-size="sm" id="download-report" disabled>{{ icon("file-down") }}Download selected</button>
+      <button type="button" class="btn" data-variant="outline" data-size="sm" id="print-report" disabled>{{ icon("printer") }}Print selected</button>
+      <span class="toolbar__gap" aria-hidden="true"></span>
+      <button type="button" class="btn" data-variant="ghost" data-size="sm" id="select-all">Select all</button>
+      <button type="button" class="btn" data-variant="ghost" data-size="sm" id="clear-selection" hidden>Clear selection</button>
+      <button type="button" class="btn" data-variant="destructive" data-size="sm" id="delete-selected" hidden>{{ icon("trash-2") }}Delete selected</button>
     </section>
 
     <p id="app-status" role="status" class="app-status"></p>
@@ -90,7 +99,7 @@
       <p id="confirm-delete-text"></p>
       <div class="dialog__actions">
         <button value="cancel" class="btn" data-variant="outline">Cancel</button>
-        <button value="delete" class="btn" data-variant="destructive">Delete</button>
+        <button value="delete" class="btn" data-variant="destructive" id="confirm-delete-action">Delete</button>
       </div>
     </form>
   </dialog>

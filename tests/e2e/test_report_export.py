@@ -1,4 +1,5 @@
-"""Whole-report export (docs/scope.md §6, "Whole report").
+"""Report export (docs/scope.md §6): exactly the selected cards, Select all for
+the whole report.
 
 The report is assembled from what each card already rendered, so the tests
 that matter are about order, completeness and refusing to produce a document
@@ -42,10 +43,18 @@ def two_cards(page: Page, base_url: str) -> None:
     add_metric(page, "Onboarding completion", "79", "67")
 
 
+def select_all(page: Page) -> None:
+    """Exports act on the selection; the whole report is Select all."""
+    button = page.get_by_role("button", name="Select all")
+    if button.is_visible():
+        button.click()
+
+
 def report_text(page: Page) -> str:
     page.context.grant_permissions(["clipboard-read", "clipboard-write"])
-    page.get_by_role("button", name="Copy report").click()
-    expect(page.locator("#app-status")).to_contain_text(re.compile("report copied", re.I))
+    select_all(page)
+    page.get_by_role("button", name="Copy selected").click()
+    expect(page.locator("#app-status")).to_contain_text(re.compile("copied", re.I))
     return page.evaluate("navigator.clipboard.readText()")
 
 
@@ -78,8 +87,18 @@ def test_the_report_follows_the_order_on_screen(page: Page, base_url: str):
 
 def test_an_empty_report_is_refused_rather_than_exported(page: Page, base_url: str):
     page.goto(base_url)
-    page.get_by_role("button", name="Copy report").click()
-    expect(page.locator("#app-status")).to_contain_text(re.compile("no cards", re.I))
+    expect(page.locator("#report-scope")).to_have_text("No cards yet")
+    for name in ("Copy selected", "Download selected", "Print selected"):
+        expect(page.get_by_role("button", name=name)).to_be_disabled()
+
+
+def test_nothing_is_exported_until_something_is_selected(page: Page, base_url: str):
+    two_cards(page, base_url)
+    expect(page.locator("#report-scope")).to_have_text("Select cards to export")
+    expect(page.get_by_role("button", name="Copy selected")).to_be_disabled()
+    select_all(page)
+    expect(page.locator("#report-scope")).to_have_text("2 of 2 selected")
+    expect(page.get_by_role("button", name="Copy selected")).to_be_enabled()
 
 
 def test_an_invalid_card_blocks_the_export_and_is_named(page: Page, base_url: str):
@@ -88,7 +107,8 @@ def test_an_invalid_card_blocks_the_export_and_is_named(page: Page, base_url: st
     page.click('[data-add-card="progress"]')
     page.locator(".editor-card").last.get_by_label("Title").fill("Not filled in")
 
-    page.get_by_role("button", name="Copy report").click()
+    select_all(page)
+    page.get_by_role("button", name="Copy selected").click()
     status = page.locator("#app-status")
     expect(status).to_contain_text(re.compile("could not|cannot", re.I))
     expect(status).to_contain_text("Not filled in")
@@ -116,7 +136,8 @@ def test_html_download_is_a_self_contained_document(page: Page, base_url: str):
     two_cards(page, base_url)
 
     with page.expect_download() as download:
-        page.get_by_role("button", name="Download HTML").click()
+        select_all(page)
+        page.get_by_role("button", name="Download selected").click()
     path = download.value.path()
     assert download.value.suggested_filename.endswith(".html")
 
@@ -137,7 +158,8 @@ def test_html_keeps_the_order_and_escapes_user_text(page: Page, base_url: str):
     add_progress(page, "Second card", "Plain.")
 
     with page.expect_download() as download:
-        page.get_by_role("button", name="Download HTML").click()
+        select_all(page)
+        page.get_by_role("button", name="Download selected").click()
     html = read_text_file(download.value.path())
 
     assert html.index("First card") < html.index("Second card")
@@ -155,7 +177,8 @@ def test_html_export_is_refused_when_a_card_is_invalid(page: Page, base_url: str
 
     downloads = []
     page.on("download", lambda d: downloads.append(d))
-    page.get_by_role("button", name="Download HTML").click()
+    select_all(page)
+    page.get_by_role("button", name="Download selected").click()
     expect(page.locator("#app-status")).to_contain_text("No value yet")
     page.wait_for_timeout(1000)
     assert downloads == [], "a document was produced despite an invalid card"

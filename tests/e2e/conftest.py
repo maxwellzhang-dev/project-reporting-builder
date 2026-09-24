@@ -78,6 +78,10 @@ def _no_csp_violations(page, request):
     renders that HTML, so style-src stays 'self' rather than being loosened
     for a report that changes nothing."""
     violations = []
+    # An uncaught script error fails the test by name. Without this, a broken
+    # module shows up only as every later step timing out.
+    errors = []
+    page.on("pageerror", lambda error: errors.append(str(error)))
     page.on(
         "console",
         lambda message: violations.append(message.text)
@@ -87,4 +91,5 @@ def _no_csp_violations(page, request):
     yield
     if request.node.get_closest_marker("rich_clipboard"):
         violations = [text for text in violations if "Applying inline style" not in text]
+    assert not errors, f"uncaught script error: {errors}"
     assert not violations, f"CSP blocked something: {violations}"

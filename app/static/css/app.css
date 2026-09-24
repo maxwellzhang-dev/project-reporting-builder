@@ -323,6 +323,7 @@ h3, h4 { font-weight: 600; }
   letter-spacing: 0.05em;
   color: var(--muted-foreground);
 }
+.toolbar__gap { flex: 1; }
 .toolbar--report {
   margin: 0 0 16px;
   padding: 8px 12px;
@@ -402,8 +403,12 @@ h3, h4 { font-weight: 600; }
   color: var(--chip);
 }
 .editor-card__badge svg { width: 14px; height: 14px; }
+/* The select box and the card's name share the heading cell. */
+.editor-card__title { grid-area: heading; display: flex; align-items: center; gap: 10px; }
+.editor-card__title input[type="checkbox"] { flex-shrink: 0; width: 18px; height: 18px; margin: 0; cursor: pointer; }
+/* A selected card reads as selected from across the room, not only by its box. */
+.editor-card.is-selected { border-color: var(--primary); box-shadow: inset 0 3px 0 var(--chip, transparent), 0 0 0 3px color-mix(in srgb, var(--primary) 22%, transparent); }
 .editor-card__heading {
-  grid-area: heading;
   margin: 0;
   font-size: 12px;
   font-weight: 600;
@@ -622,7 +627,9 @@ dialog[open]::backdrop { animation: fade-in 0.22s ease-out; backdrop-filter: blu
     box-shadow: none;
     break-inside: avoid;
   }
-  .editor-card__heading { display: none; }
+  .editor-card__heading, .editor-card__title { display: none; }
+  /* Printing a selection: the cards left out of it stay off the page. */
+  .editor-card.is-print-excluded { display: none !important; }
   /* The sunken panel exists to separate input from output on screen. On
      paper there is no input, so it is only a grey box that costs ink. */
   .preview__body {

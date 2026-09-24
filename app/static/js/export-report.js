@@ -27,14 +27,15 @@ function describe(card, index) {
 }
 
 /**
- * Render every card in order, or explain which ones stopped it.
+ * Render the given cards (by default all of them) in report order, or explain
+ * which ones stopped it. A batch export passes the selected cards, still in
+ * the order they are arranged.
  *
  * Rendering is sequential on purpose: the render endpoint is debounced and
  * revision-guarded per card, and firing twenty requests at once would race
  * the previews that are already in flight.
  */
-async function renderAll() {
-  const cards = getCards();
+async function renderAll(cards = getCards()) {
   if (!cards.length) return { cards: [], rendered: [] };
 
   const rendered = [];
@@ -53,9 +54,9 @@ async function renderAll() {
   return { cards, rendered };
 }
 
-/** The whole report as plain text, in order. */
-export async function reportText() {
-  const { rendered } = await renderAll();
+/** The report as plain text, in order: every card, or the ones passed. */
+export async function reportText(cards) {
+  const { rendered } = await renderAll(cards);
   return rendered.map(({ result }) => result.plain_text.trim()).join(SEPARATOR);
 }
 
@@ -105,8 +106,8 @@ function escapeText(value) {
   return node.innerHTML;
 }
 
-export async function reportHtml(title = "Project report") {
-  const { rendered } = await renderAll();
+export async function reportHtml(title = "Project report", cards) {
+  const { rendered } = await renderAll(cards);
   const blocks = rendered.map((entry) => `    ${htmlBlock(entry)}`).join("\n");
   const generated = new Date().toLocaleString();
 

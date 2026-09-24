@@ -4,6 +4,7 @@
 import { copyCard } from "./clipboard.js";
 import { exportCardPng } from "./export-image.js";
 import { openImageDescribe } from "./image-describe.js";
+import { isSelected, setSelected } from "./selection.js";
 import { acceptImage, ImageRejected } from "./image-assets.js";
 import { rememberBlob } from "./state.js";
 import { cancelPreview, ensureRendered, schedulePreview } from "./preview.js";
@@ -209,6 +210,21 @@ export function buildCardEditor(card, { announce, onChanged }) {
   heading.prepend(badge);
   article.setAttribute("aria-labelledby", heading.id);
 
+  // Selection for batch actions. Outside the heading, so the heading's text
+  // (used in announcements) stays the card's name.
+  const select = document.createElement("input");
+  select.type = "checkbox";
+  select.className = "input";
+  select.id = `f-${card.id}-select`;
+  select.checked = isSelected(card.id);
+  select.setAttribute("aria-label", "Select card");
+  select.setAttribute("aria-describedby", heading.id);
+  select.addEventListener("change", () => setSelected(card.id, select.checked));
+  article.classList.toggle("is-selected", select.checked);
+  const title = document.createElement("div");
+  title.className = "editor-card__title";
+  title.append(select, heading);
+
   const controls = document.createElement("div");
   controls.className = "editor-card__controls";
 
@@ -308,7 +324,7 @@ export function buildCardEditor(card, { announce, onChanged }) {
     form.append(buildImagePicker(card, preview, applyFieldErrors, announce));
   }
 
-  article.append(heading, controls, form, preview, share);
+  article.append(title, controls, form, preview, share);
   schedulePreview(card, preview, applyFieldErrors);
   return article;
 }

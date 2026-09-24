@@ -86,6 +86,20 @@ export function removeCard(id) {
   return index;
 }
 
+/** Remove several cards with one structural change, so the list redraws once. */
+export function removeCards(ids) {
+  const gone = new Set(ids);
+  const removed = cards.filter((card) => gone.has(card.id));
+  if (!removed.length) return 0;
+  for (const card of removed) {
+    releaseImage(card);
+    blobs.delete(card.id);
+  }
+  cards = cards.filter((card) => !gone.has(card.id));
+  emit("structure");
+  return removed.length;
+}
+
 export function moveCard(id, offset) {
   const from = cards.findIndex((card) => card.id === id);
   const to = from + offset;
