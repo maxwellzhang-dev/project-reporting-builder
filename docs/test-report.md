@@ -1,6 +1,6 @@
 # Test Report
 
-- Commit: b858590 (the deployed image is tagged with this commit; later
+- Commit: bf12289 (the deployed image is tagged with this commit; later
   commits change documentation and code comments only)
 - Date: 2026-09-24 for the automated checks, the deployment checks and the
   interface checks; 2026-09-21 for the AI evaluation and cold start
@@ -22,7 +22,7 @@ is never recorded as passed.
 | `pytest tests/unit tests/integration` | Passed | 160 passed |
 | `pytest tests` (both suites in one process) | Passed | 247 passed |
 | `pytest tests/e2e --browser chromium` | Passed | 87 passed, each also failing on any CSP violation |
-| GitHub Actions CI at b858590 | Passed | lint and tests, browser and accessibility tests, Docker build and health smoke test |
+| GitHub Actions CI at bf12289 | Passed | lint and tests, browser and accessibility tests, dependency audit, Docker build with header and non-root checks |
 | `pip-audit` on both lock files, 2026-09-24 | Passed after upgrades | Initially failed: see the security review below |
 | `docker build` and container smoke test | Passed | image built, `/healthz` returned `{"status":"ok"}`, container uid 10001 |
 
@@ -170,6 +170,13 @@ Looked at as an attacker would, against the deployed site and the code.
 | No security headers at all on the live site; `Server: uvicorn` sent | Medium: no defence in depth against script injection or framing | Fixed. CSP and the other headers on every response; every browser test now fails on a CSP violation. Server header removed |
 | The AI rate limit was one shared budget | Medium: one visitor could lock everyone out | Fixed. Per client, with a total ceiling for cost, and only the proxy-appended address trusted |
 | `pip-audit`: Starlette 0.41.3 had eight advisories, one reachable here (CVE-2025-62727, Range-header CPU exhaustion through `/static`); Jinja2 3.1.5 and pytest 8.3.4 one each, not reachable | High for the Starlette one | Fixed. FastAPI 0.141.1, Starlette 1.7.0, Jinja2 3.1.6, pytest 9.1.1; the audit now runs in CI on every push and weekly |
+
+Checked on the deployed site after the fixes: the CSP, X-Frame-Options and
+HSTS headers are present, there is no Server header, and HEAD / answers 200.
+Seven AI requests from one machine, each with a different forged
+X-Forwarded-For, were refused from the sixth on (one had been used by
+`verify.sh` a moment earlier): the limit follows the address the Azure
+ingress appended, not the one the client wrote.
 
 One report is tolerated rather than fixed: copying a card as rich text makes
 Chromium report the email HTML's inline styles against the page's CSP while it
