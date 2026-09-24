@@ -148,13 +148,16 @@ install_error_handlers(app)
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 
-@app.get("/healthz")
+# HEAD as well as GET on the two routes monitors and link checkers probe.
+# Starlette before 1.0 added HEAD to every GET route by itself; since the
+# upgrade it has to be asked for, and without it a HEAD check reads 405.
+@app.api_route("/healthz", methods=["GET", "HEAD"])
 def healthz() -> JSONResponse:
     """Basic application availability. Says nothing about Azure OpenAI."""
     return JSONResponse({"status": "ok"}, headers={"Cache-Control": "no-store"})
 
 
-@app.get("/", response_class=HTMLResponse)
+@app.api_route("/", methods=["GET", "HEAD"], response_class=HTMLResponse)
 def index() -> HTMLResponse:
     html = render_page(app_name=settings.app_name)
     return HTMLResponse(html, headers={"Cache-Control": "no-store"})

@@ -195,3 +195,12 @@ def test_many_clients_together_still_hit_a_total_ceiling(ai_on):
     response = draft_as("198.51.100.200")
     assert response.status_code == 429
     assert "busy" in response.json()["error"]["message"]
+
+
+def test_head_requests_are_answered_like_get():
+    """Uptime monitors and link checkers often send HEAD. Starlette 1.x no
+    longer adds it to GET routes by itself; this caught the regression."""
+    for path in ("/", "/healthz"):
+        response = client.head(path)
+        assert response.status_code == 200, path
+        assert response.headers["x-content-type-options"] == "nosniff"

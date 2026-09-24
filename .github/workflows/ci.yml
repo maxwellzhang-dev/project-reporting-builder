@@ -84,7 +84,7 @@ jobs:
         run: test "$(docker exec prb id -u)" != "0"
       - name: Confirm the security headers are sent and the server is not named
         run: |
-          headers="$(curl -fsSI http://localhost:8000/)"
+          headers="$(curl -fsS -D - -o /dev/null http://localhost:8000/)"
           echo "$headers" | grep -qi '^content-security-policy:'
           echo "$headers" | grep -qi '^x-content-type-options: nosniff'
           ! echo "$headers" | grep -qi '^server:'
