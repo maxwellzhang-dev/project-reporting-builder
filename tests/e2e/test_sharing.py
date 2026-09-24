@@ -233,23 +233,30 @@ def test_a_deleted_card_does_not_download(page: Page, base_url: str):
     card = page.locator(".editor-card").first
     button = card.get_by_role("button", name="Download PNG")
 
-    # Load the library, then slow the render down so the deletion lands while
-    # an export is in flight.
+    # Load the library, then hold the render open until the test releases it,
+    # so the deletion is guaranteed to land while an export is in flight. A
+    # fixed delay (900 ms, originally) raced the delete-and-confirm clicks
+    # and lost on a slow CI runner once dialogs animated.
     with page.expect_download():
         button.click()
     page.evaluate("""
       const real = window.htmlToImage.toBlob;
       window.htmlToImage.toBlob = (node, opts) =>
-        new Promise((resolve) => setTimeout(() => resolve(real(node, opts)), 900));
+        new Promise((resolve) => {
+          window.__releaseExport = () => resolve(real(node, opts));
+        });
       null;
     """)
 
     downloads = []
     page.on("download", lambda d: downloads.append(d))
     button.click()
+    page.wait_for_function("typeof window.__releaseExport === 'function'")
     card.get_by_role("button", name="Delete").click()
     page.locator("#confirm-delete").get_by_role("button", name="Delete").click()
+    expect(page.locator(".editor-card")).to_have_count(0)
+    page.evaluate("window.__releaseExport()")
 
-    page.wait_for_timeout(2000)
+    page.wait_for_timeout(1500)
     assert downloads == [], "a deleted card produced a download"
     expect(page.locator("#app-status")).to_contain_text(re.compile("card|retry|changed", re.I))
