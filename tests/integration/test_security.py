@@ -204,3 +204,12 @@ def test_head_requests_are_answered_like_get():
         response = client.head(path)
         assert response.status_code == 200, path
         assert response.headers["x-content-type-options"] == "nosniff"
+
+
+def test_static_files_are_revalidated_so_a_deploy_is_never_half_applied():
+    client = TestClient(app)
+    response = client.get("/static/js/main.js")
+    assert response.status_code == 200
+    assert response.headers["cache-control"] == "no-cache"
+    again = client.get("/static/js/main.js", headers={"If-None-Match": response.headers["etag"]})
+    assert again.status_code == 304

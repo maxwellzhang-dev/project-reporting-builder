@@ -145,7 +145,23 @@ app.add_middleware(BodySizeLimit)
 app.add_middleware(SecurityHeaders)
 install_error_handlers(app)
 
-app.mount("/static", StaticFiles(directory="app/static"), name="static")
+
+class RevalidatedStaticFiles(StaticFiles):
+    """Static files the browser must revalidate on every load.
+
+    The ES modules are not fingerprinted, so heuristic caching could pair a
+    new page with an old module after a deploy (the Select all button with no
+    handler). no-cache keeps the ETag round trip cheap: an unchanged file is a
+    304 with no body.
+    """
+
+    def file_response(self, *args, **kwargs):
+        response = super().file_response(*args, **kwargs)
+        response.headers["Cache-Control"] = "no-cache"
+        return response
+
+
+app.mount("/static", RevalidatedStaticFiles(directory="app/static"), name="static")
 
 
 # HEAD as well as GET on the two routes monitors and link checkers probe.
