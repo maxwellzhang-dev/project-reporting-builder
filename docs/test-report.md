@@ -18,11 +18,12 @@ is never recorded as passed.
 | Check | Status | Evidence |
 | --- | --- | --- |
 | `ruff check .` | Passed | All checks passed |
-| `ruff format --check .` | Passed | 44 files already formatted |
-| `pytest tests/unit tests/integration` | Passed | 115 passed |
-| `pytest tests` (both suites in one process) | Passed | 182 passed, twice in a row |
-| `pytest tests/e2e --browser chromium` | Passed | 67 passed, including 10 axe-core scans |
+| `ruff format --check .` | Passed | 48 files already formatted |
+| `pytest tests/unit tests/integration` | Passed | 160 passed |
+| `pytest tests` (both suites in one process) | Passed | 247 passed |
+| `pytest tests/e2e --browser chromium` | Passed | 87 passed, each also failing on any CSP violation |
 | GitHub Actions CI at b858590 | Passed | lint and tests, browser and accessibility tests, Docker build and health smoke test |
+| `pip-audit` on both lock files, 2026-09-24 | Passed after upgrades | Initially failed: see the security review below |
 | `docker build` and container smoke test | Passed | image built, `/healthz` returned `{"status":"ok"}`, container uid 10001 |
 
 ## Manual Checks
@@ -158,6 +159,22 @@ Live calls against `gpt-5-mini` on 2026-09-24, 4.7 to 5.5 s each.
 | Image only: a progress card | Passed | Completed work, next step and risks separated correctly. The "In Progress" badge in the image was noticed and deliberately not used as a status, which the rules forbid |
 | Notes and image: a metric card | Passed | 79% proposed as a metric with previous left empty; the note says the card gives a change but no earlier figure, so none was calculated |
 | Image only: the 5 px bar chart | Passed this time | All three figures right, with a note to verify small print. Given the earlier misreads, the figure check on Create stays |
+
+### Security review (2026-09-24)
+
+Looked at as an attacker would, against the deployed site and the code.
+
+| Finding | Severity here | Outcome |
+| --- | --- | --- |
+| A chunked request with no Content-Length was read whole before the size check. Streamed 10 MiB over a raw socket: the server took all of it and kept waiting | High: memory exhaustion by one unauthenticated request | Fixed. The body is counted as it arrives; the same test now gets 413 after about 1.2 MiB, which is socket buffering, not reading |
+| No security headers at all on the live site; `Server: uvicorn` sent | Medium: no defence in depth against script injection or framing | Fixed. CSP and the other headers on every response; every browser test now fails on a CSP violation. Server header removed |
+| The AI rate limit was one shared budget | Medium: one visitor could lock everyone out | Fixed. Per client, with a total ceiling for cost, and only the proxy-appended address trusted |
+| `pip-audit`: Starlette 0.41.3 had eight advisories, one reachable here (CVE-2025-62727, Range-header CPU exhaustion through `/static`); Jinja2 3.1.5 and pytest 8.3.4 one each, not reachable | High for the Starlette one | Fixed. FastAPI 0.141.1, Starlette 1.7.0, Jinja2 3.1.6, pytest 9.1.1; the audit now runs in CI on every push and weekly |
+
+One report is tolerated rather than fixed: copying a card as rich text makes
+Chromium report the email HTML's inline styles against the page's CSP while it
+writes them to the clipboard. The styles still arrive (the test asserts it),
+and the page never renders that HTML, so style-src stays `'self'`.
 
 ### Sharing
 

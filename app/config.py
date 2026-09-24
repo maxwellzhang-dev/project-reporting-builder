@@ -36,5 +36,12 @@ class Settings(BaseSettings):
     # decide.
     ai_reasoning_effort: str = "low"
 
+    # How many proxies in front of the app append to X-Forwarded-For. The AI
+    # rate limit is per client, and behind Azure Container Apps the socket
+    # peer is the ingress, not the visitor. 0 (direct, local) ignores the
+    # header completely, because a client can send any value it likes; 1 takes
+    # the last entry, the one the ingress added. Set to 1 in deployment.
+    trusted_proxy_hops: int = 0
+
 
 settings = Settings()

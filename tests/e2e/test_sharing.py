@@ -68,6 +68,7 @@ def test_copy_reports_success_to_the_user(page: Page, base_url: str):
 # --- rich text ------------------------------------------------------------
 
 
+@pytest.mark.rich_clipboard
 def test_copy_rich_supplies_both_html_and_plain(page: Page, base_url: str):
     grant_clipboard(page)
     page.goto(base_url)
@@ -84,6 +85,16 @@ def test_copy_rich_supplies_both_html_and_plain(page: Page, base_url: str):
     """)
     assert "text/html" in types, types
     assert "text/plain" in types, types
+
+    # The page's CSP makes Chromium report the inline styles as it writes
+    # them; they must still arrive, or the card pastes into email unstyled.
+    html = page.evaluate("""
+      async () => {
+        const [item] = await navigator.clipboard.read();
+        return await (await item.getType("text/html")).text();
+      }
+    """)
+    assert 'style="' in html
 
 
 def test_image_cards_offer_no_rich_copy(page: Page, base_url: str):

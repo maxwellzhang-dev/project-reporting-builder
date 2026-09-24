@@ -3,6 +3,10 @@ name: CI
 on:
   push:
   pull_request:
+  # Weekly as well: new advisories appear against dependencies that have not
+  # changed, and the audit below should find them without waiting for a push.
+  schedule:
+    - cron: "0 3 * * 1"
 
 jobs:
   checks:
@@ -18,6 +22,23 @@ jobs:
       - run: ruff check .
       - run: ruff format --check .
       - run: pytest
+
+  audit:
+    name: Dependency vulnerability audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install pip-audit
+        run: pip install pip-audit==2.10.1
+      # Both locks are fully pinned, so they are audited as written, without
+      # resolving anything. Any known advisory fails the build.
+      - name: Audit the locked dependencies
+        run: >-
+          pip-audit --no-deps --disable-pip
+          -r requirements.lock.txt -r requirements-dev.lock.txt
 
   browser:
     name: Browser and accessibility tests
@@ -61,6 +82,12 @@ jobs:
           curl -fsS http://localhost:8000/static/js/main.js > /dev/null
       - name: Confirm the container does not run as root
         run: test "$(docker exec prb id -u)" != "0"
+      - name: Confirm the security headers are sent and the server is not named
+        run: |
+          headers="$(curl -fsSI http://localhost:8000/)"
+          echo "$headers" | grep -qi '^content-security-policy:'
+          echo "$headers" | grep -qi '^x-content-type-options: nosniff'
+          ! echo "$headers" | grep -qi '^server:'
       - name: Stop container
         if: always()
         run: docker rm -f prb || true

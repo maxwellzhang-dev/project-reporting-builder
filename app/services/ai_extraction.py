@@ -25,8 +25,13 @@ PROMPT_VERSION = "extract_progress_v3"
 IMAGE_PROMPT_PATH = PROMPTS_DIR / "describe_image_v1.txt"
 IMAGE_PROMPT_VERSION = "describe_image_v1"
 
+# Per client, so one visitor cannot use up everyone's access...
 MAX_CALLS_PER_MINUTE = 6
 MAX_CONCURRENT = 1
+# ...and in total, which is what bounds the Azure bill however many
+# addresses the requests come from.
+MAX_CALLS_PER_MINUTE_TOTAL = 30
+MAX_CONCURRENT_TOTAL = 3
 REQUEST_TIMEOUT_SECONDS = 30
 
 
@@ -67,26 +72,58 @@ class FakeProvider:
 
 
 class RateLimiter:
-    """In-process limiter. Resets on restart and does not span replicas —
-    acceptable for a single-replica POC, and documented as such."""
+    """In-process limiter, per client and in total. Resets on restart and does
+    not span replicas: acceptable for a single-replica POC, and documented as
+    such.
 
-    def __init__(self, max_per_minute: int = MAX_CALLS_PER_MINUTE) -> None:
+    The first version counted every request against one shared budget, so a
+    single person sending six requests a minute locked everyone else out.
+    """
+
+    def __init__(
+        self,
+        max_per_minute: int = MAX_CALLS_PER_MINUTE,
+        max_total_per_minute: int | None = None,
+    ) -> None:
         self.max_per_minute = max_per_minute
-        self._calls: list[float] = []
-        self._in_flight = 0
+        # Never below the per-client figure, so raising that (as the browser
+        # tests do) cannot be undercut by the total.
+        self.max_total_per_minute = max(
+            max_total_per_minute or MAX_CALLS_PER_MINUTE_TOTAL, max_per_minute
+        )
+        self._calls: dict[str, list[float]] = {}
+        self._in_flight: dict[str, int] = {}
 
-    def acquire(self) -> None:
+    def acquire(self, client: str = "anonymous") -> None:
         now = time.monotonic()
-        self._calls = [stamp for stamp in self._calls if now - stamp < 60]
-        if len(self._calls) >= self.max_per_minute:
-            raise AIError(429, "Too many AI requests. Wait a moment and try again.")
-        if self._in_flight >= MAX_CONCURRENT:
-            raise AIError(429, "Another AI request is still running.")
-        self._calls.append(now)
-        self._in_flight += 1
+        # Forget clients with nothing in the last minute, so the table cannot
+        # grow without bound under a flood of addresses.
+        self._calls = {
+            key: recent
+            for key, stamps in self._calls.items()
+            if (recent := [stamp for stamp in stamps if now - stamp < 60])
+        }
+        total = sum(len(stamps) for stamps in self._calls.values())
+        mine = self._calls.get(client, [])
+        busy_total = sum(self._in_flight.values())
 
-    def release(self) -> None:
-        self._in_flight = max(0, self._in_flight - 1)
+        if total >= self.max_total_per_minute or busy_total >= max(
+            MAX_CONCURRENT_TOTAL, MAX_CONCURRENT
+        ):
+            raise AIError(429, "The AI service is busy. Try again in a minute.")
+        if len(mine) >= self.max_per_minute:
+            raise AIError(429, "Too many AI requests. Wait a moment and try again.")
+        if self._in_flight.get(client, 0) >= MAX_CONCURRENT:
+            raise AIError(429, "Another AI request is still running.")
+        self._calls[client] = [*mine, now]
+        self._in_flight[client] = self._in_flight.get(client, 0) + 1
+
+    def release(self, client: str = "anonymous") -> None:
+        left = self._in_flight.get(client, 0) - 1
+        if left > 0:
+            self._in_flight[client] = left
+        else:
+            self._in_flight.pop(client, None)
 
 
 limiter = RateLimiter()
@@ -116,14 +153,19 @@ def _parse(raw: str) -> ExtractResponse:
         raise AIError(502, "The model's answer did not match the expected shape.") from error
 
 
-def _call(provider: Provider | None, send: Callable[[Provider], str], unchanged: str) -> str:
+def _call(
+    provider: Provider | None,
+    send: Callable[[Provider], str],
+    unchanged: str,
+    client: str = "anonymous",
+) -> str:
     """One provider call under the shared limiter, with the documented error
     mapping. Text and image requests share both, so neither can be used to get
     around the other's rate limit."""
     if not settings.ai_enabled or provider is None:
         raise AIError(503, "AI assistance is turned off.")
 
-    limiter.acquire()
+    limiter.acquire(client)
     try:
         return send(provider)
     except AIError:
@@ -133,18 +175,21 @@ def _call(provider: Provider | None, send: Callable[[Provider], str], unchanged:
     except Exception as error:  # provider failures must not leak their detail
         raise AIError(502, "The model could not be reached.") from error
     finally:
-        limiter.release()
+        limiter.release(client)
 
 
 def extract_progress(
-    source_text: str, provider: Provider | None, image_data_url: str | None = None
+    source_text: str,
+    provider: Provider | None,
+    image_data_url: str | None = None,
+    client: str = "anonymous",
 ) -> ExtractResponse:
     def send(live: Provider) -> str:
         if image_data_url is None:
             return live.complete(load_prompt(), source_text)
         return live.complete(load_prompt(), source_text, image_data_url=image_data_url)
 
-    raw = _call(provider, send, "Your notes are unchanged.")
+    raw = _call(provider, send, "Your notes are unchanged.", client)
     return _parse(raw)
 
 
@@ -164,7 +209,9 @@ def _parse_image(raw: str) -> DescribeImageResponse:
         raise AIError(502, "The model's answer did not match the expected shape.") from error
 
 
-def describe_image(image_data_url: str, provider: Provider | None) -> DescribeImageResponse:
+def describe_image(
+    image_data_url: str, provider: Provider | None, client: str = "anonymous"
+) -> DescribeImageResponse:
     """Draft alt text and a caption for one image. Nothing is applied to a
     card here: the person reviews the draft and chooses to use it (scope §5)."""
     prompt = IMAGE_PROMPT_PATH.read_text(encoding="utf-8")
@@ -172,5 +219,6 @@ def describe_image(image_data_url: str, provider: Provider | None) -> DescribeIm
         provider,
         lambda live: live.describe_image(prompt, image_data_url),
         "Your card is unchanged.",
+        client,
     )
     return _parse_image(raw)

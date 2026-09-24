@@ -3,7 +3,7 @@
 from fastapi import Depends, FastAPI, Request
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
-from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
 from app.config import settings
 from app.errors import envelope
@@ -29,27 +29,120 @@ MAX_IMAGE_BODY_BYTES = 1536 * 1024
 app = FastAPI(title=settings.app_name)
 
 
-class BodySizeLimit(BaseHTTPMiddleware):
+class BodySizeLimit:
     """Enforce the body limit at the boundary: 64 KiB, or 1.5 MiB on the two AI
     routes that can carry one downscaled image.
 
-    Content-Length is a claim, not a fact, so the body is also measured as it
-    arrives (docs/test_plan.md §4).
+    Content-Length is a claim, not a fact, and a chunked request has none, so
+    the body is counted as it arrives and reading stops the moment it passes
+    the limit (docs/test_plan.md §4). Reading it whole and measuring afterwards,
+    as the first version did, let a client stream as much as it liked into
+    memory before being refused.
+
+    A plain ASGI middleware rather than BaseHTTPMiddleware, because only this
+    level sees the body as it arrives. On overflow it sends the 413 itself and
+    tells the route the body has ended; whatever the route then tries to send
+    is dropped. Raising instead does not work: FastAPI turns any exception
+    during body parsing into a 400.
     """
 
-    async def dispatch(self, request: Request, call_next):
-        limit = MAX_IMAGE_BODY_BYTES if request.url.path in IMAGE_ROUTES else MAX_BODY_BYTES
-        declared = request.headers.get("content-length")
-        if declared is not None and declared.isdigit() and int(declared) > limit:
-            return envelope(413, "Request body is too large.")
-        if request.method in {"POST", "PUT", "PATCH"}:
-            body = await request.body()
-            if len(body) > limit:
-                return envelope(413, "Request body is too large.")
-        return await call_next(request)
+    def __init__(self, app: ASGIApp) -> None:
+        self.app = app
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
+
+        limit = MAX_IMAGE_BODY_BYTES if scope["path"] in IMAGE_ROUTES else MAX_BODY_BYTES
+        declared = dict(scope["headers"]).get(b"content-length", b"")
+        if declared.isdigit() and int(declared) > limit:
+            await envelope(413, "Request body is too large.")(scope, receive, send)
+            return
+
+        received = 0
+        refused = False
+
+        async def counted() -> Message:
+            nonlocal received, refused
+            if refused:
+                return {"type": "http.disconnect"}
+            message = await receive()
+            if message["type"] == "http.request":
+                received += len(message.get("body", b""))
+                if received > limit:
+                    refused = True
+                    await envelope(413, "Request body is too large.")(scope, receive, send)
+                    return {"type": "http.request", "body": b"", "more_body": False}
+            return message
+
+        async def guarded(message: Message) -> None:
+            if not refused:
+                await send(message)
+
+        await self.app(scope, counted, guarded)
+
+
+# Sent on every response (docs/architecture.md §12). The CSP allows only this
+# origin for scripts, styles and requests: the page has no inline script, no
+# CDN and no third party. data: and blob: images are the local image cards and
+# the PNG export, which draws the card through an SVG data URL; connect-src
+# blob: and data: let the export library read them back. Every browser test
+# fails on any CSP violation, so a directive that breaks the page cannot pass.
+CONTENT_SECURITY_POLICY = "; ".join(
+    [
+        "default-src 'self'",
+        "script-src 'self'",
+        "style-src 'self'",
+        "img-src 'self' data: blob:",
+        "font-src 'self' data:",
+        "connect-src 'self' data: blob:",
+        "object-src 'none'",
+        "base-uri 'self'",
+        "form-action 'self'",
+        "frame-ancestors 'none'",
+    ]
+)
+SECURITY_HEADERS = [
+    (b"content-security-policy", CONTENT_SECURITY_POLICY.encode()),
+    (b"x-content-type-options", b"nosniff"),
+    (b"x-frame-options", b"DENY"),
+    (b"referrer-policy", b"no-referrer"),
+    (b"permissions-policy", b"camera=(), microphone=(), geolocation=(), payment=()"),
+    (b"cross-origin-opener-policy", b"same-origin"),
+    # Browsers ignore this over plain HTTP, so it is harmless locally; on the
+    # deployed HTTPS site it stops a later visit being downgraded.
+    (b"strict-transport-security", b"max-age=31536000; includeSubDomains"),
+]
+
+
+class SecurityHeaders:
+    """Add SECURITY_HEADERS to every HTTP response, error responses included."""
+
+    def __init__(self, app: ASGIApp) -> None:
+        self.app = app
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
+
+        async def with_headers(message: Message) -> None:
+            if message["type"] == "http.response.start":
+                present = {name.lower() for name, _ in message.get("headers", [])}
+                message.setdefault("headers", [])
+                message["headers"] = [
+                    *message["headers"],
+                    *((name, value) for name, value in SECURITY_HEADERS if name not in present),
+                ]
+            await send(message)
+
+        await self.app(scope, receive, with_headers)
 
 
 app.add_middleware(BodySizeLimit)
+# Added last, so it is outermost and also covers the 413 BodySizeLimit sends.
+app.add_middleware(SecurityHeaders)
 install_error_handlers(app)
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
@@ -96,14 +189,36 @@ def get_ai_provider() -> ai_extraction.Provider | None:
     )
 
 
+def client_id(request: Request) -> str:
+    """Who the AI rate limit counts against.
+
+    Behind Azure Container Apps the socket peer is the ingress proxy, and the
+    visitor's address is the entry the proxy appended to X-Forwarded-For:
+    `trusted_proxy_hops` from the right. Entries to its left are whatever the
+    client sent and are ignored, and with no trusted proxy the header is
+    ignored entirely, or rotating a forged value would buy a fresh limit.
+    """
+    hops = settings.trusted_proxy_hops
+    if hops > 0:
+        forwarded = request.headers.get("x-forwarded-for", "")
+        entries = [part.strip() for part in forwarded.split(",") if part.strip()]
+        if len(entries) >= hops:
+            return entries[-hops]
+    return request.client.host if request.client else "unknown"
+
+
 @app.post(EXTRACT_ROUTE, response_model=ExtractResponse)
 def extract_progress(
+    request: Request,
     payload: ExtractRequest,
     provider: ai_extraction.Provider | None = Depends(get_ai_provider),
 ) -> JSONResponse:
     try:
         result = ai_extraction.extract_progress(
-            payload.source_text, provider, image_data_url=payload.image_data_url
+            payload.source_text,
+            provider,
+            image_data_url=payload.image_data_url,
+            client=client_id(request),
         )
     except ai_extraction.AIError as error:
         return envelope(error.status, error.message)
@@ -112,6 +227,7 @@ def extract_progress(
 
 @app.post(IMAGE_ROUTE, response_model=DescribeImageResponse)
 def describe_image(
+    request: Request,
     payload: DescribeImageRequest,
     provider: ai_extraction.Provider | None = Depends(get_ai_provider),
 ) -> JSONResponse:
@@ -121,7 +237,9 @@ def describe_image(
     the browser only when the person asks for a description (scope §7).
     """
     try:
-        result = ai_extraction.describe_image(payload.image_data_url, provider)
+        result = ai_extraction.describe_image(
+            payload.image_data_url, provider, client=client_id(request)
+        )
     except ai_extraction.AIError as error:
         return envelope(error.status, error.message)
     return JSONResponse(result.model_dump(mode="json"), headers={"Cache-Control": "no-store"})

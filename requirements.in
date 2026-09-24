@@ -1,9 +1,13 @@
 # Direct runtime dependencies. Regenerate the lock after editing:
 #   python3 -m venv /tmp/lockenv && /tmp/lockenv/bin/pip install -r requirements.in
 #   /tmp/lockenv/bin/pip freeze > requirements.lock.txt
-fastapi==0.115.6
+fastapi==0.141.1
+# Pinned directly, not left to FastAPI's range, as a security floor: pip-audit
+# found eight advisories against 0.41.3, one of them (CVE-2025-62727, Range
+# header CPU exhaustion in FileResponse) reachable here through /static.
+starlette==1.7.0
 uvicorn[standard]==0.34.0
-jinja2==3.1.5
+jinja2==3.1.6
 pydantic==2.10.4
 pydantic-settings==2.7.0
 openai==3.16.2

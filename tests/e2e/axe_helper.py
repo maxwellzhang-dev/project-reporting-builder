@@ -15,7 +15,10 @@ def audit(page: Page, context: str = "document") -> list[dict]:
     """Return serious and critical violations. Raises if axe cannot run."""
     if not AXE_SOURCE.is_file():
         raise RuntimeError(f"axe-core is missing at {AXE_SOURCE}")
-    page.add_script_tag(path=str(AXE_SOURCE))
+    # Evaluated through the DevTools protocol rather than added as a <script>:
+    # the page's Content-Security-Policy forbids inline script, correctly, and
+    # a test tool must not need the policy loosened to run.
+    page.evaluate(AXE_SOURCE.read_text(encoding="utf-8"))
     if not page.evaluate("typeof window.axe === 'object'"):
         raise RuntimeError("axe-core did not load")
 

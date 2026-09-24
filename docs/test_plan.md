@@ -138,6 +138,19 @@ Use a fake provider to verify:
 - Timeout is 504; a content-filter refusal is 422.
 - Text and image requests share one rate limit.
 
+### Security
+
+- A chunked body with no Content-Length, streamed to a real server over a raw
+  socket, is refused with 413 long before it ends, on both size limits.
+- Every kind of response carries the security headers, the 413 included, and
+  the CSP allows no inline script and no other origin.
+- Every browser test fails if the Content-Security-Policy blocks anything.
+- Per-client rate limits: one client's exhaustion does not affect another; a
+  forged X-Forwarded-For does not buy a new limit; without a trusted proxy the
+  header is ignored; many clients together hit the total ceiling.
+- `pip-audit` finds no known advisory in either lock file (CI, every push and
+  weekly).
+
 ## 5. Browser Workflows
 
 ### Editing and Card Management

@@ -159,6 +159,7 @@ if az containerapp show --name "$APP" --resource-group "$RESOURCE_GROUP" -o none
       "AZURE_OPENAI_API_VERSION=$API_VERSION" \
       "AI_MAX_OUTPUT_TOKENS=$MAX_TOKENS" \
       "AI_REASONING_EFFORT=$EFFORT" \
+      TRUSTED_PROXY_HOPS=1 \
       "AZURE_OPENAI_API_KEY=secretref:azure-openai-key" \
     -o none
 else
@@ -183,6 +184,7 @@ az containerapp create \
     "AZURE_OPENAI_API_VERSION=$API_VERSION" \
     "AI_MAX_OUTPUT_TOKENS=$MAX_TOKENS" \
     "AI_REASONING_EFFORT=$EFFORT" \
+    TRUSTED_PROXY_HOPS=1 \
     "AZURE_OPENAI_API_KEY=secretref:azure-openai-key" \
   -o none
 fi

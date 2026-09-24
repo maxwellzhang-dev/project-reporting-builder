@@ -39,12 +39,13 @@ Design documents: [`docs/scope.md`](docs/scope.md) ·
 | Documented error envelope | Implemented: `{error:{code,message,fields}}`, never echoes submitted input |
 | `POST /api/ai/describe-image` | Implemented: drafts alt text and a caption from a downscaled JPEG, sent only after the user sees the image and presses Send; verified against the live `gpt-5-mini` deployment |
 | Image with the notes | Implemented: pick or paste a status report, slide or dashboard; sent as a downscaled JPEG only with Generate; figures read from it must be confirmed before Create |
+| Security hardening | Implemented: streaming body limit, CSP and security headers on every response, per-client AI rate limit with a total ceiling, `pip-audit` in CI; see `docs/architecture.md` §12 |
 | AI review workflow | Implemented: notes in, an editable draft out, a card only after the user picks a status and confirms |
 | Metric cards proposed from the text | Implemented: figures are copied, never derived; a stated baseline is kept, an absent one stays empty; each proposal is opt-in |
 | Copy as plain text and as rich text | Implemented, with a manual-copy dialog whenever the Clipboard API is absent or refused |
 | PNG export per card | Implemented: isolated snapshot, editing controls excluded, discarded if the card changes mid-export |
 | Whole-report export | Implemented: copy as text, download a self-contained HTML file, or print to PDF against a print stylesheet |
-| Playwright browser tests | Implemented: editor, persistence, AI review, metric proposals, sharing, report export and axe-core scans (67 checks, 10 of them axe scans, including hover states in light and dark mode) |
+| Playwright browser tests | Implemented: editor, persistence, AI review, metric proposals, sharing, report export, image input and axe-core scans (87 checks, with hover states and both themes scanned); every one also fails on a Content-Security-Policy violation |
 
 ## Planned, not built
 
@@ -110,6 +111,7 @@ normally and never contacts Azure OpenAI; the AI endpoint then returns 503.
 | `AZURE_OPENAI_API_VERSION` | The gpt-5 family is served by the Responses API and needs a preview version |
 | `AI_MAX_OUTPUT_TOKENS` | On a reasoning model this budget covers reasoning tokens too, so it sits well above the size of the draft |
 | `AI_REASONING_EFFORT` | `minimal`, `low`, `medium`, `high`, or empty to let the model decide |
+| `TRUSTED_PROXY_HOPS` | Proxies that append to `X-Forwarded-For`, for the per-visitor AI rate limit. 0 locally (header ignored), 1 on Azure Container Apps |
 
 Nothing about the model is hard-coded: the API version, the token budget and
 the reasoning effort all change with the deployment, so all three are settings.

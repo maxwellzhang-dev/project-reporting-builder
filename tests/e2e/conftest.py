@@ -54,3 +54,37 @@ def base_url() -> str:
     yield url
     process.terminate()
     process.wait(timeout=10)
+
+
+def pytest_configure(config):
+    config.addinivalue_line(
+        "markers",
+        "rich_clipboard: the test writes the email HTML to the clipboard, which makes "
+        "Chromium report its inline styles against the page's CSP",
+    )
+
+
+@pytest.fixture(autouse=True)
+def _no_csp_violations(page, request):
+    """Every browser test doubles as a Content-Security-Policy check: any
+    resource or script the policy blocks fails the test that triggered it
+    (docs/architecture.md §12). Chromium reports each violation to the
+    console, which survives reloads, unlike an in-page listener.
+
+    One known report is tolerated, and only in tests marked rich_clipboard:
+    writing the email HTML to the clipboard makes Chromium parse it in the
+    page and report every style="" attribute, although the attributes reach
+    the clipboard intact (the test asserts they do). The page itself never
+    renders that HTML, so style-src stays 'self' rather than being loosened
+    for a report that changes nothing."""
+    violations = []
+    page.on(
+        "console",
+        lambda message: violations.append(message.text)
+        if "Content Security Policy" in message.text
+        else None,
+    )
+    yield
+    if request.node.get_closest_marker("rich_clipboard"):
+        violations = [text for text in violations if "Applying inline style" not in text]
+    assert not violations, f"CSP blocked something: {violations}"
