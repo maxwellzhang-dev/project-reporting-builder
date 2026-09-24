@@ -149,3 +149,39 @@ def test_the_panel_with_a_screenshot_passes_an_accessibility_scan(page: Page, ba
     expect(page.locator("#ai-numbers-block")).to_be_visible()
     page.wait_for_timeout(300)
     assert_clean(page, "notes panel, figures to check")
+
+
+FILE_EVENT = """async ([type, targetId]) => {
+    const blob = await new Promise((done) => {
+        const canvas = document.createElement("canvas");
+        canvas.width = 40; canvas.height = 20;
+        canvas.toBlob(done, "image/png");
+    });
+    const data = new DataTransfer();
+    data.items.add(new File([blob], "chart.png", { type: "image/png" }));
+    const target = document.getElementById(targetId);
+    const event = type === "paste"
+        ? new ClipboardEvent("paste", { clipboardData: data, bubbles: true, cancelable: true })
+        : new DragEvent("drop", { dataTransfer: data, bubbles: true, cancelable: true });
+    target.dispatchEvent(event);
+}"""
+
+
+def test_an_image_pasted_anywhere_in_the_dialog_is_attached(page: Page, base_url: str):
+    open_panel(page, base_url)
+    # Not in the notes: on the dialog's heading, as when nothing is focused.
+    page.evaluate(FILE_EVENT, ["paste", "ai-review-title"])
+    expect(page.locator("#ai-image-preview")).to_be_visible()
+    expect(page.locator("#ai-image-name")).to_have_text("chart.png")
+    expect(page.locator("#ai-source")).to_have_value("")
+
+
+def test_an_image_dropped_on_the_area_is_attached(page: Page, base_url: str):
+    open_panel(page, base_url)
+    expect(page.locator("#ai-image-drop")).to_contain_text("drag it here")
+    page.evaluate(FILE_EVENT, ["drop", "ai-image-drop"])
+    expect(page.locator("#ai-image-preview")).to_be_visible()
+    expect(page.locator("#ai-image-empty")).to_be_hidden()
+
+    page.get_by_role("button", name="Remove image").click()
+    expect(page.locator("#ai-image-empty")).to_be_visible()

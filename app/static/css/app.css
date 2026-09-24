@@ -504,7 +504,43 @@ dialog::backdrop { background: rgb(0 0 0 / 50%); }
 .image-ai__number-list { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 10px; padding: 0; list-style: none; }
 .image-ai__number-list li { padding: 2px 10px; border: 1px solid var(--border); border-radius: 999px; background: var(--card); font-size: 13px; font-variant-numeric: tabular-nums; }
 .image-ai__check { display: flex; gap: 8px; align-items: center; font-size: 14px; }
-.ai-image { display: flex; gap: 12px; align-items: center; margin-top: 6px; }
+/* The notes panel's image area: choose, drop or paste, all stated. */
+.dropzone__label { font-size: 14px; font-weight: 500; }
+.dropzone {
+  padding: 14px 16px;
+  border: 1.5px dashed var(--border);
+  border-radius: var(--radius-lg, 10px);
+  background: color-mix(in srgb, var(--muted) 60%, transparent);
+  transition: border-color 0.15s, background-color 0.15s;
+}
+/* The real file input is visually hidden, so its focus shows on the area. */
+.dropzone:focus-within { outline: 2px solid var(--ring); outline-offset: 2px; }
+.dropzone.is-dragging { border-color: var(--primary); background: color-mix(in srgb, var(--primary) 8%, transparent); }
+.dropzone__empty { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.dropzone__empty label.btn { cursor: pointer; }
+.dropzone__or { margin: 0; font-size: 13px; color: var(--muted-foreground); }
+.dropzone__preview { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+.dropzone__name { margin: 0; flex: 1; min-width: 0; font-size: 13px; overflow-wrap: anywhere; }
+kbd {
+  padding: 1px 6px;
+  border: 1px solid var(--border);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  background: var(--card);
+  font: 500 12px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+/* Native file inputs elsewhere (the image card): give the button room from
+   the file name instead of the browser's cramped default. */
+input[type="file"]::file-selector-button {
+  margin-right: 12px;
+  padding: 4px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--card);
+  color: var(--foreground);
+  font: inherit;
+  cursor: pointer;
+}
 .image-describe { width: fit-content; justify-self: start; align-self: flex-start; margin-top: 4px; }
 @media (max-width: 480px) { .image-ai__consent { flex-direction: column; } }
 

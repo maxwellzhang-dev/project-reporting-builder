@@ -41,6 +41,9 @@ const metricsBlock = document.getElementById("ai-metrics-block");
 const metricsList = document.getElementById("ai-metrics");
 const imageInput = document.getElementById("ai-image");
 const imagePreview = document.getElementById("ai-image-preview");
+const imageDrop = document.getElementById("ai-image-drop");
+const imageEmpty = document.getElementById("ai-image-empty");
+const imageName = document.getElementById("ai-image-name");
 const imageThumb = document.getElementById("ai-image-thumb");
 const imageRemove = document.getElementById("ai-image-remove");
 const imageError = document.getElementById("ai-image-error");
@@ -135,7 +138,9 @@ async function attachNotesImage(file) {
     if (notesImage) URL.revokeObjectURL(notesImage.objectUrl);
     notesImage = image;
     imageThumb.src = image.objectUrl;
+    imageName.textContent = image.name || "Pasted image";
     imagePreview.hidden = false;
+    imageEmpty.hidden = true;
     imageError.hidden = true;
   } catch (rejection) {
     // An existing image survives a rejected replacement.
@@ -151,7 +156,9 @@ function clearNotesImage() {
   if (notesImage) URL.revokeObjectURL(notesImage.objectUrl);
   notesImage = null;
   imageThumb.removeAttribute("src");
+  imageName.textContent = "";
   imagePreview.hidden = true;
+  imageEmpty.hidden = false;
   imageError.hidden = true;
   imageInput.value = "";
 }
@@ -383,15 +390,28 @@ export function initAiReview({ announce = () => {} } = {}) {
     clearNotesImage();
     imageInput.focus();
   });
-  // "Paste notes": an image pasted into the notes is attached, and any
-  // text pasted with it still goes into the notes as usual.
-  source.addEventListener("paste", (event) => {
+  // Paste anywhere in the dialog: an image on the clipboard is attached, and
+  // any text pasted with it still goes where the cursor is, as usual.
+  panel.addEventListener("paste", (event) => {
     const file = [...(event.clipboardData?.files ?? [])].find((item) =>
       item.type.startsWith("image/"),
     );
     if (!file) return;
     if (!event.clipboardData.getData("text/plain")) event.preventDefault();
     attachNotesImage(file);
+  });
+
+  // Drag and drop onto the image area.
+  imageDrop.addEventListener("dragover", (event) => {
+    event.preventDefault();
+    imageDrop.classList.add("is-dragging");
+  });
+  imageDrop.addEventListener("dragleave", () => imageDrop.classList.remove("is-dragging"));
+  imageDrop.addEventListener("drop", (event) => {
+    event.preventDefault();
+    imageDrop.classList.remove("is-dragging");
+    const file = event.dataTransfer?.files?.[0];
+    if (file) attachNotesImage(file);
   });
 
   createButton.addEventListener("click", () => {

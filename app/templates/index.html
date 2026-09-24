@@ -125,7 +125,7 @@
       <label for="ai-source">Project notes</label>
       <textarea id="ai-source" rows="7"
                 aria-describedby="ai-source-hint"
-                placeholder="Paste a status update, meeting note or stand-up summary. You can paste an image here too."></textarea>
+                placeholder="Paste a status update, meeting note or stand-up summary."></textarea>
       <p id="ai-source-hint" class="field__hint">
         Sent to Azure OpenAI only when you choose Generate. Do not paste sensitive information.
       </p>
@@ -137,19 +137,33 @@
       only with Generate, as a downscaled copy, and is never saved locally.
     -->
     <div class="field">
-      <label for="ai-image">Image (optional)</label>
-      <input id="ai-image" type="file" accept="image/png,image/jpeg,image/webp"
-             aria-describedby="ai-image-hint">
+      <span id="ai-image-label" class="dropzone__label">Image (optional)</span>
+      <!--
+        Three ways in, all stated: choose a file, drop one here, or paste
+        anywhere in this dialog. The native file input is kept (visually
+        hidden, still focusable) so keyboard and screen-reader use is the
+        browser's own; the label is what people see and click.
+      -->
+      <div id="ai-image-drop" class="dropzone">
+        <input id="ai-image" type="file" class="visually-hidden"
+               accept="image/png,image/jpeg,image/webp"
+               aria-labelledby="ai-image-label" aria-describedby="ai-image-hint">
+        <div id="ai-image-empty" class="dropzone__empty">
+          <label for="ai-image" class="btn" data-variant="outline" data-size="sm">{{ icon("image") }}Choose image</label>
+          <p class="dropzone__or">or drag it here, or paste it with <kbd>⌘V</kbd> / <kbd>Ctrl+V</kbd></p>
+        </div>
+        <div id="ai-image-preview" class="dropzone__preview" hidden>
+          <img id="ai-image-thumb" class="image-ai__thumb" alt="The image that will be sent">
+          <p id="ai-image-name" class="dropzone__name"></p>
+          <button type="button" id="ai-image-remove" class="btn" data-variant="ghost" data-size="sm">{{ icon("trash-2") }}Remove image</button>
+        </div>
+      </div>
       <p id="ai-image-hint" class="field__hint">
         A status report, slide, chart or dashboard. AI reads the text and numbers in it. A
         smaller copy is sent with your notes when you choose Generate; apart from that, images
         never leave your browser.
       </p>
       <p id="ai-image-error" role="alert" class="field__error" hidden></p>
-      <div id="ai-image-preview" class="ai-image" hidden>
-        <img id="ai-image-thumb" class="image-ai__thumb" alt="The image that will be sent">
-        <button type="button" id="ai-image-remove" class="btn" data-variant="ghost" data-size="sm">{{ icon("trash-2") }}Remove image</button>
-      </div>
     </div>
 
     <p id="ai-error" role="alert" class="field__error" hidden></p>
