@@ -3,6 +3,7 @@
 
 import { copyCard } from "./clipboard.js";
 import { exportCardPng } from "./export-image.js";
+import { openImageDescribe } from "./image-describe.js";
 import { acceptImage, ImageRejected } from "./image-assets.js";
 import { rememberBlob } from "./state.js";
 import { cancelPreview, ensureRendered, schedulePreview } from "./preview.js";
@@ -120,7 +121,8 @@ function fieldsFor(card) {
     field(card, "alt_text", "Alternative text", {
       hint: "Describe the image for people who cannot see it. Required.",
     }),
-    field(card, "caption", "Caption"),
+    // Multiline: a caption, drafted or typed, is often two or three sentences.
+    field(card, "caption", "Caption", { multiline: true }),
   ];
 }
 
@@ -326,6 +328,17 @@ function buildImagePicker(card, preview, applyFieldErrors, announce) {
   error.className = "field__error";
   error.hidden = true;
 
+  // Optional AI description. Disabled until there is an image to describe;
+  // pressing it only opens the consent step, it sends nothing by itself.
+  const describe = document.createElement("button");
+  describe.type = "button";
+  describe.className = "btn image-describe";
+  describe.dataset.variant = "outline";
+  describe.dataset.size = "sm";
+  describe.append(spriteIcon("sparkles"), "Describe with AI");
+  describe.disabled = !card.image;
+  describe.addEventListener("click", () => openImageDescribe(card.id));
+
   input.addEventListener("change", async () => {
     const file = input.files?.[0];
     if (!file) return;
@@ -336,6 +349,7 @@ function buildImagePicker(card, preview, applyFieldErrors, announce) {
       const updated = updateCard(card.id, { image });
       if (previous?.objectUrl) URL.revokeObjectURL(previous.objectUrl);
       error.hidden = true;
+      describe.disabled = false;
       announce("Image added");
       if (updated) schedulePreview(updated, preview, applyFieldErrors);
     } catch (rejection) {
@@ -348,7 +362,7 @@ function buildImagePicker(card, preview, applyFieldErrors, announce) {
     }
   });
 
-  wrap.append(label, input, error);
+  wrap.append(label, input, error, describe);
   return wrap;
 }
 

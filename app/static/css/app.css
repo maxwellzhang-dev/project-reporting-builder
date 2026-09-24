@@ -486,6 +486,27 @@ dialog::backdrop { background: rgb(0 0 0 / 50%); }
 .ai-panel h3 { margin: 20px 0 6px; font-size: 16px; }
 .ai-panel h4 { margin: 0 0 4px; font-size: 14px; }
 
+/* Describing an image: the consent step shows exactly what would be sent. */
+.image-ai__consent { display: flex; gap: 16px; align-items: flex-start; margin: 4px 0 8px; }
+.image-ai__consent p { margin: 0 0 6px; font-size: 14px; }
+.image-ai__thumb {
+  flex-shrink: 0;
+  width: 120px;
+  max-height: 120px;
+  object-fit: contain;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--muted);
+}
+/* A secondary action under the file picker, not a full-width bar. */
+.image-ai__numbers { margin: 0 0 12px; padding: 10px 14px; border: 1px solid var(--warning-line); border-radius: var(--radius-lg, 10px); background: var(--warning-fill); }
+.image-ai__numbers legend { padding: 0 6px; font-size: 14px; font-weight: 600; }
+.image-ai__number-list { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 10px; padding: 0; list-style: none; }
+.image-ai__number-list li { padding: 2px 10px; border: 1px solid var(--border); border-radius: 999px; background: var(--card); font-size: 13px; font-variant-numeric: tabular-nums; }
+.image-ai__check { display: flex; gap: 8px; align-items: center; font-size: 14px; }
+.image-describe { width: fit-content; justify-self: start; align-self: flex-start; margin-top: 4px; }
+@media (max-width: 480px) { .image-ai__consent { flex-direction: column; } }
+
 #manual-copy { max-width: 560px; width: calc(100vw - 32px); }
 #manual-copy textarea { width: 100%; font-family: inherit; }
 

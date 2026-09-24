@@ -124,6 +124,20 @@ Use a fake provider to verify:
 Inject a distinctive test string and verify it does not appear in application
 logs. This does not establish the behavior of Azure platform logs.
 
+### Image Description Endpoint
+
+Use a fake provider to verify:
+- PNG, JPEG and WebP data URLs reach the provider with the image prompt.
+- Anything else is refused with 422 before the provider is called: a remote
+  URL, another image type, invalid base64, bytes that do not match the
+  declared type, more than 1 MiB decoded, extra fields.
+- A refused image is not echoed in the error.
+- The route accepts up to 1.5 MiB; every other route keeps 64 KiB.
+- An over-long but otherwise valid draft is returned for the person to trim;
+  a malformed one is a 502 that does not echo the answer.
+- Timeout is 504; a content-filter refusal is 422.
+- Text and image requests share one rate limit.
+
 ## 5. Browser Workflows
 
 ### Editing and Card Management
@@ -194,6 +208,18 @@ With a fake provider:
 - Failure preserves the source text and offers retry or manual entry.
 - Manual editing and sharing remain available when AI is disabled.
 
+### Image Description
+
+Verify in the browser:
+- The action is disabled until the card has an image.
+- Opening the panel and cancelling it send nothing.
+- What is sent is a JPEG no larger than 1024 px on its longest side.
+- The draft changes nothing until "Use this text"; then the card's fields,
+  validation and preview update as if typed.
+- A cancelled draft is not kept; a failure leaves the card unchanged and can
+  be retried; a card deleted during review is not recreated.
+- Both steps of the panel pass an accessibility scan.
+
 ### Real Azure Evaluation
 
 Maintain approximately 10–15 fixed examples covering:
@@ -213,6 +239,11 @@ Evaluate meaning rather than exact wording:
 - Important risks retained.
 - Ambiguity surfaced for review.
 - No model-assigned project status.
+
+For image description, include charts and dashboards with legible figures, a
+photo, and an image whose text is too small to read. Evaluate that numbers
+and labels are copied exactly and that unreadable text is reported rather than
+guessed.
 
 Record deployment/model details, prompt version, date, outputs, and findings.
 Passing a finite sample does not guarantee future factual accuracy.

@@ -213,6 +213,77 @@
     </section>
   </dialog>
 
+  <!--
+    Describing an image with AI. Images otherwise never leave the browser
+    (docs/scope.md §7), so the panel opens on a consent step that shows the
+    image and says where it goes; nothing is sent until Send is pressed. The
+    draft is editable and only reaches the card through "Use this text".
+  -->
+  <dialog id="image-ai" aria-labelledby="image-ai-title" class="ai-panel">
+    <h2 id="image-ai-title">Describe this image with AI</h2>
+
+    <div class="image-ai__consent">
+      <img id="image-ai-thumb" class="image-ai__thumb" alt="The image that would be sent">
+      <div>
+        <p>A smaller copy of this image is sent to Azure OpenAI to draft alternative text and a
+          caption. Apart from this, images never leave your browser.</p>
+        <p class="field__hint">Used for this request only and not stored. Do not send images that
+          contain sensitive information.</p>
+      </div>
+    </div>
+
+    <p id="image-ai-error" role="alert" class="field__error" hidden></p>
+    <p id="image-ai-busy" role="status" class="ai-panel__status"></p>
+
+    <div id="image-ai-start-actions" class="dialog__actions">
+      <button type="button" id="image-ai-send" class="btn">{{ icon("sparkles") }}Send image and draft</button>
+      <button type="button" id="image-ai-cancel" class="btn" data-variant="outline">Cancel</button>
+    </div>
+
+    <section id="image-ai-draft" aria-labelledby="image-ai-draft-heading" hidden>
+      <h3 id="image-ai-draft-heading">Draft for review</h3>
+      <p class="ai-panel__warning">
+        Generated text. Check it against the image, especially any numbers, before using it.
+      </p>
+
+      <div class="field">
+        <label for="image-ai-alt">Draft alternative text</label>
+        <textarea id="image-ai-alt" rows="3" aria-describedby="image-ai-alt-hint"></textarea>
+        <p id="image-ai-alt-hint" class="field__hint">The card allows up to 300 characters.</p>
+      </div>
+
+      <div class="field">
+        <label for="image-ai-caption">Draft caption</label>
+        <textarea id="image-ai-caption" rows="4"></textarea>
+      </div>
+
+      <div id="image-ai-notes-block" hidden>
+        <h4 id="image-ai-notes-heading">What the model could not read</h4>
+        <ul id="image-ai-notes" aria-labelledby="image-ai-notes-heading" class="ai-panel__notes"></ul>
+      </div>
+
+      <!--
+        Every figure in the draft, pulled out by the page rather than by the
+        model. On small print the live model misread digits and did not say
+        so, so its own uncertainty notes cannot be the safeguard. When the
+        draft contains numbers, "Use this text" waits for this box.
+      -->
+      <fieldset id="image-ai-numbers-block" class="image-ai__numbers" hidden>
+        <legend>Numbers to check against the image</legend>
+        <ul id="image-ai-numbers" class="image-ai__number-list"></ul>
+        <div class="image-ai__check">
+          <input type="checkbox" id="image-ai-numbers-checked" class="input">
+          <label for="image-ai-numbers-checked">I checked every number against the image</label>
+        </div>
+      </fieldset>
+
+      <p class="field__hint">Replaces this card's alternative text and caption.</p>
+      <div class="dialog__actions">
+        <button type="button" id="image-ai-use" class="btn">Use this text</button>
+      </div>
+    </section>
+  </dialog>
+
   <footer class="page__footer">
     <h2 class="visually-hidden">Service status</h2>
     <p id="service-status" role="status">Checking service status…</p>

@@ -1,6 +1,7 @@
 // Wires the page together: toolbar, card list, deletion dialog, status line.
 
 import { initAiReview } from "./ai-review.js";
+import { initImageDescribe } from "./image-describe.js";
 import { copyCard, setManualFallback } from "./clipboard.js";
 import { ReportIncomplete, reportHtml, reportText } from "./export-report.js";
 import { buildCardEditor, setDeletionConfirmer } from "./editor.js";
@@ -105,6 +106,7 @@ for (const button of addButtons) {
 subscribe(render);
 
 initAiReview({ announce });
+initImageDescribe({ announce });
 
 // The manual copy route, for every browser that refuses the Clipboard API.
 const manualCopy = document.getElementById("manual-copy");

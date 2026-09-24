@@ -8,31 +8,41 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from app.config import settings
 from app.errors import envelope
 from app.errors import install as install_error_handlers
-from app.schemas.ai import ExtractRequest, ExtractResponse
+from app.schemas.ai import (
+    DescribeImageRequest,
+    DescribeImageResponse,
+    ExtractRequest,
+    ExtractResponse,
+)
 from app.schemas.rendering import RenderRequest, RenderResponse
 from app.services import ai_extraction
 from app.services.rendering import render_card
 from app.templating import render_page
 
 MAX_BODY_BYTES = 64 * 1024
+# The one route that carries an image. Everything else keeps the 64 KiB limit.
+IMAGE_ROUTE = "/api/ai/describe-image"
+MAX_IMAGE_BODY_BYTES = 1536 * 1024
 
 app = FastAPI(title=settings.app_name)
 
 
 class BodySizeLimit(BaseHTTPMiddleware):
-    """Enforce the 64 KiB body limit at the boundary.
+    """Enforce the body limit at the boundary: 64 KiB, or 1.5 MiB on the image
+    route, whose body is one downscaled image.
 
     Content-Length is a claim, not a fact, so the body is also measured as it
     arrives (docs/test_plan.md §4).
     """
 
     async def dispatch(self, request: Request, call_next):
+        limit = MAX_IMAGE_BODY_BYTES if request.url.path == IMAGE_ROUTE else MAX_BODY_BYTES
         declared = request.headers.get("content-length")
-        if declared is not None and declared.isdigit() and int(declared) > MAX_BODY_BYTES:
+        if declared is not None and declared.isdigit() and int(declared) > limit:
             return envelope(413, "Request body is too large.")
         if request.method in {"POST", "PUT", "PATCH"}:
             body = await request.body()
-            if len(body) > MAX_BODY_BYTES:
+            if len(body) > limit:
                 return envelope(413, "Request body is too large.")
         return await call_next(request)
 
@@ -91,6 +101,23 @@ def extract_progress(
 ) -> JSONResponse:
     try:
         result = ai_extraction.extract_progress(payload.source_text, provider)
+    except ai_extraction.AIError as error:
+        return envelope(error.status, error.message)
+    return JSONResponse(result.model_dump(mode="json"), headers={"Cache-Control": "no-store"})
+
+
+@app.post(IMAGE_ROUTE, response_model=DescribeImageResponse)
+def describe_image(
+    payload: DescribeImageRequest,
+    provider: ai_extraction.Provider | None = Depends(get_ai_provider),
+) -> JSONResponse:
+    """Draft alt text and a caption for an image the person chose to send.
+
+    The image is used for this one call and not stored or logged: it leaves
+    the browser only when the person asks for a description (scope §7).
+    """
+    try:
+        result = ai_extraction.describe_image(payload.image_data_url, provider)
     except ai_extraction.AIError as error:
         return envelope(error.status, error.message)
     return JSONResponse(result.model_dump(mode="json"), headers={"Cache-Control": "no-store"})

@@ -22,12 +22,12 @@ Design documents: [`docs/scope.md`](docs/scope.md) ·
 | Create, edit, reorder and delete cards | Implemented, 20-card limit, deletion confirmed in a dialog |
 | Live preview per card | Implemented, debounced; stale and superseded responses discarded |
 | Field-level validation messages | Implemented, wired to `aria-invalid` and `aria-describedby` |
-| Local image selection | Implemented: PNG/JPEG/WebP, 5 MiB, 4096px per side, 12 MP; files never leave the browser |
+| Local image selection | Implemented: PNG/JPEG/WebP, 5 MiB, 4096px per side, 12 MP; files stay in the browser unless the user asks AI to describe one |
 | `POST /api/cards/render` | Implemented: preview HTML, email HTML, plain text |
 | AI error contract | Implemented: 503 disabled, 429 rate limited, 422 refused by the content filter, 502 bad upstream, 504 timeout |
 | Progress, metric and image card models | Implemented, discriminated union, extra fields rejected |
 | Metric comparison and formatting | Implemented as pure functions, covered by the table in `docs/test_plan.md` §3 |
-| 64 KiB request limit, `no-store` on responses | Implemented |
+| 64 KiB request limit (1.5 MiB on the image route), `no-store` on responses | Implemented |
 | Explicit Jinja2 autoescaping | Implemented, covered by tests |
 | Same-origin CSS and ES module JavaScript, no build step | Implemented |
 | shadcn/ui-style interface (Basecoat) with Lucide icons, light and dark mode | Implemented |
@@ -37,6 +37,7 @@ Design documents: [`docs/scope.md`](docs/scope.md) ·
 | Local draft recovery (IndexedDB) | Implemented: text, order and image blobs, serialised writes, Clear local data |
 | `POST /api/ai/extract-progress` | Implemented behind a provider interface; verified against a live Azure OpenAI `gpt-5-mini` deployment (see `docs/test-report.md`) |
 | Documented error envelope | Implemented: `{error:{code,message,fields}}`, never echoes submitted input |
+| `POST /api/ai/describe-image` | Implemented: drafts alt text and a caption from a downscaled JPEG, sent only after the user sees the image and presses Send; verified against the live `gpt-5-mini` deployment |
 | AI review workflow | Implemented: notes in, an editable draft out, a card only after the user picks a status and confirms |
 | Metric cards proposed from the text | Implemented: figures are copied, never derived; a stated baseline is kept, an absent one stays empty; each proposal is opt-in |
 | Copy as plain text and as rich text | Implemented, with a manual-copy dialog whenever the Clipboard API is absent or refused |

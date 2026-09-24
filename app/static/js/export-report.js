@@ -62,8 +62,8 @@ export async function reportText() {
 /**
  * A card's contribution to the HTML document.
  *
- * An image card has no rich form (scope §6) because the image never leaves
- * the browser, so it contributes its description instead of vanishing. The
+ * An image card has no rich form (scope §6) because the image file is not
+ * uploaded, so it contributes its description instead of vanishing. The
  * text is escaped: this is a document built from user content.
  */
 function htmlBlock({ card, result }) {
@@ -92,7 +92,7 @@ function htmlBlock({ card, result }) {
 
   const note = document.createElement("p");
   note.style.cssText = "margin:6px 0 0;font:400 12px/1.4 inherit;color:#8a8a90";
-  note.textContent = "The image file itself is not included: images stay in the browser.";
+  note.textContent = "The image file itself is not included: images are not uploaded.";
   wrapper.append(note);
 
   return wrapper.outerHTML;

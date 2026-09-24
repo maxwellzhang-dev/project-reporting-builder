@@ -6,8 +6,14 @@ Importing the provider module does not import the OpenAI SDK or read any
 credential: the SDK import inside `complete` is deliberately lazy.
 """
 
-from app.schemas.ai import ExtractResponse, MetricDraft, ProgressDraft
-from app.services.azure_provider import DRAFT_JSON_SCHEMA, METRIC_ITEM_SCHEMA
+from app.schemas.ai import (
+    DescribeImageResponse,
+    ExtractResponse,
+    ImageDraft,
+    MetricDraft,
+    ProgressDraft,
+)
+from app.services.azure_provider import DRAFT_JSON_SCHEMA, IMAGE_JSON_SCHEMA, METRIC_ITEM_SCHEMA
 
 
 def test_schema_properties_match_the_draft_models():
@@ -42,3 +48,12 @@ def test_list_fields_are_arrays_of_strings():
             "type": "array",
             "items": {"type": "string"},
         }
+
+
+def test_image_schema_matches_the_image_draft_model():
+    # Flat on the wire, like the progress draft: review_notes is lifted out
+    # before the draft is validated.
+    assert set(IMAGE_JSON_SCHEMA["properties"]) == set(ImageDraft.model_fields) | {"review_notes"}
+    assert "review_notes" in DescribeImageResponse.model_fields
+    assert set(IMAGE_JSON_SCHEMA["required"]) == set(IMAGE_JSON_SCHEMA["properties"])
+    assert IMAGE_JSON_SCHEMA["additionalProperties"] is False

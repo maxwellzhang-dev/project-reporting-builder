@@ -74,6 +74,7 @@ app/
   templating.py
   prompts/
     extract_progress_v2.txt
+    describe_image_v1.txt
   templates/
     index.html
     preview/
@@ -93,6 +94,7 @@ app/
       persistence.js
       image-assets.js
       ai-review.js
+      image-describe.js
       clipboard.js
       export-image.js
       export-report.js
@@ -169,7 +171,8 @@ The API accepts image metadata only, never files, base64 data, remote URLs, or b
 | Total retained image files | 100 MiB, guaranteed by 20 cards × one 5 MiB image each rather than checked separately |
 | Image dimensions | 4,096 pixels per side and 12 million pixels total |
 | AI source text | 8,000 characters |
-| API request body | 64 KiB |
+| API request body | 64 KiB; 1.5 MiB on `POST /api/ai/describe-image` only |
+| Image sent for description | 1 MiB decoded, PNG, JPEG or WebP; the browser sends a JPEG of at most 1024 px |
 
 Image file size does not represent decoded memory usage.
 Dimension checks and on-demand image loading are also required.
@@ -294,6 +297,35 @@ Response:
 
 The draft does not include a confirmed project status or card ID.
 The user supplies the status before creating a normal progress card.
+
+### POST /api/ai/describe-image
+
+Request:
+
+```json
+{
+  "image_data_url": "data:image/jpeg;base64,/9j/4AAQ..."
+}
+```
+
+Response:
+
+```json
+{
+  "draft": {
+    "alt_text": "A dashboard card showing onboarding completion at 79%.",
+    "caption": "Onboarding completion is 79%, up 12 percentage points."
+  },
+  "review_notes": ["The axis label is too small to read."]
+}
+```
+
+The request is refused with 422, before any model call, unless it is a base64
+data URL of PNG, JPEG or WebP whose bytes match the declared type and decode to
+at most 1 MiB. The error names the field and never echoes the image. The draft
+allows up to 1,000 characters per field so that an over-long answer is trimmed
+by the person rather than discarded; the card's own limits apply when it is
+used. Text and image requests share one rate limiter.
 
 ### Errors
 
@@ -445,6 +477,24 @@ The prompt requires:
 Source text is untrusted data, not an instruction source.
 The model has no tools, browsing, database access, or side effects.
 
+### Image description flow
+
+1. The browser shows the image and sends nothing until the user presses Send.
+2. It downscales to a JPEG of at most 1024 px on the longest side.
+3. The server validates type, signature and size, then applies the shared limits.
+4. The prompt (`describe_image_v1`) travels as `instructions`; the image is the
+   whole user message, as an `input_image`, so no user text sits beside it.
+5. Strict `json_schema` output, validated with Pydantic.
+6. The browser shows an editable draft and lists every figure in it, extracted
+   by the page, not the model. When there are figures, "Use this text" waits
+   for the person to confirm they checked them; editing a figure clears that.
+7. "Use this text" fills the card's fields as if typed, so validation and
+   preview run as usual.
+
+Text inside an image is treated as content to describe, not instructions.
+Measured on gpt-5-mini, 2026-09-24: 2.6 to 5.4 seconds per image; numbers read
+exactly as shown on the test images.
+
 Schema validation checks structure, not factual correctness.
 User review is required.
 
@@ -518,7 +568,9 @@ On canvas or rendering limits, fail clearly rather than silently crop.
 - Do not commit secrets or include them in the image or frontend.
 - Do not log report text, AI payloads, or rendered output.
 - Disable provider payload tracing unless explicitly reviewed.
-- Do not upload image blobs.
+- Do not upload or store image blobs. The only image data that leaves the browser is the
+  downscaled copy sent, on request, to `POST /api/ai/describe-image`; it is passed to the
+  model and discarded, never logged or persisted.
 - Avoid third-party analytics, remote fonts, and runtime CDNs.
 - Set render and AI responses to `Cache-Control: no-store`.
 - Use HTTPS and same-origin API access.

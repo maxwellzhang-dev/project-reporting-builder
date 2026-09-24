@@ -31,6 +31,13 @@ ai_extraction.MAX_CONCURRENT = 50
 ai_extraction.limiter = ai_extraction.RateLimiter(max_per_minute=500)
 
 
+IMAGE_DRAFT = {
+    "alt_text": "Bar chart of weekly sign-ups, highest in week 4.",
+    "caption": "Sign-ups peaked at 212 in week 4.",
+    "review_notes": ["The y-axis label is too small to read."],
+}
+
+
 class ScriptedProvider:
     def complete(self, prompt: str, source_text: str) -> str:
         if TIMEOUT in source_text:
@@ -49,6 +56,11 @@ class ScriptedProvider:
         if NO_METRICS in source_text:
             draft["metrics"] = []
         return json.dumps(draft)
+
+    def describe_image(self, prompt: str, image_data_url: str) -> str:
+        # The browser test checks what was sent by watching the request, so
+        # the fake only has to answer.
+        return json.dumps(IMAGE_DRAFT)
 
 
 app.dependency_overrides[get_ai_provider] = lambda: ScriptedProvider()

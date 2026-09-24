@@ -83,7 +83,7 @@ Optional:
 
 Supported formats: PNG, JPEG, and WebP.
 
-Image files remain in the browser. Invalid files are rejected without replacing an existing valid image.
+Image files remain in the browser, except for the downscaled copy sent when the user asks AI to describe the image (§5). Invalid files are rejected without replacing an existing valid image.
 
 ## 5. AI Assistance
 Users can choose manual entry or AI-assisted structuring.
@@ -106,10 +106,33 @@ Users review and edit the draft, select the project status, and confirm before
 creating a card. Metric proposals are reviewed and confirmed one by one, and
 declining them all is an ordinary outcome.
 
+### Describing an image
+
+On an image card, the user can ask Azure OpenAI to draft the alternative text
+and the caption from the image. This is what lets a screenshot of a chart or
+dashboard survive a text export: the plain-text form of an image card is its
+title, caption and alternative text (§6), so without a description the
+information in the picture is lost.
+
+- It is the only time an image leaves the browser, and it is opt-in every
+  time: the panel shows the image and says where it is going, and nothing is
+  sent until the user presses Send.
+- What is sent is a downscaled JPEG copy (longest side 1024 px), not the
+  original file.
+- The draft is editable and reaches the card only when the user chooses "Use
+  this text", which replaces the card's alternative text and caption and then
+  passes through the card's normal validation.
+- Numbers and labels are copied as shown, never calculated; anything the model
+  could not read is listed for review instead of guessed.
+- The model does not reliably know when it has misread small print, so the
+  page lists every figure in the draft and "Use this text" waits until the
+  user confirms they checked each one against the image.
+
 AI assistance:
 - Should preserve source facts, numbers, dates, and uncertainty.
 - Must not intentionally invent missing information.
-- Does not calculate metrics, derive missing values, or generate image cards.
+- Does not calculate metrics, derive missing values, or create image cards; it may draft
+  the text of an image card the user already made, when asked.
 - Does not overwrite existing cards or trigger sharing.
 - Preserves the original input when a request fails.
 - Provides retry and manual-entry options.
@@ -140,7 +163,7 @@ arranged (§2). This is what makes arranging them worth doing.
   it cannot differ from the previews on screen.
 - An image card contributes its title, caption and alternative text, matching
   the per-card rule above. The image file itself is not included, because
-  images never leave the browser (§7). The export says so rather than dropping
+  image files are not uploaded (§7). The export says so rather than dropping
   the card silently.
 - A card that is invalid or has not rendered blocks the export and is named,
   rather than being omitted from a document that looks complete.
@@ -164,9 +187,11 @@ Sharing to email, Slack, or Teams uses copy/download workflows, not platform API
 - Pending or failed saves may be lost on refresh.
 - Users can clear the locally saved draft; browser data clearing or eviction may also remove it.
 - Text, metrics, and image descriptions are sent to the application server for validation and rendering.
-- Image files are not uploaded.
+- Image files are not uploaded. The one exception is a downscaled copy sent to Azure OpenAI,
+  for that request only, when the user asks for an image to be described (§5); it is not
+  stored or logged by the application.
 - Source notes are sent to Azure OpenAI only when the user requests AI assistance.
-- AI source notes and unconfirmed AI responses are not saved locally; confirmed cards are included in the report draft.
+- AI source notes, images sent for description, and unconfirmed AI responses are not saved locally; confirmed cards are included in the report draft.
 - Azure credentials remain on the server.
 - Application logs exclude report content and AI request/response bodies.
 - Azure data handling follows the selected service configuration and applicable policies.
@@ -178,6 +203,13 @@ Sharing to email, Slack, or Teams uses copy/download workflows, not platform API
 > one piece of real computation, the metric comparison, went unused. The
 > boundary that mattered was never "no metrics" but "no invented numbers", and
 > an empty previous value keeps that boundary without losing the feature.
+
+> **Changed 2026-09-24.** Image description was added, and with it the only
+> case in which image data leaves the browser. The rule it replaces, "image
+> files are not uploaded", was a privacy default rather than a goal; keeping
+> it absolutely meant a chart's content vanished from every text export. The
+> exception is narrow on purpose: per image, on request, after the image has
+> been shown, as a reduced copy, with the result reviewed before use.
 
 ## 8. Out of Scope
 

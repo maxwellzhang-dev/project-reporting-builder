@@ -67,6 +67,18 @@ DRAFT_JSON_SCHEMA: dict[str, Any] = {
     },
 }
 
+# The image description: mirrors ImageDraft plus review_notes.
+IMAGE_JSON_SCHEMA: dict[str, Any] = {
+    "type": "object",
+    "additionalProperties": False,
+    "required": ["alt_text", "caption", "review_notes"],
+    "properties": {
+        "alt_text": {"type": "string"},
+        "caption": {"type": "string"},
+        "review_notes": {"type": "array", "items": {"type": "string"}},
+    },
+}
+
 
 def _is_content_filter(error: Exception) -> bool:
     """Recognise a content-filter rejection without depending on wording.
@@ -109,6 +121,36 @@ class AzureOpenAIProvider:
         )
 
     def complete(self, prompt: str, source_text: str) -> str:
+        return self._respond(
+            prompt,
+            source_text,
+            "progress_draft",
+            DRAFT_JSON_SCHEMA,
+            "The content filter rejected this text. Edit the note and try again.",
+        )
+
+    def describe_image(self, prompt: str, image_data_url: str) -> str:
+        # The image is the whole user message: there is no user text beside
+        # it, so nothing but the image can compete with the instructions.
+        message = [
+            {"role": "user", "content": [{"type": "input_image", "image_url": image_data_url}]}
+        ]
+        return self._respond(
+            prompt,
+            message,
+            "image_draft",
+            IMAGE_JSON_SCHEMA,
+            "The content filter rejected this image. Try a different image.",
+        )
+
+    def _respond(
+        self,
+        prompt: str,
+        user_input: str | list[dict[str, Any]],
+        schema_name: str,
+        schema: dict[str, Any],
+        filtered_message: str,
+    ) -> str:
         # Imported lazily: not needed when AI is off.
         from openai import AzureOpenAI, BadRequestError
 
@@ -122,14 +164,14 @@ class AzureOpenAIProvider:
         options: dict[str, Any] = {
             "model": self.deployment,
             "instructions": prompt,
-            "input": source_text,
+            "input": user_input,
             "max_output_tokens": self.max_output_tokens,
             "text": {
                 "format": {
                     "type": "json_schema",
-                    "name": "progress_draft",
+                    "name": schema_name,
                     "strict": True,
-                    "schema": DRAFT_JSON_SCHEMA,
+                    "schema": schema,
                 }
             },
         }
@@ -145,10 +187,7 @@ class AzureOpenAIProvider:
             # unchanged will fail again, so it maps to 422 (invalid input)
             # rather than 502. The refused text is never echoed back.
             if _is_content_filter(error):
-                raise AIError(
-                    422,
-                    "The content filter rejected this text. Edit the note and try again.",
-                ) from error
+                raise AIError(422, filtered_message) from error
             raise
 
         # An answer cut off by the token budget arrives as status "incomplete"

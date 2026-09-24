@@ -1,4 +1,5 @@
-"""Turn source notes into a progress draft, or fail in a documented way.
+"""Turn source notes into a progress draft, and an image into a description,
+or fail in a documented way.
 
 The provider is an interface so tests and CI never make a paid call
 (docs/test_plan.md §1). Error mapping follows docs/architecture.md §6.
@@ -8,6 +9,7 @@ from __future__ import annotations
 
 import json
 import time
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Protocol
@@ -15,10 +17,13 @@ from typing import Protocol
 from pydantic import ValidationError
 
 from app.config import settings
-from app.schemas.ai import ExtractResponse, ProgressDraft
+from app.schemas.ai import DescribeImageResponse, ExtractResponse, ImageDraft, ProgressDraft
 
-PROMPT_PATH = Path(__file__).resolve().parent.parent / "prompts" / "extract_progress_v2.txt"
+PROMPTS_DIR = Path(__file__).resolve().parent.parent / "prompts"
+PROMPT_PATH = PROMPTS_DIR / "extract_progress_v2.txt"
 PROMPT_VERSION = "extract_progress_v2"
+IMAGE_PROMPT_PATH = PROMPTS_DIR / "describe_image_v1.txt"
+IMAGE_PROMPT_VERSION = "describe_image_v1"
 
 MAX_CALLS_PER_MINUTE = 6
 MAX_CONCURRENT = 1
@@ -37,6 +42,8 @@ class AIError(Exception):
 class Provider(Protocol):
     def complete(self, prompt: str, source_text: str) -> str: ...
 
+    def describe_image(self, prompt: str, image_data_url: str) -> str: ...
+
 
 @dataclass
 class FakeProvider:
@@ -52,6 +59,9 @@ class FakeProvider:
         if self.delay_seconds:
             time.sleep(self.delay_seconds)
         return self.body
+
+    def describe_image(self, prompt: str, image_data_url: str) -> str:
+        return self.complete(prompt, image_data_url)
 
 
 class RateLimiter:
@@ -104,20 +114,58 @@ def _parse(raw: str) -> ExtractResponse:
         raise AIError(502, "The model's answer did not match the expected shape.") from error
 
 
-def extract_progress(source_text: str, provider: Provider | None) -> ExtractResponse:
+def _call(provider: Provider | None, send: Callable[[Provider], str], unchanged: str) -> str:
+    """One provider call under the shared limiter, with the documented error
+    mapping. Text and image requests share both, so neither can be used to get
+    around the other's rate limit."""
     if not settings.ai_enabled or provider is None:
         raise AIError(503, "AI assistance is turned off.")
 
     limiter.acquire()
     try:
-        raw = provider.complete(load_prompt(), source_text)
+        return send(provider)
     except AIError:
         raise
     except TimeoutError as error:
-        raise AIError(504, "The model took too long. Your text is unchanged.") from error
+        raise AIError(504, f"The model took too long. {unchanged}") from error
     except Exception as error:  # provider failures must not leak their detail
         raise AIError(502, "The model could not be reached.") from error
     finally:
         limiter.release()
 
+
+def extract_progress(source_text: str, provider: Provider | None) -> ExtractResponse:
+    raw = _call(
+        provider,
+        lambda live: live.complete(load_prompt(), source_text),
+        "Your text is unchanged.",
+    )
     return _parse(raw)
+
+
+def _parse_image(raw: str) -> DescribeImageResponse:
+    try:
+        payload = json.loads(raw)
+    except json.JSONDecodeError as error:
+        raise AIError(502, "The model returned something unreadable.") from error
+    if not isinstance(payload, dict):
+        raise AIError(502, "The model returned something unreadable.")
+
+    notes = payload.pop("review_notes", [])
+    try:
+        draft = ImageDraft.model_validate(payload)
+        return DescribeImageResponse(draft=draft, review_notes=notes)
+    except ValidationError as error:
+        raise AIError(502, "The model's answer did not match the expected shape.") from error
+
+
+def describe_image(image_data_url: str, provider: Provider | None) -> DescribeImageResponse:
+    """Draft alt text and a caption for one image. Nothing is applied to a
+    card here: the person reviews the draft and chooses to use it (scope §5)."""
+    prompt = IMAGE_PROMPT_PATH.read_text(encoding="utf-8")
+    raw = _call(
+        provider,
+        lambda live: live.describe_image(prompt, image_data_url),
+        "Your card is unchanged.",
+    )
+    return _parse_image(raw)
