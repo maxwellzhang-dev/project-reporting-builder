@@ -1,5 +1,6 @@
 """axe-core scans of the states listed in docs/test_plan.md §9."""
 
+import pytest
 from playwright.sync_api import Page, expect
 
 from tests.e2e.axe_helper import assert_clean
@@ -82,3 +83,24 @@ def test_mobile_width(page: Page, base_url: str):
     # Core operations must survive a narrow viewport (test_plan §9).
     expect(page.locator('[data-add-card="metric"]')).to_be_visible()
     expect(page.locator(".editor-card__controls button").first).to_be_visible()
+
+
+@pytest.mark.parametrize("scheme", ["light", "dark"])
+def test_hover_states_keep_contrast(page: Page, base_url: str, scheme: str):
+    """Hover styles are where contrast is easiest to lose unseen: a scan of the
+    resting page never sees them. Basecoat's defaults lightened the primary
+    button to 4.2:1 on hover, which only CI's pointer position exposed."""
+    page.emulate_media(color_scheme=scheme)
+    page.goto(base_url)
+    page.click('[data-add-card="progress"]')
+
+    page.get_by_role("button", name="Paste notes, draft with AI").click()
+    page.get_by_role("button", name="Generate draft").hover()
+    page.wait_for_timeout(300)  # let the hover transition finish
+    assert_clean(page, f"{scheme}: primary button hovered")
+    page.keyboard.press("Escape")
+
+    page.locator(".editor-card").get_by_role("button", name="Delete").click()
+    page.locator("#confirm-delete").get_by_role("button", name="Delete").hover()
+    page.wait_for_timeout(300)
+    assert_clean(page, f"{scheme}: destructive button hovered")

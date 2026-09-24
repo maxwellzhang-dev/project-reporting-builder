@@ -20,11 +20,13 @@
   --input: oklch(0.9 0.008 275);
   --primary: #4f46e5;
   --primary-foreground: #ffffff;
+  --primary-hover: #4338ca;
   --ring: #6366f1;
   /* Basecoat's muted text is about 4.3:1 on its own muted surface; this
      darker grey keeps small print at AA on both white and the sunken panel. */
   --muted-foreground: oklch(0.48 0.012 275);
   --danger-ink: oklch(0.5 0.2 27);
+  --danger-ink-strong: oklch(0.43 0.18 27);
   --warning-line: #8a6d00;
   --warning-fill: rgb(138 109 0 / 10%);
   /* One colour per status. Each is at least 4.5:1 on its own 10% tint, and
@@ -57,9 +59,11 @@
   /* Indigo light enough to carry dark text; white on it would fail AA. */
   --primary: #818cf8;
   --primary-foreground: #0f0e2a;
+  --primary-hover: #a5b4fc;
   --ring: #818cf8;
   --muted-foreground: oklch(0.72 0.01 275);
   --danger-ink: oklch(0.75 0.16 22);
+  --danger-ink-strong: oklch(0.8 0.13 22);
   --warning-line: #e8c34a;
   --warning-fill: rgb(232 195 74 / 12%);
   --status-proposed: #d4d4d8;
@@ -328,6 +332,16 @@ h3, h4 { font-weight: 600; }
 }
 
 [data-add-card] svg { color: var(--chip); }
+
+/* Basecoat's hover states lighten the primary fill to 80% and deepen the
+   destructive tint, and both leave the label under AA (4.2:1 for white on
+   the lightened indigo). The primary darkens instead, in light mode, and
+   lightens in dark mode, where its label is dark; the destructive label
+   deepens with its fill. */
+.btn:is(:not([data-variant]), [data-variant="primary"]):hover:not(:disabled) {
+  background-color: var(--primary-hover);
+}
+.btn[data-variant="destructive"]:hover:not(:disabled) { color: var(--danger-ink-strong); }
 
 /* The AI entry point: the one gradient on the page. */
 .btn.btn--ai {
