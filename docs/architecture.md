@@ -603,7 +603,9 @@ or other visitors' access, and getting script to run in the page.
 | --- | --- | --- |
 | Endless or oversized request body, with or without Content-Length | `BodySizeLimit` counts the body as it arrives and answers 413 at 64 KiB (1.5 MiB on the two AI routes); it does not read on | A raw-socket test against a real server: the old code read all 10 MiB and kept waiting |
 | One visitor exhausting the AI for everyone | Rate limit per client: 6 a minute, 1 in flight | Integration test: a second client is unaffected |
-| Many addresses exhausting the budget | Total ceiling: 30 a minute, 3 in flight, bounded tokens and input size | Integration test |
+| Many addresses exhausting the budget | Total ceiling: 30 a minute, 3 in flight, bounded tokens and input size. On Azure, the model deployment is capped at 10K tokens a minute, a limit outside the app's control | Integration test; deployment capacity set 2026-09-24 |
+| Azure's cap reached | Reported as 429 "busy", not 502 "unreachable" | Unit test with a replaced SDK client |
+| A spend spike nobody notices | Azure Monitor alert on `TokenTransaction` over 200K in an hour, emailed to the owner | Alert rule `prb-token-spike`, action group `prb-alerts` |
 | Forged `X-Forwarded-For` to get fresh limits | Only the entry the ingress appended counts (`TRUSTED_PROXY_HOPS`, 1 in deployment); with no proxy the header is ignored | Integration test; trusting the leftmost entry turns it red |
 | Script injection | Autoescaped templates; model output inserted as text; CSP `script-src 'self'`, no inline script, no other origin | Every browser test fails on any CSP violation |
 | Clickjacking, MIME sniffing, referrer leaks | `frame-ancestors 'none'`, `X-Frame-Options: DENY`, `nosniff`, `Referrer-Policy: no-referrer`, HSTS | Integration test on every kind of response, and a check in the CI container job |
@@ -614,9 +616,12 @@ or other visitors' access, and getting script to run in the page.
 | Fingerprinting | No `Server` header in the container | CI container job |
 
 **Known gaps, by decision.** No authentication and no WAF: a POC with a
-public demo URL. The rate limiter lives in one process, so the app runs as one
-replica. There is no alerting on 429 or 5xx spikes and no Azure budget alert;
-both are outside the application and belong to the subscription. Azure's own
+public demo URL, and Front Door Standard starts at about 35 dollars a month.
+The rate limiter lives in one process, so the app runs as one replica. There is
+no alerting on 429 or 5xx spikes yet, and no budget alert on the subscription
+(creating one is a subscription-level change for the owner to make). The
+subscription's spending limit is on, so exhausting the credit stops the
+resources rather than charging a card. Azure's own
 retention of prompts for abuse monitoring was not checked. In production, the
 first additions would be Azure Front Door with WAF rate rules, a budget alert
 on the OpenAI resource, managed identity instead of a key, and

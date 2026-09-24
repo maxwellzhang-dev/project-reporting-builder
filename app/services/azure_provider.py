@@ -162,7 +162,7 @@ class AzureOpenAIProvider:
         filtered_message: str,
     ) -> str:
         # Imported lazily: not needed when AI is off.
-        from openai import AzureOpenAI, BadRequestError
+        from openai import AzureOpenAI, BadRequestError, RateLimitError
 
         client = AzureOpenAI(
             azure_endpoint=self.endpoint,
@@ -190,6 +190,10 @@ class AzureOpenAIProvider:
 
         try:
             response = client.responses.create(**options)
+        except RateLimitError as error:
+            # The deployment's own tokens-per-minute cap, set low on purpose to
+            # bound cost. That is "busy", not "unreachable", and says so.
+            raise AIError(429, "The AI service is busy. Try again in a minute.") from error
         except BadRequestError as error:
             # Azure's own content filter, including its jailbreak shield, ends
             # the request with 400 and code "content_filter". That is not an
