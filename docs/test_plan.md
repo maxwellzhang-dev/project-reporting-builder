@@ -161,7 +161,7 @@ Use isolated browser contexts between tests. Reload the same context when
 testing recovery.
 
 Verify:
-- Text fields, order, selected card, and incomplete drafts recover after reload.
+- Text fields, order, and incomplete drafts recover after reload.
 - Image blobs recover with new Object URLs.
 - Restored cards pass through normal validation and rendering.
 - “Saved” appears only after the write transaction succeeds.

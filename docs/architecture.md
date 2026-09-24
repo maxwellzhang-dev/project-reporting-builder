@@ -67,18 +67,19 @@ app/
   services/
     rendering.py
     plain_text.py
+    presentation_model.py
     ai_extraction.py
+    azure_provider.py
+  errors.py
+  templating.py
   prompts/
-    extract_progress_v1.txt
+    extract_progress_v2.txt
   templates/
     index.html
     preview/
-      progress.html
-      metric.html
-      image.html
+      card.html
     email/
-      progress.html
-      metric.html
+      card.html
   static/
     css/
       app.css
@@ -91,16 +92,16 @@ app/
       preview.js
       persistence.js
       image-assets.js
-      ai-editor.js
+      ai-review.js
       clipboard.js
       export-image.js
+      export-report.js
     vendor/            basecoat/, lucide/, html-to-image.js
-    examples/
 tests/
   unit/
   integration/
   e2e/
-  fixtures/
+  vendor/              axe-core, test-only
 docs/
 pyproject.toml
 Dockerfile
@@ -165,7 +166,7 @@ The API accepts image metadata only, never files, base64 data, remote URLs, or b
 | Image caption | 1,000 characters |
 | Alternative text | 300 characters |
 | Image file | 5 MiB |
-| Total retained image files | 100 MiB |
+| Total retained image files | 100 MiB, guaranteed by 20 cards × one 5 MiB image each rather than checked separately |
 | Image dimensions | 4,096 pixels per side and 12 million pixels total |
 | AI source text | 8,000 characters |
 | API request body | 64 KiB |
@@ -332,7 +333,7 @@ The application state is the source of truth, not the DOM.
 ```text
 report
   cards[]
-  selectedCardId
+  selectedCardId   reserved: the editor has no card selection, so this is null
 
 assetsByCardId
   blob
@@ -382,7 +383,7 @@ Temporary nodes and Object URLs are cleaned up after success or failure.
 Use IndexedDB for a single working report, not report history.
 
 Stores:
-- `reports`: schema version, card order, editable fields, selected card, and last-saved timestamp.
+- `reports`: schema version, card order, editable fields, last-saved timestamp, and a `selectedCardId` field kept for a future selection feature (always null today).
 - `assets`: image blobs keyed by card ID.
 
 Behavior:

@@ -17,13 +17,13 @@ Create a card or load examples → Enter content or generate an AI draft → Edi
 | --- | --- |
 | Card types | Progress, metric, and image |
 | Editing | Field editing, validation, and live preview |
-| Card management | Create, select, delete, move up, and move down |
+| Card management | Create, edit, delete, move up, and move down |
 | AI assistance | Optional text-to-progress-draft generation through Azure OpenAI |
 | Sharing | Plain text, rich text, and single-card PNG; whole report as text, HTML or print-to-PDF |
 | Examples | Load a sample report containing all three card types |
 | Accessibility | Keyboard operation, labels, visible focus, and accessible feedback |
 | Responsive layout | Desktop and mobile layouts |
-| Local draft recovery | Automatically save and restore one working report, including images and the selected card, in the current browser |
+| Local draft recovery | Automatically save and restore one working report, including card order and images, in the current browser |
 ## 4. Card Types
 
 ### Progress Card

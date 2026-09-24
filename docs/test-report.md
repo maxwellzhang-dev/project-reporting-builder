@@ -1,7 +1,9 @@
 # Test Report
 
-- Commit: 3306bc0 (the deployed image is tagged with this commit)
-- Date: 2026-09-21
+- Commit: b858590 (the deployed image is tagged with this commit; later
+  commits change documentation and code comments only)
+- Date: 2026-09-24 for the automated checks, the deployment checks and the
+  interface checks; 2026-09-21 for the AI evaluation and cold start
 - Deployment URL: https://ca-reporting-builder.kindbush-e2227a04.koreacentral.azurecontainerapps.io
 - Browser / OS: Chromium 140 (Playwright) on macOS 15.6
 - Azure deployment: `gpt-5-mini`, Responses API, api-version `2025-04-01-preview`, Korea Central
@@ -16,10 +18,11 @@ is never recorded as passed.
 | Check | Status | Evidence |
 | --- | --- | --- |
 | `ruff check .` | Passed | All checks passed |
-| `ruff format --check .` | Passed | 38 files already formatted |
+| `ruff format --check .` | Passed | 44 files already formatted |
 | `pytest tests/unit tests/integration` | Passed | 115 passed |
-| `pytest tests` (both suites in one process) | Passed | 180 passed |
-| `pytest tests/e2e --browser chromium` | Passed | 65 passed, including 8 axe-core scans |
+| `pytest tests` (both suites in one process) | Passed | 182 passed, twice in a row |
+| `pytest tests/e2e --browser chromium` | Passed | 67 passed, including 10 axe-core scans |
+| GitHub Actions CI at b858590 | Passed | lint and tests, browser and accessibility tests, Docker build and health smoke test |
 | `docker build` and container smoke test | Passed | image built, `/healthz` returned `{"status":"ok"}`, container uid 10001 |
 
 ## Manual Checks
@@ -38,6 +41,9 @@ is never recorded as passed.
 | Azure Container Apps deployment checks | Deployed app, `deploy/verify.sh` | Passed | 11 of 11. Listed individually below |
 | Online AI workflow through a browser | Chrome 140, macOS, deployed app | Passed | Notes pasted on the live site, real draft returned, status chosen, card created and previewed |
 | Online local recovery | Chrome 140, macOS, deployed app | Passed | Reload restored the card and its preview, and announced when the draft was saved |
+| axe in dark mode | Chromium, local, 2026-09-24 | Passed | The suite scans light mode only. By hand, dark mode: empty page, all seven statuses rendered, a field error, the AI dialog. No violations |
+| Hover states | Chromium, local, 2026-09-24 | Passed | Every button hovered in both themes and scanned. Two failures found and fixed (primary and destructive hover); both are now in the suite |
+| Interface restyle inspected visually | Chromium, local and deployed, 2026-09-24 | Passed | Light and dark mode, exported PNG in both themes, print view: the hero, logo and flow chips drop out of print |
 
 ### Deployment checks (docs/test_plan.md §11)
 

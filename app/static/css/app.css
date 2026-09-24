@@ -7,7 +7,7 @@
  * This file is unlayered and Basecoat lives in cascade layers, so any rule
  * here wins over Basecoat regardless of specificity. Colours come from
  * Basecoat's tokens, adjusted below where a text colour fell short of WCAG AA,
- * so contrast is still checked in one place (docs/architecture §11).
+ * so contrast is still checked in one place (docs/test_plan §9).
  */
 :root {
   /* Palette: Basecoat's neutral greys with a cool tint, and one indigo accent
@@ -31,7 +31,7 @@
   --warning-fill: rgb(138 109 0 / 10%);
   /* One colour per status. Each is at least 4.5:1 on its own 10% tint, and
      the label is always shown too, so colour is never the only signal
-     (docs/scope §3). The same values are in templates/email/card.html. */
+     (docs/architecture §11). The same values are in templates/email/card.html. */
   --status-proposed: #52525b;
   --status-under_review: #854d0e;
   --status-cleared_to_start: #075985;
@@ -253,7 +253,7 @@ h3, h4 { font-weight: 600; }
 }
 .card__title { margin: 0; font-size: 17px; font-weight: 600; line-height: 1.35; }
 
-/* Status carries a text label, never colour alone (docs/scope §3). */
+/* Status carries a text label, never colour alone (docs/architecture §11). */
 .card__status {
   margin: 0;
   display: inline-flex;

@@ -22,7 +22,7 @@ Design documents: [`docs/scope.md`](docs/scope.md) ·
 | Create, edit, reorder and delete cards | Implemented, 20-card limit, deletion confirmed in a dialog |
 | Live preview per card | Implemented, debounced; stale and superseded responses discarded |
 | Field-level validation messages | Implemented, wired to `aria-invalid` and `aria-describedby` |
-| Local image selection | Implemented: PNG/JPEG/WebP, 5 MB, 4096px per side, 12 MP; files never leave the browser |
+| Local image selection | Implemented: PNG/JPEG/WebP, 5 MiB, 4096px per side, 12 MP; files never leave the browser |
 | `POST /api/cards/render` | Implemented: preview HTML, email HTML, plain text |
 | AI error contract | Implemented: 503 disabled, 429 rate limited, 422 refused by the content filter, 502 bad upstream, 504 timeout |
 | Progress, metric and image card models | Implemented, discriminated union, extra fields rejected |
@@ -42,7 +42,7 @@ Design documents: [`docs/scope.md`](docs/scope.md) ·
 | Copy as plain text and as rich text | Implemented, with a manual-copy dialog whenever the Clipboard API is absent or refused |
 | PNG export per card | Implemented: isolated snapshot, editing controls excluded, discarded if the card changes mid-export |
 | Whole-report export | Implemented: copy as text, download a self-contained HTML file, or print to PDF against a print stylesheet |
-| Playwright browser tests | Implemented: editor, persistence, AI review, metric proposals, sharing, report export and axe-core scans (65 checks) |
+| Playwright browser tests | Implemented: editor, persistence, AI review, metric proposals, sharing, report export and axe-core scans (67 checks, 10 of them axe scans, including hover states in light and dark mode) |
 
 ## Planned, not built
 
