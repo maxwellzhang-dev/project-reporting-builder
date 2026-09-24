@@ -159,6 +159,7 @@ Live calls against `gpt-5-mini` on 2026-09-24, 4.7 to 5.5 s each.
 | Image only: a progress card | Passed | Completed work, next step and risks separated correctly. The "In Progress" badge in the image was noticed and deliberately not used as a status, which the rules forbid |
 | Notes and image: a metric card | Passed | 79% proposed as a metric with previous left empty; the note says the card gives a change but no earlier figure, so none was calculated |
 | Image only: the 5 px bar chart | Passed this time | All three figures right, with a note to verify small print. Given the earlier misreads, the figure check on Create stays |
+| Notes and the same chart, on the deployed site | **Failed**, caught by the figure check | $2466.0k read as $2496.0k and repeated in the review note as if certain. The figure list showed 2496 k and Create stayed disabled until checked: the safeguard doing its job |
 
 ### Security review (2026-09-24)
 
