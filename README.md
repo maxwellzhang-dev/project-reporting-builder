@@ -38,6 +38,7 @@ Design documents: [`docs/scope.md`](docs/scope.md) ·
 | `POST /api/ai/extract-progress` | Implemented behind a provider interface; verified against a live Azure OpenAI `gpt-5-mini` deployment (see `docs/test-report.md`) |
 | Documented error envelope | Implemented: `{error:{code,message,fields}}`, never echoes submitted input |
 | `POST /api/ai/describe-image` | Implemented: drafts alt text and a caption from a downscaled JPEG, sent only after the user sees the image and presses Send; verified against the live `gpt-5-mini` deployment |
+| Image with the notes | Implemented: pick or paste a status report, slide or dashboard; sent as a downscaled JPEG only with Generate; figures read from it must be confirmed before Create |
 | AI review workflow | Implemented: notes in, an editable draft out, a card only after the user picks a status and confirms |
 | Metric cards proposed from the text | Implemented: figures are copied, never derived; a stated baseline is kept, an absent one stays empty; each proposal is opt-in |
 | Copy as plain text and as rich text | Implemented, with a manual-copy dialog whenever the Clipboard API is absent or refused |

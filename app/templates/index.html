@@ -119,15 +119,37 @@
     until they do.
   -->
   <dialog id="ai-review" aria-labelledby="ai-review-title" class="ai-panel">
-    <h2 id="ai-review-title">Draft a progress card from notes</h2>
+    <h2 id="ai-review-title">Draft a progress card from notes or an image</h2>
 
     <div class="field">
       <label for="ai-source">Project notes</label>
       <textarea id="ai-source" rows="7"
-                placeholder="Paste a status update, meeting note or stand-up summary."></textarea>
+                aria-describedby="ai-source-hint"
+                placeholder="Paste a status update, meeting note or stand-up summary. You can paste an image here too."></textarea>
       <p id="ai-source-hint" class="field__hint">
         Sent to Azure OpenAI only when you choose Generate. Do not paste sensitive information.
       </p>
+    </div>
+
+    <!--
+      An optional image: a status report, slide, chart or dashboard is often all
+      someone has. It can be picked or pasted into the notes. It goes to Azure
+      only with Generate, as a downscaled copy, and is never saved locally.
+    -->
+    <div class="field">
+      <label for="ai-image">Image (optional)</label>
+      <input id="ai-image" type="file" accept="image/png,image/jpeg,image/webp"
+             aria-describedby="ai-image-hint">
+      <p id="ai-image-hint" class="field__hint">
+        A status report, slide, chart or dashboard. AI reads the text and numbers in it. A
+        smaller copy is sent with your notes when you choose Generate; apart from that, images
+        never leave your browser.
+      </p>
+      <p id="ai-image-error" role="alert" class="field__error" hidden></p>
+      <div id="ai-image-preview" class="ai-image" hidden>
+        <img id="ai-image-thumb" class="image-ai__thumb" alt="The image that will be sent">
+        <button type="button" id="ai-image-remove" class="btn" data-variant="ghost" data-size="sm">{{ icon("trash-2") }}Remove image</button>
+      </div>
     </div>
 
     <p id="ai-error" role="alert" class="field__error" hidden></p>
@@ -189,6 +211,20 @@
         <h4 id="ai-notes-heading">What the model could not confirm</h4>
         <ul id="ai-notes" aria-labelledby="ai-notes-heading" class="ai-panel__notes"></ul>
       </div>
+
+      <!--
+        Shown when the draft was read from an image. The live model has
+        misread small print without saying so, so every figure in the draft
+        and its metric proposals is listed here and Create waits for this box.
+      -->
+      <fieldset id="ai-numbers-block" class="image-ai__numbers" hidden>
+        <legend>Numbers read from the image</legend>
+        <ul id="ai-numbers" class="image-ai__number-list"></ul>
+        <div class="image-ai__check">
+          <input type="checkbox" id="ai-numbers-checked" class="input">
+          <label for="ai-numbers-checked">I checked every number against the image</label>
+        </div>
+      </fieldset>
 
       <div class="field">
         <label for="ai-draft-status">Status</label>

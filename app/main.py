@@ -20,23 +20,25 @@ from app.services.rendering import render_card
 from app.templating import render_page
 
 MAX_BODY_BYTES = 64 * 1024
-# The one route that carries an image. Everything else keeps the 64 KiB limit.
+# The routes that can carry an image. Everything else keeps the 64 KiB limit.
 IMAGE_ROUTE = "/api/ai/describe-image"
+EXTRACT_ROUTE = "/api/ai/extract-progress"
+IMAGE_ROUTES = frozenset({IMAGE_ROUTE, EXTRACT_ROUTE})
 MAX_IMAGE_BODY_BYTES = 1536 * 1024
 
 app = FastAPI(title=settings.app_name)
 
 
 class BodySizeLimit(BaseHTTPMiddleware):
-    """Enforce the body limit at the boundary: 64 KiB, or 1.5 MiB on the image
-    route, whose body is one downscaled image.
+    """Enforce the body limit at the boundary: 64 KiB, or 1.5 MiB on the two AI
+    routes that can carry one downscaled image.
 
     Content-Length is a claim, not a fact, so the body is also measured as it
     arrives (docs/test_plan.md §4).
     """
 
     async def dispatch(self, request: Request, call_next):
-        limit = MAX_IMAGE_BODY_BYTES if request.url.path == IMAGE_ROUTE else MAX_BODY_BYTES
+        limit = MAX_IMAGE_BODY_BYTES if request.url.path in IMAGE_ROUTES else MAX_BODY_BYTES
         declared = request.headers.get("content-length")
         if declared is not None and declared.isdigit() and int(declared) > limit:
             return envelope(413, "Request body is too large.")
@@ -94,13 +96,15 @@ def get_ai_provider() -> ai_extraction.Provider | None:
     )
 
 
-@app.post("/api/ai/extract-progress", response_model=ExtractResponse)
+@app.post(EXTRACT_ROUTE, response_model=ExtractResponse)
 def extract_progress(
     payload: ExtractRequest,
     provider: ai_extraction.Provider | None = Depends(get_ai_provider),
 ) -> JSONResponse:
     try:
-        result = ai_extraction.extract_progress(payload.source_text, provider)
+        result = ai_extraction.extract_progress(
+            payload.source_text, provider, image_data_url=payload.image_data_url
+        )
     except ai_extraction.AIError as error:
         return envelope(error.status, error.message)
     return JSONResponse(result.model_dump(mode="json"), headers={"Cache-Control": "no-store"})

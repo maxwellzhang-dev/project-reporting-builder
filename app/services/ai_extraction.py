@@ -20,8 +20,8 @@ from app.config import settings
 from app.schemas.ai import DescribeImageResponse, ExtractResponse, ImageDraft, ProgressDraft
 
 PROMPTS_DIR = Path(__file__).resolve().parent.parent / "prompts"
-PROMPT_PATH = PROMPTS_DIR / "extract_progress_v2.txt"
-PROMPT_VERSION = "extract_progress_v2"
+PROMPT_PATH = PROMPTS_DIR / "extract_progress_v3.txt"
+PROMPT_VERSION = "extract_progress_v3"
 IMAGE_PROMPT_PATH = PROMPTS_DIR / "describe_image_v1.txt"
 IMAGE_PROMPT_VERSION = "describe_image_v1"
 
@@ -40,7 +40,9 @@ class AIError(Exception):
 
 
 class Provider(Protocol):
-    def complete(self, prompt: str, source_text: str) -> str: ...
+    # image_data_url is passed only when there is one, so a provider written
+    # for text alone keeps working for text.
+    def complete(self, prompt: str, source_text: str, image_data_url: str | None = None) -> str: ...
 
     def describe_image(self, prompt: str, image_data_url: str) -> str: ...
 
@@ -53,7 +55,7 @@ class FakeProvider:
     delay_seconds: float = 0.0
     raises: Exception | None = None
 
-    def complete(self, prompt: str, source_text: str) -> str:
+    def complete(self, prompt: str, source_text: str, image_data_url: str | None = None) -> str:
         if self.raises is not None:
             raise self.raises
         if self.delay_seconds:
@@ -134,12 +136,15 @@ def _call(provider: Provider | None, send: Callable[[Provider], str], unchanged:
         limiter.release()
 
 
-def extract_progress(source_text: str, provider: Provider | None) -> ExtractResponse:
-    raw = _call(
-        provider,
-        lambda live: live.complete(load_prompt(), source_text),
-        "Your text is unchanged.",
-    )
+def extract_progress(
+    source_text: str, provider: Provider | None, image_data_url: str | None = None
+) -> ExtractResponse:
+    def send(live: Provider) -> str:
+        if image_data_url is None:
+            return live.complete(load_prompt(), source_text)
+        return live.complete(load_prompt(), source_text, image_data_url=image_data_url)
+
+    raw = _call(provider, send, "Your notes are unchanged.")
     return _parse(raw)
 
 

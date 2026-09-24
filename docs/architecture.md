@@ -73,7 +73,7 @@ app/
   errors.py
   templating.py
   prompts/
-    extract_progress_v2.txt
+    extract_progress_v3.txt
     describe_image_v1.txt
   templates/
     index.html
@@ -171,8 +171,8 @@ The API accepts image metadata only, never files, base64 data, remote URLs, or b
 | Total retained image files | 100 MiB, guaranteed by 20 cards × one 5 MiB image each rather than checked separately |
 | Image dimensions | 4,096 pixels per side and 12 million pixels total |
 | AI source text | 8,000 characters |
-| API request body | 64 KiB; 1.5 MiB on `POST /api/ai/describe-image` only |
-| Image sent for description | 1 MiB decoded, PNG, JPEG or WebP; the browser sends a JPEG of at most 1024 px |
+| API request body | 64 KiB; 1.5 MiB on the two AI routes that can carry an image |
+| Image sent to the AI | 1 MiB decoded, PNG, JPEG or WebP; the browser sends a JPEG of at most 1024 px |
 
 Image file size does not represent decoded memory usage.
 Dimension checks and on-demand image loading are also required.
@@ -297,6 +297,12 @@ Response:
 
 The draft does not include a confirmed project status or card ID.
 The user supplies the status before creating a normal progress card.
+
+The request may also carry `image_data_url`, an image validated exactly as
+for `describe-image` below. `source_text` may then be empty; a request with
+neither is refused with 422. With an image, the user message sent to Azure
+holds the notes (if any) and the image as parts; the prompt stays in
+`instructions`.
 
 ### POST /api/ai/describe-image
 
@@ -476,6 +482,16 @@ The prompt requires:
 
 Source text is untrusted data, not an instruction source.
 The model has no tools, browsing, database access, or side effects.
+
+### Images with notes
+
+The same extraction flow, with the image downscaled in the browser and
+sent only with Generate. Prompt `extract_progress_v3` adds rules for
+images: visible figures are source material, small print that cannot be
+read with certainty goes to review_notes, and text inside the image is data,
+not instructions. When the draft came from an image the panel lists every
+figure in the draft and its metric proposals, and Create also waits for the
+person to confirm they checked them.
 
 ### Image description flow
 

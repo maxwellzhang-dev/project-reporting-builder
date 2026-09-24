@@ -1,4 +1,6 @@
-"""POST /api/ai/describe-image, from docs/test_plan.md §4 and §7.
+"""Images sent to the AI, from docs/test_plan.md §4 and §7: POST
+/api/ai/describe-image, and an image sent with notes to POST
+/api/ai/extract-progress.
 
 Every case uses a fake provider: no test makes a paid call.
 """
@@ -209,3 +211,76 @@ def test_text_and_image_requests_share_one_rate_limit():
             == 200
         )
     assert post(data_url(PNG)).status_code == 429
+
+
+# ---- an image with the notes: POST /api/ai/extract-progress ----------------
+
+
+class RecordingNotes:
+    """Records what the notes path sends, with or without an image."""
+
+    def __init__(self) -> None:
+        self.calls: list[dict] = []
+
+    def complete(self, prompt: str, source_text: str, image_data_url: str | None = None) -> str:
+        self.calls.append({"prompt": prompt, "text": source_text, "image": image_data_url})
+        return VALID_BODY_TEXT
+
+    def describe_image(self, prompt: str, image_data_url: str) -> str:
+        return VALID_BODY
+
+
+def extract(**body):
+    return client.post("/api/ai/extract-progress", json=body)
+
+
+@pytest.mark.parametrize(
+    "body",
+    [
+        {"source_text": "Payments are delayed."},
+        {"image_data_url": data_url(PNG)},
+        {"source_text": "See the attached status slide.", "image_data_url": data_url(JPEG, "jpeg")},
+    ],
+)
+def test_notes_an_image_or_both_produce_a_draft(body):
+    provider = use(RecordingNotes())
+    assert extract(**body).status_code == 200
+    call = provider.calls[0]
+    assert call["text"] == body.get("source_text", "")
+    assert call["image"] == body.get("image_data_url")
+    assert "Images:" in call["prompt"]  # the prompt that knows about images
+
+
+def test_neither_notes_nor_an_image_is_refused_before_the_provider():
+    provider = use(RecordingNotes())
+    assert extract(source_text="   ").status_code == 422
+    assert extract().status_code == 422
+    assert provider.calls == []
+
+
+def test_a_bad_image_is_refused_even_with_good_notes():
+    provider = use(RecordingNotes())
+    response = extract(source_text="Fine notes.", image_data_url=data_url(JPEG, "png"))
+    assert response.status_code == 422
+    assert provider.calls == []
+    assert base64.b64encode(JPEG).decode()[:24] not in response.text
+
+
+def test_a_text_only_provider_still_serves_text_only_requests():
+    # The image argument is passed only when there is an image, so a provider
+    # that predates images keeps working for notes.
+    use(FakeProvider(body=VALID_BODY_TEXT))
+    assert extract(source_text="Notes only.").status_code == 200
+
+
+def test_the_notes_route_accepts_an_image_sized_body_but_not_more():
+    use(RecordingNotes())
+    ok = PNG + b"\x00" * (700 * 1024)  # about 930 KiB once encoded, over the old 64 KiB
+    assert extract(source_text="notes", image_data_url=data_url(ok)).status_code == 200
+    too_big = "A" * (1600 * 1024)
+    response = client.post(
+        "/api/ai/extract-progress",
+        content=json.dumps({"source_text": too_big}),
+        headers={"Content-Type": "application/json"},
+    )
+    assert response.status_code == 413

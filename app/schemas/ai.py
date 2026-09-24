@@ -20,10 +20,68 @@ DRAFT_ITEM_MAX = 300
 DRAFT_METRICS_MAX = 6
 
 
+# ---- images ------------------------------------------------------------------
+
+# The browser downscales before sending (longest side 1024 px, JPEG), which
+# keeps a typical screenshot well under this. The limit is on the decoded
+# image; the data URL is about a third larger.
+IMAGE_BYTES_MAX = 1024 * 1024
+IMAGE_DATA_URL_MAX = 1_400_000
+# Longer than the card's own limits on purpose. The live model has returned
+# alt text of about 570 characters when asked for 300; rejecting that would
+# throw the whole draft away. The person trims it in review, and the card's
+# field validation (alt text 300, caption 1,000) still applies when it is used.
+IMAGE_DRAFT_TEXT_MAX = 1_000
+
+_DATA_URL = re.compile(r"data:image/(png|jpeg|webp);base64,([A-Za-z0-9+/]+={0,2})")
+# The declared type has to match the bytes: a "PNG" that is not one is refused
+# here rather than passed to the model.
+_SIGNATURES = {
+    "png": (b"\x89PNG\r\n\x1a\n",),
+    "jpeg": (b"\xff\xd8\xff",),
+    "webp": (b"RIFF",),
+}
+
+
+def _check_image_data_url(value: str) -> str:
+    """A PNG, JPEG or WebP data URL whose bytes match its declared type, at
+    most IMAGE_BYTES_MAX decoded. Messages name the rule, never the value: the
+    error envelope must not echo the submitted image back (docs/architecture.md §6)."""
+    match = _DATA_URL.fullmatch(value)
+    if not match:
+        raise ValueError("must be a PNG, JPEG or WebP image as a base64 data URL")
+    kind, payload = match.groups()
+    try:
+        data = base64.b64decode(payload, validate=True)
+    except (binascii.Error, ValueError) as error:
+        raise ValueError("is not valid base64") from error
+    if len(data) > IMAGE_BYTES_MAX:
+        raise ValueError("is larger than 1 MiB after decoding")
+    if not data.startswith(_SIGNATURES[kind]) or (kind == "webp" and data[8:12] != b"WEBP"):
+        raise ValueError("does not contain the image type it declares")
+    return value
+
+
 class ExtractRequest(BaseModel):
+    """Notes, an image, or both. An image of a status report or a
+    dashboard is often all a person has, so text is no longer required when
+    an image is attached; one of the two always is."""
+
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
 
-    source_text: str = Field(min_length=1, max_length=SOURCE_TEXT_MAX)
+    source_text: str = Field(default="", max_length=SOURCE_TEXT_MAX)
+    image_data_url: str | None = Field(default=None, max_length=IMAGE_DATA_URL_MAX)
+
+    @field_validator("image_data_url")
+    @classmethod
+    def _real_image(cls, value: str | None) -> str | None:
+        return None if value is None else _check_image_data_url(value)
+
+    @model_validator(mode="after")
+    def _something_to_read(self) -> ExtractRequest:
+        if not self.source_text and self.image_data_url is None:
+            raise ValueError("paste some notes or add an image")
+        return self
 
 
 DraftList = list[str]
@@ -94,29 +152,6 @@ class ExtractResponse(BaseModel):
     review_notes: list[str] = Field(default_factory=list, max_length=DRAFT_LIST_MAX)
 
 
-# ---- image description ----------------------------------------------------
-
-# The browser downscales before sending (longest side 1024 px, JPEG), which
-# keeps a typical screenshot well under this. The limit is on the decoded
-# image; the data URL is about a third larger.
-IMAGE_BYTES_MAX = 1024 * 1024
-IMAGE_DATA_URL_MAX = 1_400_000
-# Longer than the card's own limits on purpose. The live model has returned
-# alt text of about 570 characters when asked for 300; rejecting that would
-# throw the whole draft away. The person trims it in review, and the card's
-# field validation (alt text 300, caption 1,000) still applies when it is used.
-IMAGE_DRAFT_TEXT_MAX = 1_000
-
-_DATA_URL = re.compile(r"data:image/(png|jpeg|webp);base64,([A-Za-z0-9+/]+={0,2})")
-# The declared type has to match the bytes: a "PNG" that is not one is refused
-# here rather than passed to the model.
-_SIGNATURES = {
-    "png": (b"\x89PNG\r\n\x1a\n",),
-    "jpeg": (b"\xff\xd8\xff",),
-    "webp": (b"RIFF",),
-}
-
-
 class DescribeImageRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -125,21 +160,7 @@ class DescribeImageRequest(BaseModel):
     @field_validator("image_data_url")
     @classmethod
     def _real_image_within_limit(cls, value: str) -> str:
-        # Messages name the rule, never the value: the error envelope must not
-        # echo the submitted image back (docs/architecture.md §6).
-        match = _DATA_URL.fullmatch(value)
-        if not match:
-            raise ValueError("must be a PNG, JPEG or WebP image as a base64 data URL")
-        kind, payload = match.groups()
-        try:
-            data = base64.b64decode(payload, validate=True)
-        except (binascii.Error, ValueError) as error:
-            raise ValueError("is not valid base64") from error
-        if len(data) > IMAGE_BYTES_MAX:
-            raise ValueError("is larger than 1 MiB after decoding")
-        if not data.startswith(_SIGNATURES[kind]) or (kind == "webp" and data[8:12] != b"WEBP"):
-            raise ValueError("does not contain the image type it declares")
-        return value
+        return _check_image_data_url(value)
 
 
 class ImageDraft(BaseModel):

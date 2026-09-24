@@ -106,6 +106,21 @@ Users review and edit the draft, select the project status, and confirm before
 creating a card. Metric proposals are reviewed and confirmed one by one, and
 declining them all is an ordinary outcome.
 
+### An image with the notes
+
+The notes panel also takes an image, picked or pasted straight into the
+notes: a status report, a slide or a dashboard is often all someone has. Notes,
+an image, or both are enough to draft from.
+
+- The image is sent, as a downscaled JPEG, only when the user chooses
+  Generate, and is dropped when the panel closes. It is never saved locally.
+- Its visible text and figures are source material under the same rules as
+  typed notes: copied, never calculated, and small print that cannot be read
+  with certainty is named in the review notes instead of guessed.
+- When the draft was read from an image, every figure in it and in its
+  metric proposals is listed, and Create waits until the user confirms they
+  checked them against the image, as well as for the status.
+
 ### Describing an image
 
 On an image card, the user can ask Azure OpenAI to draft the alternative text
@@ -187,11 +202,12 @@ Sharing to email, Slack, or Teams uses copy/download workflows, not platform API
 - Pending or failed saves may be lost on refresh.
 - Users can clear the locally saved draft; browser data clearing or eviction may also remove it.
 - Text, metrics, and image descriptions are sent to the application server for validation and rendering.
-- Image files are not uploaded. The one exception is a downscaled copy sent to Azure OpenAI,
-  for that request only, when the user asks for an image to be described (§5); it is not
-  stored or logged by the application.
+- Image files are not uploaded. The exceptions are downscaled copies sent to Azure OpenAI,
+  for that request only, when the user asks AI to read an image: an image sent with the
+  notes, or an image card to be described (§5). Neither is stored or logged by the
+  application.
 - Source notes are sent to Azure OpenAI only when the user requests AI assistance.
-- AI source notes, images sent for description, and unconfirmed AI responses are not saved locally; confirmed cards are included in the report draft.
+- AI source notes, images, images sent for description, and unconfirmed AI responses are not saved locally; confirmed cards are included in the report draft.
 - Azure credentials remain on the server.
 - Application logs exclude report content and AI request/response bodies.
 - Azure data handling follows the selected service configuration and applicable policies.
@@ -204,8 +220,9 @@ Sharing to email, Slack, or Teams uses copy/download workflows, not platform API
 > boundary that mattered was never "no metrics" but "no invented numbers", and
 > an empty previous value keeps that boundary without losing the feature.
 
-> **Changed 2026-09-24.** Image description was added, and with it the only
-> case in which image data leaves the browser. The rule it replaces, "image
+> **Changed 2026-09-24.** Images in the notes panel and image
+> description were added, and with them the only cases in which image data
+> leaves the browser. The rule it replaces, "image
 > files are not uploaded", was a privacy default rather than a goal; keeping
 > it absolutely meant a chart's content vanished from every text export. The
 > exception is narrow on purpose: per image, on request, after the image has

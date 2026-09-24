@@ -1,5 +1,6 @@
-// Image files are not uploaded (docs/scope.md §7); the one exception is the
-// downscaled copy image-describe.js sends when the user asks for it. This module validates
+// Image files are not uploaded (docs/scope.md §7). The exceptions are the
+// downscaled copies sent when the user asks AI to read an image, from an
+// image card (image-describe.js) or with notes (ai-review.js). This module validates
 // one and hands back metadata plus an Object URL for the preview.
 
 export const MAX_BYTES = 5 * 1024 * 1024;

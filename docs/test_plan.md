@@ -208,6 +208,22 @@ With a fake provider:
 - Failure preserves the source text and offers retry or manual entry.
 - Manual editing and sharing remain available when AI is disabled.
 
+### Image With Notes
+
+Verify in the browser:
+- An image can be picked, pasted into the notes, and removed.
+- Attaching sends nothing; Generate sends a JPEG no larger than 1024 px.
+- An image alone is enough; neither notes nor image is refused.
+- A draft read from an image lists its figures and Create waits for them
+  to be confirmed; changing a figure clears the confirmation. A draft from
+  notes alone does not ask.
+- Closing the panel drops the image.
+
+Through the API, with a fake provider: notes, an image or both reach the
+provider with the image-aware prompt; neither is 422; a bad image is
+refused even with good notes; a provider without image support still serves
+text; the route accepts an image-sized body.
+
 ### Image Description
 
 Verify in the browser:

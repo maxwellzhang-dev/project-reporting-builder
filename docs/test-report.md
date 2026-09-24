@@ -8,7 +8,7 @@
 - Browser / OS: Chromium 140 (Playwright) on macOS 15.6
 - Azure deployment: `gpt-5-mini`, Responses API, api-version `2025-04-01-preview`, Korea Central
 - Hosting: Azure Container Apps, Korea Central, 0.5 vCPU / 1 GiB, max 1 replica, scale to zero
-- Prompt version: `extract_progress_v2`
+- Prompt versions: `extract_progress_v3` and `describe_image_v1` (the text-only results below were recorded on `extract_progress_v2`, whose rules v3 keeps unchanged)
 
 Statuses are Passed, Failed, Blocked or Not run. A check that could not be run
 is never recorded as passed.
@@ -148,6 +148,16 @@ The review panel now extracts every figure from the draft itself and lists
 them, and "Use this text" stays disabled until the person confirms they checked
 each one against the image; editing a figure clears that confirmation. A
 browser test covers it, and fails when the gate is removed.
+
+### Image with notes (prompt `extract_progress_v3`)
+
+Live calls against `gpt-5-mini` on 2026-09-24, 4.7 to 5.5 s each.
+
+| Input | Status | Findings |
+| --- | --- | --- |
+| Image only: a progress card | Passed | Completed work, next step and risks separated correctly. The "In Progress" badge in the image was noticed and deliberately not used as a status, which the rules forbid |
+| Notes and image: a metric card | Passed | 79% proposed as a metric with previous left empty; the note says the card gives a change but no earlier figure, so none was calculated |
+| Image only: the 5 px bar chart | Passed this time | All three figures right, with a note to verify small print. Given the earlier misreads, the figure check on Create stays |
 
 ### Sharing
 

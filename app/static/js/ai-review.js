@@ -13,7 +13,14 @@
 //   3. Every response carries the request number that asked for it. A reply
 //      that is not the current one is dropped, so a slow first answer cannot
 //      overwrite a second, and a cancelled request cannot come back.
+//   4. An image is optional and stays in this module like the notes: it
+//      is sent, as a downscaled JPEG, only with Generate, and never saved.
+//      When the draft was read from one, every figure in it is listed and
+//      Create waits until the person says they checked them, because the
+//      live model has misread small print without saying so.
 
+import { acceptImage, ImageRejected } from "./image-assets.js";
+import { downscaleToJpeg, figuresIn } from "./image-describe.js";
 import { addCard } from "./state.js";
 
 const MAX_ITEMS = 8;
@@ -32,6 +39,21 @@ const notesList = document.getElementById("ai-notes");
 const statusSelect = document.getElementById("ai-draft-status");
 const metricsBlock = document.getElementById("ai-metrics-block");
 const metricsList = document.getElementById("ai-metrics");
+const imageInput = document.getElementById("ai-image");
+const imagePreview = document.getElementById("ai-image-preview");
+const imageThumb = document.getElementById("ai-image-thumb");
+const imageRemove = document.getElementById("ai-image-remove");
+const imageError = document.getElementById("ai-image-error");
+const numbersBlock = document.getElementById("ai-numbers-block");
+const numbersList = document.getElementById("ai-numbers");
+const numbersChecked = document.getElementById("ai-numbers-checked");
+
+// The attached image, if any: validated metadata plus an Object URL.
+let notesImage = null;
+// Whether the draft on screen was read from an image, and the figures
+// listed for checking.
+let draftFromImage = false;
+let listedFigures = [];
 
 // Proposals currently on screen, alongside the checkbox that accepts each.
 let metricProposals = [];
@@ -107,6 +129,67 @@ function setBusy(busy) {
   busyLine.textContent = busy ? "Generating a draft…" : "";
 }
 
+async function attachNotesImage(file) {
+  try {
+    const image = await acceptImage(file);
+    if (notesImage) URL.revokeObjectURL(notesImage.objectUrl);
+    notesImage = image;
+    imageThumb.src = image.objectUrl;
+    imagePreview.hidden = false;
+    imageError.hidden = true;
+  } catch (rejection) {
+    // An existing image survives a rejected replacement.
+    imageError.textContent =
+      rejection instanceof ImageRejected ? rejection.message : "That file could not be used.";
+    imageError.hidden = false;
+  } finally {
+    imageInput.value = "";
+  }
+}
+
+function clearNotesImage() {
+  if (notesImage) URL.revokeObjectURL(notesImage.objectUrl);
+  notesImage = null;
+  imageThumb.removeAttribute("src");
+  imagePreview.hidden = true;
+  imageError.hidden = true;
+  imageInput.value = "";
+}
+
+/** Create needs a status, and for a draft read from an image, checked figures. */
+function updateCreate() {
+  const figuresPending = draftFromImage && listedFigures.length > 0 && !numbersChecked.checked;
+  createButton.disabled = !statusSelect.value || figuresPending;
+}
+
+/** List the figures in the draft and its proposals; a changed list is unchecked. */
+function refreshFigures() {
+  if (!draftFromImage) {
+    listedFigures = [];
+    numbersBlock.hidden = true;
+    updateCreate();
+    return;
+  }
+  const text = [
+    ...Object.values(fields).map((control) => control.value),
+    ...metricProposals.map(({ metric }) => `${metric.title}: ${describeMetric(metric)}`),
+  ].join("\n");
+  const figures = figuresIn(text);
+  if (figures.join("\u0000") !== listedFigures.join("\u0000")) {
+    listedFigures = figures;
+    numbersChecked.checked = false;
+    numbersList.replaceChildren(
+      ...figures.map((figure) => {
+        const item = document.createElement("li");
+        item.textContent = figure;
+        return item;
+      }),
+    );
+  }
+  numbersBlock.hidden = figures.length === 0;
+  updateCreate();
+}
+
 function hideDraft() {
   draftSection.hidden = true;
   for (const control of Object.values(fields)) control.value = "";
@@ -115,6 +198,11 @@ function hideDraft() {
   showMetrics([]);
   statusSelect.value = "";
   createButton.disabled = true;
+  draftFromImage = false;
+  listedFigures = [];
+  numbersList.replaceChildren();
+  numbersChecked.checked = false;
+  numbersBlock.hidden = true;
 }
 
 function linesToList(text) {
@@ -125,7 +213,7 @@ function linesToList(text) {
     .slice(0, MAX_ITEMS);
 }
 
-function showDraft(body) {
+function showDraft(body, { fromImage = false } = {}) {
   const draft = body.draft ?? {};
   fields.title.value = draft.title ?? "";
   fields.summary.value = draft.summary ?? "";
@@ -149,7 +237,9 @@ function showDraft(body) {
 
   // The status is left unchosen on purpose, so confirming is a decision.
   statusSelect.value = "";
-  createButton.disabled = true;
+  draftFromImage = fromImage;
+  listedFigures = [];
+  refreshFigures();
   draftSection.hidden = false;
   fields.title.focus();
 }
@@ -168,21 +258,25 @@ async function messageFor(response) {
 
 async function generate() {
   const text = source.value.trim();
-  if (!text) {
-    showError("Paste some project notes first.");
+  if (!text && !notesImage) {
+    showError("Paste some project notes or add an image first.");
     source.focus();
     return;
   }
 
   const request = ++currentRequest;
+  const withImage = Boolean(notesImage);
   clearError();
   setBusy(true);
 
   try {
+    const payload = { source_text: text };
+    if (withImage) payload.image_data_url = await downscaleToJpeg(notesImage.objectUrl);
+    if (request !== currentRequest) return;
     const response = await fetch("/api/ai/extract-progress", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ source_text: text }),
+      body: JSON.stringify(payload),
     });
 
     if (request !== currentRequest) return; // cancelled or superseded
@@ -193,7 +287,7 @@ async function generate() {
       showError(await messageFor(response));
       return;
     }
-    showDraft(await response.json());
+    showDraft(await response.json(), { fromImage: withImage });
   } catch {
     if (request !== currentRequest) return;
     showError("Could not reach the service. Your notes are unchanged; try again.");
@@ -203,7 +297,8 @@ async function generate() {
 }
 
 function confirmDraft() {
-  if (!statusSelect.value) return; // the button is disabled, but never trust that alone
+  updateCreate();
+  if (createButton.disabled) return; // never trust the disabled state alone
 
   // Born complete: only a structure change rebuilds the list, so a card
   // filled in afterwards would show empty fields until the next rebuild.
@@ -255,6 +350,7 @@ function close() {
   clearError();
   hideDraft();
   source.value = "";
+  clearNotesImage();
   if (panel.open) panel.close();
 }
 
@@ -274,8 +370,28 @@ export function initAiReview({ announce = () => {} } = {}) {
     announce("AI draft discarded");
   });
 
-  statusSelect.addEventListener("change", () => {
-    createButton.disabled = !statusSelect.value;
+  statusSelect.addEventListener("change", updateCreate);
+  numbersChecked.addEventListener("change", updateCreate);
+  for (const control of Object.values(fields)) control.addEventListener("input", refreshFigures);
+  metricsList.addEventListener("change", refreshFigures);
+
+  imageInput.addEventListener("change", () => {
+    const file = imageInput.files?.[0];
+    if (file) attachNotesImage(file);
+  });
+  imageRemove.addEventListener("click", () => {
+    clearNotesImage();
+    imageInput.focus();
+  });
+  // "Paste notes": an image pasted into the notes is attached, and any
+  // text pasted with it still goes into the notes as usual.
+  source.addEventListener("paste", (event) => {
+    const file = [...(event.clipboardData?.files ?? [])].find((item) =>
+      item.type.startsWith("image/"),
+    );
+    if (!file) return;
+    if (!event.clipboardData.getData("text/plain")) event.preventDefault();
+    attachNotesImage(file);
   });
 
   createButton.addEventListener("click", () => {

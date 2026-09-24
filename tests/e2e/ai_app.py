@@ -31,6 +31,24 @@ ai_extraction.MAX_CONCURRENT = 50
 ai_extraction.limiter = ai_extraction.RateLimiter(max_per_minute=500)
 
 
+NOTES_IMAGE_DRAFT = {
+    "title": "Draft from image",
+    "summary": "Onboarding completion reached 79%.",
+    "completed_items": ["New checklist shipped"],
+    "next_steps": [],
+    "risks": [],
+    "metrics": [
+        {
+            "title": "Onboarding completion",
+            "current": 79,
+            "previous": None,
+            "unit": "percent",
+            "unit_label": "",
+        }
+    ],
+    "review_notes": ["The date in the footer is too small to read."],
+}
+
 IMAGE_DRAFT = {
     "alt_text": "Bar chart of weekly sign-ups, highest in week 4.",
     "caption": "Sign-ups peaked at 212 in week 4.",
@@ -39,7 +57,12 @@ IMAGE_DRAFT = {
 
 
 class ScriptedProvider:
-    def complete(self, prompt: str, source_text: str) -> str:
+    def complete(self, prompt: str, source_text: str, image_data_url: str | None = None) -> str:
+        if image_data_url is not None:
+            # An image came with the notes. The browser test checks what
+            # was sent by watching the request; the fake only has to answer
+            # with something that has figures in it.
+            return json.dumps(NOTES_IMAGE_DRAFT)
         if TIMEOUT in source_text:
             raise TimeoutError("scripted timeout")
         if FILTERED in source_text:

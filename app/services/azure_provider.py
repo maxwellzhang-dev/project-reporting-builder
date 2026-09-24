@@ -120,10 +120,20 @@ class AzureOpenAIProvider:
             settings.ai_reasoning_effort if reasoning_effort is None else reasoning_effort
         )
 
-    def complete(self, prompt: str, source_text: str) -> str:
+    def complete(self, prompt: str, source_text: str, image_data_url: str | None = None) -> str:
+        # Text alone stays a plain string input, as before. With an image
+        # the user message carries the notes (if any) and the image as parts;
+        # the prompt stays in `instructions` either way.
+        user_input: str | list[dict[str, Any]] = source_text
+        if image_data_url is not None:
+            parts: list[dict[str, Any]] = []
+            if source_text:
+                parts.append({"type": "input_text", "text": source_text})
+            parts.append({"type": "input_image", "image_url": image_data_url})
+            user_input = [{"role": "user", "content": parts}]
         return self._respond(
             prompt,
-            source_text,
+            user_input,
             "progress_draft",
             DRAFT_JSON_SCHEMA,
             "The content filter rejected this text. Edit the note and try again.",

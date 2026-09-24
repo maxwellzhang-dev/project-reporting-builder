@@ -60,7 +60,8 @@ def test_the_button_waits_for_an_image(page: Page, base_url: str):
     page.click('[data-add-card="image"]')
     button = page.get_by_role("button", name="Describe with AI")
     expect(button).to_be_disabled()
-    page.locator('input[type="file"]').set_input_files(
+    # Scoped to the card: the notes panel has a file input of its own.
+    page.locator('.editor-card input[type="file"]').set_input_files(
         {"name": "chart.png", "mimeType": "image/png", "buffer": image_bytes(page, 20, 20)}
     )
     expect(button).to_be_enabled()
@@ -186,8 +187,9 @@ def test_a_card_deleted_during_review_is_not_resurrected(page: Page, base_url: s
     )
     page.locator("#confirm-delete").get_by_role("button", name="Delete").click()
     expect(page.locator(".editor-card")).to_have_count(0)
-    page.get_by_label("I checked every number against the image").check()
-    page.locator("#image-ai").get_by_role("button", name="Use this text").click()
+    panel = page.locator("#image-ai")
+    panel.get_by_label("I checked every number against the image").check()
+    panel.get_by_role("button", name="Use this text").click()
     expect(page.locator(".editor-card")).to_have_count(0)
     expect(page.locator("#app-status")).to_contain_text("deleted")
 

@@ -76,7 +76,7 @@ def test_image_blobs_recover_with_a_fresh_object_url(page: Page, base_url: str):
     page.fill('input[name="title"]', "Burndown")
     page.fill('input[name="alt_text"]', "Burndown chart trending down")
     page.set_input_files(
-        'input[type="file"]',
+        '.editor-card input[type="file"]',
         {
             "name": "chart.png",
             "mimeType": "image/png",
@@ -98,7 +98,7 @@ def test_deleting_a_card_removes_its_stored_image(page: Page, base_url: str):
     add(page, "image")
     page.fill('input[name="alt_text"]', "Chart to be deleted")
     page.set_input_files(
-        'input[type="file"]',
+        '.editor-card input[type="file"]',
         {
             "name": "chart.png",
             "mimeType": "image/png",
