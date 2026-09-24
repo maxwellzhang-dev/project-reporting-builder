@@ -25,12 +25,19 @@
     <p class="page__lead">
       Turn project notes, metrics and images into shareable snippet cards.
     </p>
-    <ol class="hero__flow" aria-label="How it works">
-      <li data-type="progress">{{ icon("file-text") }}Progress notes</li>
-      <li data-type="metric">{{ icon("chart-column") }}Metrics</li>
-      <li data-type="image">{{ icon("image") }}Images</li>
-      <li data-type="share">{{ icon("copy") }}Cards for email and chat</li>
-    </ol>
+    <!-- Three kinds of input, any mix of them, one kind of output. The inputs
+         are grouped rather than chained: they are alternatives, not steps. -->
+    <div class="hero__flow">
+      <ul class="hero__inputs" aria-label="Inputs">
+        <li data-type="progress">{{ icon("file-text") }}Progress notes</li>
+        <li data-type="metric">{{ icon("chart-column") }}Metrics</li>
+        <li data-type="image">{{ icon("image") }}Images</li>
+      </ul>
+      <span class="hero__arrow" aria-hidden="true">→</span>
+      <p class="hero__output" data-type="share">
+        <span class="visually-hidden">Output: </span>{{ icon("copy") }}Snippet cards for email and chat
+      </p>
+    </div>
   </header>
 
   <main id="main">

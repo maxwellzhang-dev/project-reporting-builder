@@ -112,27 +112,35 @@ h3, h4 { font-weight: 600; }
 .hero__flow {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin: 18px 0 0;
-  padding: 0;
-  list-style: none;
+  align-items: center;
+  gap: 10px;
+  margin-top: 18px;
 }
-.hero__flow li {
+/* The inputs share one frame because any of them, in any mix, makes a card. */
+.hero__inputs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 4px;
+  list-style: none;
+  border: 1px dashed color-mix(in srgb, var(--muted-foreground) 45%, transparent);
+  border-radius: 999px;
+}
+.hero__inputs li, .hero__output {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  padding: 5px 12px 5px 8px;
+  margin: 0;
+  padding: 5px 12px 5px 9px;
   border: 1px solid var(--border);
   border-radius: 999px;
-  background: color-mix(in srgb, var(--card) 80%, transparent);
+  background: color-mix(in srgb, var(--card) 85%, transparent);
   font-size: 13px;
   font-weight: 500;
 }
-.hero__flow li:not(:last-child)::after {
-  content: "→";
-  margin-left: 6px;
-  color: var(--muted-foreground);
-}
+.hero__output { border-color: color-mix(in srgb, var(--chip) 35%, var(--border)); font-weight: 600; }
+.hero__arrow { color: var(--muted-foreground); font-size: 18px; }
 .hero__flow svg { width: 15px; height: 15px; color: var(--chip); }
 .page__brand { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
 .page__brand h1 { margin: 0; }
