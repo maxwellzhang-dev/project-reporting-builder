@@ -191,6 +191,7 @@ export function buildCardEditor(card, { announce, onChanged }) {
   const article = document.createElement("article");
   article.className = "editor-card";
   article.dataset.cardId = card.id;
+  article.dataset.type = card.type;
 
   const heading = document.createElement("h3");
   heading.className = "editor-card__heading";
@@ -198,6 +199,12 @@ export function buildCardEditor(card, { announce, onChanged }) {
   heading.textContent = { progress: "Progress card", metric: "Metric card", image: "Image card" }[
     card.type
   ];
+  // Coloured type badge. Decorative, and it carries no text, so the heading's
+  // textContent (used in announcements) is unchanged.
+  const badge = document.createElement("span");
+  badge.className = "editor-card__badge";
+  badge.append(spriteIcon({ progress: "file-text", metric: "chart-column", image: "image" }[card.type]));
+  heading.prepend(badge);
   article.setAttribute("aria-labelledby", heading.id);
 
   const controls = document.createElement("div");

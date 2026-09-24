@@ -65,9 +65,21 @@ let knownIds = [];
 function render(cards, kind) {
   if (kind !== "structure") return; // field edits redraw their own preview
   const activeId = document.activeElement?.id;
-  list.replaceChildren(
-    ...cards.map((card) => buildCardEditor(card, { announce, onChanged: () => {} })),
-  );
+  const editors = cards.map((card) => buildCardEditor(card, { announce, onChanged: () => {} }));
+  list.replaceChildren(...editors);
+
+  // The whole list is rebuilt on every structural change, so only a card that
+  // was not there before gets the entrance animation, and the page scrolls to
+  // it. On first load every card is new, which gives a staggered reveal.
+  const added = editors.filter((node) => !knownIds.includes(node.dataset.cardId));
+  added.forEach((node, index) => {
+    node.classList.add("is-new");
+    node.style.setProperty("--stagger", `${Math.min(index, 8) * 40}ms`);
+  });
+  if (knownIds.length && added.length === 1) {
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    added[0].scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "nearest" });
+  }
 
   empty.hidden = cards.length > 0;
   counter.textContent = `${cards.length} of ${MAX_CARDS} cards`;
@@ -196,6 +208,11 @@ const store = new Persistence((state, error) => {
 let saveTimer;
 function scheduleSave() {
   clearTimeout(saveTimer);
+  // Report the change as unsaved straight away. Waiting for the debounce left
+  // "Saved locally" on screen for 400 ms after an edit that had not been
+  // written, and a reload in that window lost the edit while claiming it was
+  // safe.
+  store.onStateChange(SaveState.SAVING);
   saveTimer = setTimeout(() => {
     store.save(getCards(), null, getBlobs());
   }, 400);

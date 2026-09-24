@@ -37,9 +37,16 @@
   --status-completed: #166534;
   --status-on_hold: #9a3412;
   --status-cancelled: #b91c1c;
+  /* One colour per card type, used for icons and accents only, never for
+     text, so they need 3:1 against the surface rather than 4.5:1. */
+  --type-progress: #4f46e5;
+  --type-metric: #059669;
+  --type-image: #d97706;
+  --type-share: #db2777;
   /* Read by export-image.js for the border of a card saved on its own. */
   --line: var(--border);
   --page-width: 1040px;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 }
 .dark {
   --background: oklch(0.155 0.01 275);
@@ -62,12 +69,22 @@
   --status-completed: #86efac;
   --status-on_hold: #fdba74;
   --status-cancelled: #fca5a5;
+  --type-progress: #a5b4fc;
+  --type-metric: #6ee7b7;
+  --type-image: #fcd34d;
+  --type-share: #f9a8d4;
 }
 
 body {
   margin: 0;
+  min-height: 100vh;
   padding: clamp(16px, 4vw, 40px);
-  background: var(--background);
+  /* Two soft glows at the top of the page, in the accent colours. */
+  background:
+    radial-gradient(900px 420px at 0% -8%, color-mix(in srgb, #6366f1 13%, transparent), transparent 70%),
+    radial-gradient(760px 380px at 100% -6%, color-mix(in srgb, #ec4899 9%, transparent), transparent 70%),
+    var(--background);
+  background-repeat: no-repeat;
   color: var(--foreground);
   font-size: 15px;
   line-height: 1.55;
@@ -80,7 +97,43 @@ h2 { font-size: 18px; font-weight: 600; margin: 32px 0 8px; }
 h3, h4 { font-weight: 600; }
 
 .page__header, main, .page__footer { max-width: var(--page-width); margin-inline: auto; }
-.page__header { padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+.page__header {
+  position: relative;
+  overflow: hidden;
+  padding: 28px 28px 24px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background:
+    radial-gradient(420px 220px at 100% 0%, color-mix(in srgb, #ec4899 12%, transparent), transparent 70%),
+    radial-gradient(520px 260px at 0% 100%, color-mix(in srgb, #06b6d4 10%, transparent), transparent 70%),
+    linear-gradient(135deg, color-mix(in srgb, #6366f1 12%, var(--card)), var(--card) 60%);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 4%), 0 12px 32px -18px rgb(67 56 202 / 35%);
+}
+.hero__flow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.hero__flow li {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 12px 5px 8px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--card) 80%, transparent);
+  font-size: 13px;
+  font-weight: 500;
+}
+.hero__flow li:not(:last-child)::after {
+  content: "→";
+  margin-left: 6px;
+  color: var(--muted-foreground);
+}
+.hero__flow svg { width: 15px; height: 15px; color: var(--chip); }
 .page__brand { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
 .page__brand h1 { margin: 0; }
 .page__mark {
@@ -100,10 +153,27 @@ h3, h4 { font-weight: 600; }
   margin: 0 0 8px;
   padding: 40px 24px;
   text-align: center;
-  border: 1px dashed var(--border);
+  border: 1.5px dashed var(--border);
   border-radius: var(--radius-xl, 14px);
-  background: var(--card);
+  background: color-mix(in srgb, var(--card) 70%, transparent);
 }
+.page__note p { margin: 0 auto; max-width: 520px; }
+.page__note .empty__title { margin-bottom: 6px; color: var(--foreground); font-size: 17px; font-weight: 600; }
+.empty__icons { display: flex; justify-content: center; margin-bottom: 16px; }
+.empty__icons span {
+  display: grid;
+  place-items: center;
+  width: 44px; height: 44px;
+  margin-inline: -4px;
+  border: 3px solid var(--card);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--chip) 16%, var(--card));
+  color: var(--chip);
+}
+.empty__icons span:nth-child(1) { transform: rotate(-8deg) translateY(4px); }
+.empty__icons span:nth-child(2) { z-index: 1; transform: translateY(-4px); }
+.empty__icons span:nth-child(3) { transform: rotate(8deg) translateY(4px); }
+.empty__icons svg { width: 20px; height: 20px; }
 
 /* Focus must stay visible everywhere (docs/test_plan §9). Basecoat's own ring
    is a soft halo; this outline is the one that is guaranteed to show. */
@@ -136,6 +206,12 @@ h3, h4 { font-weight: 600; }
   overflow: hidden; clip-path: inset(50%);
   white-space: nowrap;
 }
+
+/* Each card type's colour, wherever a type is named. */
+[data-type="progress"], [data-add-card="progress"] { --chip: var(--type-progress); }
+[data-type="metric"], [data-add-card="metric"] { --chip: var(--type-metric); }
+[data-type="image"], [data-add-card="image"] { --chip: var(--type-image); }
+[data-type="share"] { --chip: var(--type-share); }
 
 /* ---- snippet card ---- */
 /* Basecoat has a `.card` component too (flex column, gaps, header padding).
@@ -243,6 +319,24 @@ h3, h4 { font-weight: 600; }
   background: var(--muted);
 }
 
+[data-add-card] svg { color: var(--chip); }
+
+/* The AI entry point: the one gradient on the page. */
+.btn.btn--ai {
+  border: 0;
+  background: linear-gradient(135deg, #4f46e5, #7c3aed 55%, #c026d3);
+  color: #ffffff;
+  box-shadow: 0 4px 14px -4px rgb(124 58 237 / 55%);
+}
+.btn.btn--ai:hover:not(:disabled) {
+  background: linear-gradient(135deg, #4338ca, #6d28d9 55%, #a21caf);
+  box-shadow: 0 6px 20px -4px rgb(124 58 237 / 65%);
+}
+.dark .btn.btn--ai {
+  background: linear-gradient(135deg, #a5b4fc, #c4b5fd 55%, #f0abfc);
+  color: #1e1b4b;
+}
+
 /* Basecoat's destructive text is a bright red that sits just under AA on
    its own tinted fill; the darker ink keeps the label readable. */
 .btn[data-variant="destructive"] { color: var(--danger-ink); }
@@ -263,8 +357,29 @@ h3, h4 { font-weight: 600; }
   border: 1px solid var(--border);
   border-radius: var(--radius-xl, 14px);
   background: var(--card);
-  box-shadow: 0 1px 3px rgb(0 0 0 / 6%);
+  /* The type colour as a bar along the top edge. */
+  box-shadow: inset 0 3px 0 var(--chip, transparent), 0 1px 3px rgb(0 0 0 / 6%);
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
+/* The card being edited lights up in its type colour. */
+.editor-card:focus-within {
+  border-color: color-mix(in srgb, var(--chip) 45%, var(--border));
+  box-shadow:
+    inset 0 3px 0 var(--chip, transparent),
+    0 0 0 4px color-mix(in srgb, var(--chip) 12%, transparent),
+    0 8px 24px -12px rgb(0 0 0 / 18%);
+}
+.editor-card__badge {
+  display: inline-grid;
+  place-items: center;
+  width: 24px; height: 24px;
+  margin-right: 8px;
+  vertical-align: middle;
+  border-radius: 7px;
+  background: color-mix(in srgb, var(--chip) 14%, transparent);
+  color: var(--chip);
+}
+.editor-card__badge svg { width: 14px; height: 14px; }
 .editor-card__heading {
   grid-area: heading;
   margin: 0;
@@ -359,6 +474,43 @@ dialog::backdrop { background: rgb(0 0 0 / 50%); }
 .ai-panel__metrics li { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 8px; font-size: 13px; }
 .ai-panel__metrics input { margin-top: 2px; flex-shrink: 0; }
 
+/* ---- motion ---- */
+/* Motion is position and scale only, never opacity on content: text that is
+   briefly translucent fails a contrast check made while it animates, and
+   the accessibility tests audit a dialog the moment it opens. */
+.btn { transition: background-color 0.15s, box-shadow 0.2s, transform 0.15s var(--ease-out), border-color 0.15s; }
+.toolbar .btn:hover:not(:disabled) { transform: translateY(-1px); }
+.btn:active:not(:disabled) { transform: translateY(0) scale(0.98); }
+
+.editor-card.is-new { animation: card-in 0.45s var(--ease-out) var(--stagger, 0ms) both; }
+@keyframes card-in {
+  from { transform: translateY(12px) scale(0.99); }
+}
+
+/* A fresh preview fades in. Scoped to .editor-card so the copy that the PNG
+   export clones outside the editor is never captured mid-animation. */
+.editor-card .preview__body > .card { animation: preview-in 0.3s var(--ease-out); }
+@keyframes preview-in {
+  from { transform: translateY(3px); }
+}
+
+dialog[open] { animation: dialog-in 0.22s var(--ease-out); }
+dialog[open]::backdrop { animation: fade-in 0.22s ease-out; backdrop-filter: blur(3px); }
+@keyframes dialog-in {
+  from { transform: translateY(8px) scale(0.97); }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after, ::backdrop {
+    animation: none !important;
+    transition: none !important;
+  }
+  .toolbar .btn:hover:not(:disabled) { transform: none; }
+}
+
 /* ---- print: the PDF route (docs/scope.md §6) ---- */
 /* The page is an editor on screen and a report on paper. Everything that
    exists to change a card is dropped, leaving the rendered previews. */
@@ -374,11 +526,13 @@ dialog::backdrop { background: rgb(0 0 0 / 50%); }
   .page__lead,
   /* Print drops backgrounds by default, which would leave a blank square. */
   .page__mark,
+  .hero__flow,
   .page__footer,
   dialog { display: none !important; }
 
   body { background: #fff; color: #000; }
-  .page__header { border-bottom: 0; padding-bottom: 8px; }
+  .editor-card, .editor-card .preview__body > .card { animation: none !important; }
+  .page__header { border: 0; padding: 0 0 8px; background: none; box-shadow: none; }
   .card-list { display: block; }
   .editor-card {
     display: block;
