@@ -1,0 +1,580 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Project Reporting Builder Deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400..700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* reveal.js 5.1.0 core, MIT — inlined because stylesheets cannot load from a CDN here */
+/*!
+* reveal.js 5.1.0
+* https://revealjs.com
+* MIT licensed
+*
+* Copyright (C) 2011-2024 Hakim El Hattab, https://hakim.se
+*/.reveal .r-stretch,.reveal .stretch{max-width:none;max-height:none}.reveal pre.r-stretch code,.reveal pre.stretch code{height:100%;max-height:100%;box-sizing:border-box}.reveal .r-fit-text{display:inline-block;white-space:nowrap}.reveal .r-stack{display:grid;grid-template-rows:100%}.reveal .r-stack>*{grid-area:1/1;margin:auto}.reveal .r-hstack,.reveal .r-vstack{display:flex}.reveal .r-hstack img,.reveal .r-hstack video,.reveal .r-vstack img,.reveal .r-vstack video{min-width:0;min-height:0;object-fit:contain}.reveal .r-vstack{flex-direction:column;align-items:center;justify-content:center}.reveal .r-hstack{flex-direction:row;align-items:center;justify-content:center}.reveal .items-stretch{align-items:stretch}.reveal .items-start{align-items:flex-start}.reveal .items-center{align-items:center}.reveal .items-end{align-items:flex-end}.reveal .justify-between{justify-content:space-between}.reveal .justify-around{justify-content:space-around}.reveal .justify-start{justify-content:flex-start}.reveal .justify-center{justify-content:center}.reveal .justify-end{justify-content:flex-end}html.reveal-full-page{width:100%;height:100%;height:100vh;height:calc(var(--vh,1vh) * 100);height:100svh;overflow:hidden}.reveal-viewport{height:100%;overflow:hidden;position:relative;line-height:1;margin:0;background-color:#fff;color:#000;--r-controls-spacing:12px}.reveal-viewport:fullscreen{top:0!important;left:0!important;width:100%!important;height:100%!important;transform:none!important}.reveal .fragment{transition:all .2s ease}.reveal .fragment:not(.custom){opacity:0;visibility:hidden;will-change:opacity}.reveal .fragment.visible{opacity:1;visibility:inherit}.reveal .fragment.disabled{transition:none}.reveal .fragment.grow{opacity:1;visibility:inherit}.reveal .fragment.grow.visible{transform:scale(1.3)}.reveal .fragment.shrink{opacity:1;visibility:inherit}.reveal .fragment.shrink.visible{transform:scale(.7)}.reveal .fragment.zoom-in{transform:scale(.1)}.reveal .fragment.zoom-in.visible{transform:none}.reveal .fragment.fade-out{opacity:1;visibility:inherit}.reveal .fragment.fade-out.visible{opacity:0;visibility:hidden}.reveal .fragment.semi-fade-out{opacity:1;visibility:inherit}.reveal .fragment.semi-fade-out.visible{opacity:.5;visibility:inherit}.reveal .fragment.strike{opacity:1;visibility:inherit}.reveal .fragment.strike.visible{text-decoration:line-through}.reveal .fragment.fade-up{transform:translate(0,40px)}.reveal .fragment.fade-up.visible{transform:translate(0,0)}.reveal .fragment.fade-down{transform:translate(0,-40px)}.reveal .fragment.fade-down.visible{transform:translate(0,0)}.reveal .fragment.fade-right{transform:translate(-40px,0)}.reveal .fragment.fade-right.visible{transform:translate(0,0)}.reveal .fragment.fade-left{transform:translate(40px,0)}.reveal .fragment.fade-left.visible{transform:translate(0,0)}.reveal .fragment.current-visible,.reveal .fragment.fade-in-then-out{opacity:0;visibility:hidden}.reveal .fragment.current-visible.current-fragment,.reveal .fragment.fade-in-then-out.current-fragment{opacity:1;visibility:inherit}.reveal .fragment.fade-in-then-semi-out{opacity:0;visibility:hidden}.reveal .fragment.fade-in-then-semi-out.visible{opacity:.5;visibility:inherit}.reveal .fragment.fade-in-then-semi-out.current-fragment{opacity:1;visibility:inherit}.reveal .fragment.highlight-blue,.reveal .fragment.highlight-current-blue,.reveal .fragment.highlight-current-green,.reveal .fragment.highlight-current-red,.reveal .fragment.highlight-green,.reveal .fragment.highlight-red{opacity:1;visibility:inherit}.reveal .fragment.highlight-red.visible{color:#ff2c2d}.reveal .fragment.highlight-green.visible{color:#17ff2e}.reveal .fragment.highlight-blue.visible{color:#1b91ff}.reveal .fragment.highlight-current-red.current-fragment{color:#ff2c2d}.reveal .fragment.highlight-current-green.current-fragment{color:#17ff2e}.reveal .fragment.highlight-current-blue.current-fragment{color:#1b91ff}.reveal:after{content:"";font-style:italic}.reveal iframe{z-index:1}.reveal a{position:relative}@keyframes bounce-right{0%,10%,25%,40%,50%{transform:translateX(0)}20%{transform:translateX(10px)}30%{transform:translateX(-5px)}}@keyframes bounce-left{0%,10%,25%,40%,50%{transform:translateX(0)}20%{transform:translateX(-10px)}30%{transform:translateX(5px)}}@keyframes bounce-down{0%,10%,25%,40%,50%{transform:translateY(0)}20%{transform:translateY(10px)}30%{transform:translateY(-5px)}}.reveal .controls{display:none;position:absolute;top:auto;bottom:var(--r-controls-spacing);right:var(--r-controls-spacing);left:auto;z-index:11;color:#000;pointer-events:none;font-size:10px}.reveal .controls button{position:absolute;padding:0;background-color:transparent;border:0;outline:0;cursor:pointer;color:currentColor;transform:scale(.9999);transition:color .2s ease,opacity .2s ease,transform .2s ease;z-index:2;pointer-events:auto;font-size:inherit;visibility:hidden;opacity:0;-webkit-appearance:none;-webkit-tap-highlight-color:transparent}.reveal .controls .controls-arrow:after,.reveal .controls .controls-arrow:before{content:"";position:absolute;top:0;left:0;width:2.6em;height:.5em;border-radius:.25em;background-color:currentColor;transition:all .15s ease,background-color .8s ease;transform-origin:.2em 50%;will-change:transform}.reveal .controls .controls-arrow{position:relative;width:3.6em;height:3.6em}.reveal .controls .controls-arrow:before{transform:translateX(.5em) translateY(1.55em) rotate(45deg)}.reveal .controls .controls-arrow:after{transform:translateX(.5em) translateY(1.55em) rotate(-45deg)}.reveal .controls .controls-arrow:hover:before{transform:translateX(.5em) translateY(1.55em) rotate(40deg)}.reveal .controls .controls-arrow:hover:after{transform:translateX(.5em) translateY(1.55em) rotate(-40deg)}.reveal .controls .controls-arrow:active:before{transform:translateX(.5em) translateY(1.55em) rotate(36deg)}.reveal .controls .controls-arrow:active:after{transform:translateX(.5em) translateY(1.55em) rotate(-36deg)}.reveal .controls .navigate-left{right:6.4em;bottom:3.2em;transform:translateX(-10px)}.reveal .controls .navigate-left.highlight{animation:bounce-left 2s 50 both ease-out}.reveal .controls .navigate-right{right:0;bottom:3.2em;transform:translateX(10px)}.reveal .controls .navigate-right .controls-arrow{transform:rotate(180deg)}.reveal .controls .navigate-right.highlight{animation:bounce-right 2s 50 both ease-out}.reveal .controls .navigate-up{right:3.2em;bottom:6.4em;transform:translateY(-10px)}.reveal .controls .navigate-up .controls-arrow{transform:rotate(90deg)}.reveal .controls .navigate-down{right:3.2em;bottom:-1.4em;padding-bottom:1.4em;transform:translateY(10px)}.reveal .controls .navigate-down .controls-arrow{transform:rotate(-90deg)}.reveal .controls .navigate-down.highlight{animation:bounce-down 2s 50 both ease-out}.reveal .controls[data-controls-back-arrows=faded] .navigate-up.enabled{opacity:.3}.reveal .controls[data-controls-back-arrows=faded] .navigate-up.enabled:hover{opacity:1}.reveal .controls[data-controls-back-arrows=hidden] .navigate-up.enabled{opacity:0;visibility:hidden}.reveal .controls .enabled{visibility:visible;opacity:.9;cursor:pointer;transform:none}.reveal .controls .enabled.fragmented{opacity:.5}.reveal .controls .enabled.fragmented:hover,.reveal .controls .enabled:hover{opacity:1}.reveal:not(.rtl) .controls[data-controls-back-arrows=faded] .navigate-left.enabled{opacity:.3}.reveal:not(.rtl) .controls[data-controls-back-arrows=faded] .navigate-left.enabled:hover{opacity:1}.reveal:not(.rtl) .controls[data-controls-back-arrows=hidden] .navigate-left.enabled{opacity:0;visibility:hidden}.reveal.rtl .controls[data-controls-back-arrows=faded] .navigate-right.enabled{opacity:.3}.reveal.rtl .controls[data-controls-back-arrows=faded] .navigate-right.enabled:hover{opacity:1}.reveal.rtl .controls[data-controls-back-arrows=hidden] .navigate-right.enabled{opacity:0;visibility:hidden}.reveal[data-navigation-mode=linear].has-horizontal-slides .navigate-down,.reveal[data-navigation-mode=linear].has-horizontal-slides .navigate-up{display:none}.reveal:not(.has-vertical-slides) .controls .navigate-left,.reveal[data-navigation-mode=linear].has-horizontal-slides .navigate-left{bottom:1.4em;right:5.5em}.reveal:not(.has-vertical-slides) .controls .navigate-right,.reveal[data-navigation-mode=linear].has-horizontal-slides .navigate-right{bottom:1.4em;right:.5em}.reveal:not(.has-horizontal-slides) .controls .navigate-up{right:1.4em;bottom:5em}.reveal:not(.has-horizontal-slides) .controls .navigate-down{right:1.4em;bottom:.5em}.reveal.has-dark-background .controls{color:#fff}.reveal.has-light-background .controls{color:#000}.reveal.no-hover .controls .controls-arrow:active:before,.reveal.no-hover .controls .controls-arrow:hover:before{transform:translateX(.5em) translateY(1.55em) rotate(45deg)}.reveal.no-hover .controls .controls-arrow:active:after,.reveal.no-hover .controls .controls-arrow:hover:after{transform:translateX(.5em) translateY(1.55em) rotate(-45deg)}@media screen and (min-width:500px){.reveal-viewport{--r-controls-spacing:0.8em}.reveal .controls[data-controls-layout=edges]{top:0;right:0;bottom:0;left:0}.reveal .controls[data-controls-layout=edges] .navigate-down,.reveal .controls[data-controls-layout=edges] .navigate-left,.reveal .controls[data-controls-layout=edges] .navigate-right,.reveal .controls[data-controls-layout=edges] .navigate-up{bottom:auto;right:auto}.reveal .controls[data-controls-layout=edges] .navigate-left{top:50%;left:var(--r-controls-spacing);margin-top:-1.8em}.reveal .controls[data-controls-layout=edges] .navigate-right{top:50%;right:var(--r-controls-spacing);margin-top:-1.8em}.reveal .controls[data-controls-layout=edges] .navigate-up{top:var(--r-controls-spacing);left:50%;margin-left:-1.8em}.reveal .controls[data-controls-layout=edges] .navigate-down{bottom:calc(var(--r-controls-spacing) - 1.4em + .3em);left:50%;margin-left:-1.8em}}.reveal .progress{position:absolute;display:none;height:3px;width:100%;bottom:0;left:0;z-index:10;background-color:rgba(0,0,0,.2);color:#fff}.reveal .progress:after{content:"";display:block;position:absolute;height:10px;width:100%;top:-10px}.reveal .progress span{display:block;height:100%;width:100%;background-color:currentColor;transition:transform .8s cubic-bezier(.26,.86,.44,.985);transform-origin:0 0;transform:scaleX(0)}.reveal .slide-number{position:absolute;display:block;right:8px;bottom:8px;z-index:31;font-family:Helvetica,sans-serif;font-size:12px;line-height:1;color:#fff;background-color:rgba(0,0,0,.4);padding:5px}.reveal .slide-number a{color:currentColor}.reveal .slide-number-delimiter{margin:0 3px}.reveal{position:relative;width:100%;height:100%;overflow:hidden;touch-action:pinch-zoom}.reveal.embedded{touch-action:pan-y}.reveal.embedded.is-vertical-slide{touch-action:none}.reveal .slides{position:absolute;width:100%;height:100%;top:0;right:0;bottom:0;left:0;margin:auto;pointer-events:none;overflow:visible;z-index:1;text-align:center;perspective:600px;perspective-origin:50% 40%}.reveal .slides>section{perspective:600px}.reveal .slides>section,.reveal .slides>section>section{display:none;position:absolute;width:100%;pointer-events:auto;z-index:10;transform-style:flat;transition:transform-origin .8s cubic-bezier(.26,.86,.44,.985),transform .8s cubic-bezier(.26,.86,.44,.985),visibility .8s cubic-bezier(.26,.86,.44,.985),opacity .8s cubic-bezier(.26,.86,.44,.985)}.reveal[data-transition-speed=fast] .slides section{transition-duration:.4s}.reveal[data-transition-speed=slow] .slides section{transition-duration:1.2s}.reveal .slides section[data-transition-speed=fast]{transition-duration:.4s}.reveal .slides section[data-transition-speed=slow]{transition-duration:1.2s}.reveal .slides>section.stack{padding-top:0;padding-bottom:0;pointer-events:none;height:100%}.reveal .slides>section.present,.reveal .slides>section>section.present{display:block;z-index:11;opacity:1}.reveal .slides>section:empty,.reveal .slides>section>section:empty,.reveal .slides>section>section[data-background-interactive],.reveal .slides>section[data-background-interactive]{pointer-events:none}.reveal.center,.reveal.center .slides,.reveal.center .slides section{min-height:0!important}.reveal .slides>section:not(.present),.reveal .slides>section>section:not(.present){pointer-events:none}.reveal.overview .slides>section,.reveal.overview .slides>section>section{pointer-events:auto}.reveal .slides>section.future,.reveal .slides>section.future>section,.reveal .slides>section.past,.reveal .slides>section.past>section,.reveal .slides>section>section.future,.reveal .slides>section>section.past{opacity:0}.reveal .slides>section[data-transition=slide].past,.reveal .slides>section[data-transition~=slide-out].past,.reveal.slide .slides>section:not([data-transition]).past{transform:translate(-150%,0)}.reveal .slides>section[data-transition=slide].future,.reveal .slides>section[data-transition~=slide-in].future,.reveal.slide .slides>section:not([data-transition]).future{transform:translate(150%,0)}.reveal .slides>section>section[data-transition=slide].past,.reveal .slides>section>section[data-transition~=slide-out].past,.reveal.slide .slides>section>section:not([data-transition]).past{transform:translate(0,-150%)}.reveal .slides>section>section[data-transition=slide].future,.reveal .slides>section>section[data-transition~=slide-in].future,.reveal.slide .slides>section>section:not([data-transition]).future{transform:translate(0,150%)}.reveal .slides>section[data-transition=linear].past,.reveal .slides>section[data-transition~=linear-out].past,.reveal.linear .slides>section:not([data-transition]).past{transform:translate(-150%,0)}.reveal .slides>section[data-transition=linear].future,.reveal .slides>section[data-transition~=linear-in].future,.reveal.linear .slides>section:not([data-transition]).future{transform:translate(150%,0)}.reveal .slides>section>section[data-transition=linear].past,.reveal .slides>section>section[data-transition~=linear-out].past,.reveal.linear .slides>section>section:not([data-transition]).past{transform:translate(0,-150%)}.reveal .slides>section>section[data-transition=linear].future,.reveal .slides>section>section[data-transition~=linear-in].future,.reveal.linear .slides>section>section:not([data-transition]).future{transform:translate(0,150%)}.reveal .slides section[data-transition=default].stack,.reveal.default .slides section.stack{transform-style:preserve-3d}.reveal .slides>section[data-transition=default].past,.reveal .slides>section[data-transition~=default-out].past,.reveal.default .slides>section:not([data-transition]).past{transform:translate3d(-100%,0,0) rotateY(-90deg) translate3d(-100%,0,0)}.reveal .slides>section[data-transition=default].future,.reveal .slides>section[data-transition~=default-in].future,.reveal.default .slides>section:not([data-transition]).future{transform:translate3d(100%,0,0) rotateY(90deg) translate3d(100%,0,0)}.reveal .slides>section>section[data-transition=default].past,.reveal .slides>section>section[data-transition~=default-out].past,.reveal.default .slides>section>section:not([data-transition]).past{transform:translate3d(0,-300px,0) rotateX(70deg) translate3d(0,-300px,0)}.reveal .slides>section>section[data-transition=default].future,.reveal .slides>section>section[data-transition~=default-in].future,.reveal.default .slides>section>section:not([data-transition]).future{transform:translate3d(0,300px,0) rotateX(-70deg) translate3d(0,300px,0)}.reveal .slides section[data-transition=convex].stack,.reveal.convex .slides section.stack{transform-style:preserve-3d}.reveal .slides>section[data-transition=convex].past,.reveal .slides>section[data-transition~=convex-out].past,.reveal.convex .slides>section:not([data-transition]).past{transform:translate3d(-100%,0,0) rotateY(-90deg) translate3d(-100%,0,0)}.reveal .slides>section[data-transition=convex].future,.reveal .slides>section[data-transition~=convex-in].future,.reveal.convex .slides>section:not([data-transition]).future{transform:translate3d(100%,0,0) rotateY(90deg) translate3d(100%,0,0)}.reveal .slides>section>section[data-transition=convex].past,.reveal .slides>section>section[data-transition~=convex-out].past,.reveal.convex .slides>section>section:not([data-transition]).past{transform:translate3d(0,-300px,0) rotateX(70deg) translate3d(0,-300px,0)}.reveal .slides>section>section[data-transition=convex].future,.reveal .slides>section>section[data-transition~=convex-in].future,.reveal.convex .slides>section>section:not([data-transition]).future{transform:translate3d(0,300px,0) rotateX(-70deg) translate3d(0,300px,0)}.reveal .slides section[data-transition=concave].stack,.reveal.concave .slides section.stack{transform-style:preserve-3d}.reveal .slides>section[data-transition=concave].past,.reveal .slides>section[data-transition~=concave-out].past,.reveal.concave .slides>section:not([data-transition]).past{transform:translate3d(-100%,0,0) rotateY(90deg) translate3d(-100%,0,0)}.reveal .slides>section[data-transition=concave].future,.reveal .slides>section[data-transition~=concave-in].future,.reveal.concave .slides>section:not([data-transition]).future{transform:translate3d(100%,0,0) rotateY(-90deg) translate3d(100%,0,0)}.reveal .slides>section>section[data-transition=concave].past,.reveal .slides>section>section[data-transition~=concave-out].past,.reveal.concave .slides>section>section:not([data-transition]).past{transform:translate3d(0,-80%,0) rotateX(-70deg) translate3d(0,-80%,0)}.reveal .slides>section>section[data-transition=concave].future,.reveal .slides>section>section[data-transition~=concave-in].future,.reveal.concave .slides>section>section:not([data-transition]).future{transform:translate3d(0,80%,0) rotateX(70deg) translate3d(0,80%,0)}.reveal .slides section[data-transition=zoom],.reveal.zoom .slides section:not([data-transition]){transition-timing-function:ease}.reveal .slides>section[data-transition=zoom].past,.reveal .slides>section[data-transition~=zoom-out].past,.reveal.zoom .slides>section:not([data-transition]).past{visibility:hidden;transform:scale(16)}.reveal .slides>section[data-transition=zoom].future,.reveal .slides>section[data-transition~=zoom-in].future,.reveal.zoom .slides>section:not([data-transition]).future{visibility:hidden;transform:scale(.2)}.reveal .slides>section>section[data-transition=zoom].past,.reveal .slides>section>section[data-transition~=zoom-out].past,.reveal.zoom .slides>section>section:not([data-transition]).past{transform:scale(16)}.reveal .slides>section>section[data-transition=zoom].future,.reveal .slides>section>section[data-transition~=zoom-in].future,.reveal.zoom .slides>section>section:not([data-transition]).future{transform:scale(.2)}.reveal.cube .slides{perspective:1300px}.reveal.cube .slides section{padding:30px;min-height:700px;backface-visibility:hidden;box-sizing:border-box;transform-style:preserve-3d}.reveal.center.cube .slides section{min-height:0}.reveal.cube .slides section:not(.stack):before{content:"";position:absolute;display:block;width:100%;height:100%;left:0;top:0;background:rgba(0,0,0,.1);border-radius:4px;transform:translateZ(-20px)}.reveal.cube .slides section:not(.stack):after{content:"";position:absolute;display:block;width:90%;height:30px;left:5%;bottom:0;background:0 0;z-index:1;border-radius:4px;box-shadow:0 95px 25px rgba(0,0,0,.2);transform:translateZ(-90px) rotateX(65deg)}.reveal.cube .slides>section.stack{padding:0;background:0 0}.reveal.cube .slides>section.past{transform-origin:100% 0;transform:translate3d(-100%,0,0) rotateY(-90deg)}.reveal.cube .slides>section.future{transform-origin:0 0;transform:translate3d(100%,0,0) rotateY(90deg)}.reveal.cube .slides>section>section.past{transform-origin:0 100%;transform:translate3d(0,-100%,0) rotateX(90deg)}.reveal.cube .slides>section>section.future{transform-origin:0 0;transform:translate3d(0,100%,0) rotateX(-90deg)}.reveal.page .slides{perspective-origin:0 50%;perspective:3000px}.reveal.page .slides section{padding:30px;min-height:700px;box-sizing:border-box;transform-style:preserve-3d}.reveal.page .slides section.past{z-index:12}.reveal.page .slides section:not(.stack):before{content:"";position:absolute;display:block;width:100%;height:100%;left:0;top:0;background:rgba(0,0,0,.1);transform:translateZ(-20px)}.reveal.page .slides section:not(.stack):after{content:"";position:absolute;display:block;width:90%;height:30px;left:5%;bottom:0;background:0 0;z-index:1;border-radius:4px;box-shadow:0 95px 25px rgba(0,0,0,.2);-webkit-transform:translateZ(-90px) rotateX(65deg)}.reveal.page .slides>section.stack{padding:0;background:0 0}.reveal.page .slides>section.past{transform-origin:0 0;transform:translate3d(-40%,0,0) rotateY(-80deg)}.reveal.page .slides>section.future{transform-origin:100% 0;transform:translate3d(0,0,0)}.reveal.page .slides>section>section.past{transform-origin:0 0;transform:translate3d(0,-40%,0) rotateX(80deg)}.reveal.page .slides>section>section.future{transform-origin:0 100%;transform:translate3d(0,0,0)}.reveal .slides section[data-transition=fade],.reveal.fade .slides section:not([data-transition]),.reveal.fade .slides>section>section:not([data-transition]){transform:none;transition:opacity .5s}.reveal.fade.overview .slides section,.reveal.fade.overview .slides>section>section{transition:none}.reveal .slides section[data-transition=none],.reveal.none .slides section:not([data-transition]){transform:none;transition:none}.reveal .pause-overlay{position:absolute;top:0;left:0;width:100%;height:100%;background:#000;visibility:hidden;opacity:0;z-index:100;transition:all 1s ease}.reveal .pause-overlay .resume-button{position:absolute;bottom:20px;right:20px;color:#ccc;border-radius:2px;padding:6px 14px;border:2px solid #ccc;font-size:16px;background:0 0;cursor:pointer}.reveal .pause-overlay .resume-button:hover{color:#fff;border-color:#fff}.reveal.paused .pause-overlay{visibility:visible;opacity:1}.reveal .no-transition,.reveal .no-transition *,.reveal .slides.disable-slide-transitions section{transition:none!important}.reveal .slides.disable-slide-transitions section{transform:none!important}.reveal .backgrounds{position:absolute;width:100%;height:100%;top:0;left:0;perspective:600px}.reveal .slide-background{display:none;position:absolute;width:100%;height:100%;opacity:0;visibility:hidden;overflow:hidden;background-color:rgba(0,0,0,0);transition:all .8s cubic-bezier(.26,.86,.44,.985)}.reveal .slide-background-content{position:absolute;width:100%;height:100%;background-position:50% 50%;background-repeat:no-repeat;background-size:cover}.reveal .slide-background.stack{display:block}.reveal .slide-background.present{opacity:1;visibility:visible;z-index:2}.print-pdf .reveal .slide-background{opacity:1!important;visibility:visible!important}.reveal .slide-background video{position:absolute;width:100%;height:100%;max-width:none;max-height:none;top:0;left:0;object-fit:cover}.reveal .slide-background[data-background-size=contain] video{object-fit:contain}.reveal>.backgrounds .slide-background[data-background-transition=none],.reveal[data-background-transition=none]>.backgrounds .slide-background:not([data-background-transition]){transition:none}.reveal>.backgrounds .slide-background[data-background-transition=slide],.reveal[data-background-transition=slide]>.backgrounds .slide-background:not([data-background-transition]){opacity:1}.reveal>.backgrounds .slide-background.past[data-background-transition=slide],.reveal[data-background-transition=slide]>.backgrounds .slide-background.past:not([data-background-transition]){transform:translate(-100%,0)}.reveal>.backgrounds .slide-background.future[data-background-transition=slide],.reveal[data-background-transition=slide]>.backgrounds .slide-background.future:not([data-background-transition]){transform:translate(100%,0)}.reveal>.backgrounds .slide-background>.slide-background.past[data-background-transition=slide],.reveal[data-background-transition=slide]>.backgrounds .slide-background>.slide-background.past:not([data-background-transition]){transform:translate(0,-100%)}.reveal>.backgrounds .slide-background>.slide-background.future[data-background-transition=slide],.reveal[data-background-transition=slide]>.backgrounds .slide-background>.slide-background.future:not([data-background-transition]){transform:translate(0,100%)}.reveal>.backgrounds .slide-background.past[data-background-transition=convex],.reveal[data-background-transition=convex]>.backgrounds .slide-background.past:not([data-background-transition]){opacity:0;transform:translate3d(-100%,0,0) rotateY(-90deg) translate3d(-100%,0,0)}.reveal>.backgrounds .slide-background.future[data-background-transition=convex],.reveal[data-background-transition=convex]>.backgrounds .slide-background.future:not([data-background-transition]){opacity:0;transform:translate3d(100%,0,0) rotateY(90deg) translate3d(100%,0,0)}.reveal>.backgrounds .slide-background>.slide-background.past[data-background-transition=convex],.reveal[data-background-transition=convex]>.backgrounds .slide-background>.slide-background.past:not([data-background-transition]){opacity:0;transform:translate3d(0,-100%,0) rotateX(90deg) translate3d(0,-100%,0)}.reveal>.backgrounds .slide-background>.slide-background.future[data-background-transition=convex],.reveal[data-background-transition=convex]>.backgrounds .slide-background>.slide-background.future:not([data-background-transition]){opacity:0;transform:translate3d(0,100%,0) rotateX(-90deg) translate3d(0,100%,0)}.reveal>.backgrounds .slide-background.past[data-background-transition=concave],.reveal[data-background-transition=concave]>.backgrounds .slide-background.past:not([data-background-transition]){opacity:0;transform:translate3d(-100%,0,0) rotateY(90deg) translate3d(-100%,0,0)}.reveal>.backgrounds .slide-background.future[data-background-transition=concave],.reveal[data-background-transition=concave]>.backgrounds .slide-background.future:not([data-background-transition]){opacity:0;transform:translate3d(100%,0,0) rotateY(-90deg) translate3d(100%,0,0)}.reveal>.backgrounds .slide-background>.slide-background.past[data-background-transition=concave],.reveal[data-background-transition=concave]>.backgrounds .slide-background>.slide-background.past:not([data-background-transition]){opacity:0;transform:translate3d(0,-100%,0) rotateX(-90deg) translate3d(0,-100%,0)}.reveal>.backgrounds .slide-background>.slide-background.future[data-background-transition=concave],.reveal[data-background-transition=concave]>.backgrounds .slide-background>.slide-background.future:not([data-background-transition]){opacity:0;transform:translate3d(0,100%,0) rotateX(90deg) translate3d(0,100%,0)}.reveal>.backgrounds .slide-background[data-background-transition=zoom],.reveal[data-background-transition=zoom]>.backgrounds .slide-background:not([data-background-transition]){transition-timing-function:ease}.reveal>.backgrounds .slide-background.past[data-background-transition=zoom],.reveal[data-background-transition=zoom]>.backgrounds .slide-background.past:not([data-background-transition]){opacity:0;visibility:hidden;transform:scale(16)}.reveal>.backgrounds .slide-background.future[data-background-transition=zoom],.reveal[data-background-transition=zoom]>.backgrounds .slide-background.future:not([data-background-transition]){opacity:0;visibility:hidden;transform:scale(.2)}.reveal>.backgrounds .slide-background>.slide-background.past[data-background-transition=zoom],.reveal[data-background-transition=zoom]>.backgrounds .slide-background>.slide-background.past:not([data-background-transition]){opacity:0;visibility:hidden;transform:scale(16)}.reveal>.backgrounds .slide-background>.slide-background.future[data-background-transition=zoom],.reveal[data-background-transition=zoom]>.backgrounds .slide-background>.slide-background.future:not([data-background-transition]){opacity:0;visibility:hidden;transform:scale(.2)}.reveal[data-transition-speed=fast]>.backgrounds .slide-background{transition-duration:.4s}.reveal[data-transition-speed=slow]>.backgrounds .slide-background{transition-duration:1.2s}.reveal [data-auto-animate-target^=unmatched]{will-change:opacity}.reveal section[data-auto-animate]:not(.stack):not([data-auto-animate=running]) [data-auto-animate-target^=unmatched]{opacity:0}.reveal.overview{perspective-origin:50% 50%;perspective:700px}.reveal.overview .slides{-moz-transform-style:preserve-3d}.reveal.overview .slides section{height:100%;top:0!important;opacity:1!important;overflow:hidden;visibility:visible!important;cursor:pointer;box-sizing:border-box}.reveal.overview .slides section.present,.reveal.overview .slides section:hover{outline:10px solid rgba(150,150,150,.4);outline-offset:10px}.reveal.overview .slides section .fragment{opacity:1;transition:none}.reveal.overview .slides section:after,.reveal.overview .slides section:before{display:none!important}.reveal.overview .slides>section.stack{padding:0;top:0!important;background:0 0;outline:0;overflow:visible}.reveal.overview .backgrounds{perspective:inherit;-moz-transform-style:preserve-3d}.reveal.overview .backgrounds .slide-background{opacity:1;visibility:visible;outline:10px solid rgba(150,150,150,.1);outline-offset:10px}.reveal.overview .backgrounds .slide-background.stack{overflow:visible}.reveal.overview .slides section,.reveal.overview-deactivating .slides section{transition:none}.reveal.overview .backgrounds .slide-background,.reveal.overview-deactivating .backgrounds .slide-background{transition:none}.reveal.rtl .slides,.reveal.rtl .slides h1,.reveal.rtl .slides h2,.reveal.rtl .slides h3,.reveal.rtl .slides h4,.reveal.rtl .slides h5,.reveal.rtl .slides h6{direction:rtl;font-family:sans-serif}.reveal.rtl code,.reveal.rtl pre{direction:ltr}.reveal.rtl ol,.reveal.rtl ul{text-align:right}.reveal.rtl .progress span{transform-origin:100% 0}.reveal.has-parallax-background .backgrounds{transition:all .8s ease}.reveal.has-parallax-background[data-transition-speed=fast] .backgrounds{transition-duration:.4s}.reveal.has-parallax-background[data-transition-speed=slow] .backgrounds{transition-duration:1.2s}.reveal>.overlay{position:absolute;top:0;left:0;width:100%;height:100%;z-index:1000;background:rgba(0,0,0,.95);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);transition:all .3s ease}.reveal>.overlay .spinner{position:absolute;display:block;top:50%;left:50%;width:32px;height:32px;margin:-16px 0 0 -16px;z-index:10;background-image:url(data:image/gif;base64,R0lGODlhIAAgAPMAAJmZmf%2F%2F%2F6%2Bvr8nJybW1tcDAwOjo6Nvb26ioqKOjo7Ozs%2FLy8vz8%2FAAAAAAAAAAAACH%2FC05FVFNDQVBFMi4wAwEAAAAh%2FhpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh%2BQQJCgAAACwAAAAAIAAgAAAE5xDISWlhperN52JLhSSdRgwVo1ICQZRUsiwHpTJT4iowNS8vyW2icCF6k8HMMBkCEDskxTBDAZwuAkkqIfxIQyhBQBFvAQSDITM5VDW6XNE4KagNh6Bgwe60smQUB3d4Rz1ZBApnFASDd0hihh12BkE9kjAJVlycXIg7CQIFA6SlnJ87paqbSKiKoqusnbMdmDC2tXQlkUhziYtyWTxIfy6BE8WJt5YJvpJivxNaGmLHT0VnOgSYf0dZXS7APdpB309RnHOG5gDqXGLDaC457D1zZ%2FV%2FnmOM82XiHRLYKhKP1oZmADdEAAAh%2BQQJCgAAACwAAAAAIAAgAAAE6hDISWlZpOrNp1lGNRSdRpDUolIGw5RUYhhHukqFu8DsrEyqnWThGvAmhVlteBvojpTDDBUEIFwMFBRAmBkSgOrBFZogCASwBDEY%2FCZSg7GSE0gSCjQBMVG023xWBhklAnoEdhQEfyNqMIcKjhRsjEdnezB%2BA4k8gTwJhFuiW4dokXiloUepBAp5qaKpp6%2BHo7aWW54wl7obvEe0kRuoplCGepwSx2jJvqHEmGt6whJpGpfJCHmOoNHKaHx61WiSR92E4lbFoq%2BB6QDtuetcaBPnW6%2BO7wDHpIiK9SaVK5GgV543tzjgGcghAgAh%2BQQJCgAAACwAAAAAIAAgAAAE7hDISSkxpOrN5zFHNWRdhSiVoVLHspRUMoyUakyEe8PTPCATW9A14E0UvuAKMNAZKYUZCiBMuBakSQKG8G2FzUWox2AUtAQFcBKlVQoLgQReZhQlCIJesQXI5B0CBnUMOxMCenoCfTCEWBsJColTMANldx15BGs8B5wlCZ9Po6OJkwmRpnqkqnuSrayqfKmqpLajoiW5HJq7FL1Gr2mMMcKUMIiJgIemy7xZtJsTmsM4xHiKv5KMCXqfyUCJEonXPN2rAOIAmsfB3uPoAK%2B%2BG%2Bw48edZPK%2BM6hLJpQg484enXIdQFSS1u6UhksENEQAAIfkECQoAAAAsAAAAACAAIAAABOcQyEmpGKLqzWcZRVUQnZYg1aBSh2GUVEIQ2aQOE%2BG%2BcD4ntpWkZQj1JIiZIogDFFyHI0UxQwFugMSOFIPJftfVAEoZLBbcLEFhlQiqGp1Vd140AUklUN3eCA51C1EWMzMCezCBBmkxVIVHBWd3HHl9JQOIJSdSnJ0TDKChCwUJjoWMPaGqDKannasMo6WnM562R5YluZRwur0wpgqZE7NKUm%2BFNRPIhjBJxKZteWuIBMN4zRMIVIhffcgojwCF117i4nlLnY5ztRLsnOk%2BaV%2BoJY7V7m76PdkS4trKcdg0Zc0tTcKkRAAAIfkECQoAAAAsAAAAACAAIAAABO4QyEkpKqjqzScpRaVkXZWQEximw1BSCUEIlDohrft6cpKCk5xid5MNJTaAIkekKGQkWyKHkvhKsR7ARmitkAYDYRIbUQRQjWBwJRzChi9CRlBcY1UN4g0%2FVNB0AlcvcAYHRyZPdEQFYV8ccwR5HWxEJ02YmRMLnJ1xCYp0Y5idpQuhopmmC2KgojKasUQDk5BNAwwMOh2RtRq5uQuPZKGIJQIGwAwGf6I0JXMpC8C7kXWDBINFMxS4DKMAWVWAGYsAdNqW5uaRxkSKJOZKaU3tPOBZ4DuK2LATgJhkPJMgTwKCdFjyPHEnKxFCDhEAACH5BAkKAAAALAAAAAAgACAAAATzEMhJaVKp6s2nIkolIJ2WkBShpkVRWqqQrhLSEu9MZJKK9y1ZrqYK9WiClmvoUaF8gIQSNeF1Er4MNFn4SRSDARWroAIETg1iVwuHjYB1kYc1mwruwXKC9gmsJXliGxc%2BXiUCby9ydh1sOSdMkpMTBpaXBzsfhoc5l58Gm5yToAaZhaOUqjkDgCWNHAULCwOLaTmzswadEqggQwgHuQsHIoZCHQMMQgQGubVEcxOPFAcMDAYUA85eWARmfSRQCdcMe0zeP1AAygwLlJtPNAAL19DARdPzBOWSm1brJBi45soRAWQAAkrQIykShQ9wVhHCwCQCACH5BAkKAAAALAAAAAAgACAAAATrEMhJaVKp6s2nIkqFZF2VIBWhUsJaTokqUCoBq%2BE71SRQeyqUToLA7VxF0JDyIQh%2FMVVPMt1ECZlfcjZJ9mIKoaTl1MRIl5o4CUKXOwmyrCInCKqcWtvadL2SYhyASyNDJ0uIiRMDjI0Fd30%2FiI2UA5GSS5UDj2l6NoqgOgN4gksEBgYFf0FDqKgHnyZ9OX8HrgYHdHpcHQULXAS2qKpENRg7eAMLC7kTBaixUYFkKAzWAAnLC7FLVxLWDBLKCwaKTULgEwbLA4hJtOkSBNqITT3xEgfLpBtzE%2FjiuL04RGEBgwWhShRgQExHBAAh%2BQQJCgAAACwAAAAAIAAgAAAE7xDISWlSqerNpyJKhWRdlSAVoVLCWk6JKlAqAavhO9UkUHsqlE6CwO1cRdCQ8iEIfzFVTzLdRAmZX3I2SfZiCqGk5dTESJeaOAlClzsJsqwiJwiqnFrb2nS9kmIcgEsjQydLiIlHehhpejaIjzh9eomSjZR%2BipslWIRLAgMDOR2DOqKogTB9pCUJBagDBXR6XB0EBkIIsaRsGGMMAxoDBgYHTKJiUYEGDAzHC9EACcUGkIgFzgwZ0QsSBcXHiQvOwgDdEwfFs0sDzt4S6BK4xYjkDOzn0unFeBzOBijIm1Dgmg5YFQwsCMjp1oJ8LyIAACH5BAkKAAAALAAAAAAgACAAAATwEMhJaVKp6s2nIkqFZF2VIBWhUsJaTokqUCoBq%2BE71SRQeyqUToLA7VxF0JDyIQh%2FMVVPMt1ECZlfcjZJ9mIKoaTl1MRIl5o4CUKXOwmyrCInCKqcWtvadL2SYhyASyNDJ0uIiUd6GGl6NoiPOH16iZKNlH6KmyWFOggHhEEvAwwMA0N9GBsEC6amhnVcEwavDAazGwIDaH1ipaYLBUTCGgQDA8NdHz0FpqgTBwsLqAbWAAnIA4FWKdMLGdYGEgraigbT0OITBcg5QwPT4xLrROZL6AuQAPUS7bxLpoWidY0JtxLHKhwwMJBTHgPKdEQAACH5BAkKAAAALAAAAAAgACAAAATrEMhJaVKp6s2nIkqFZF2VIBWhUsJaTokqUCoBq%2BE71SRQeyqUToLA7VxF0JDyIQh%2FMVVPMt1ECZlfcjZJ9mIKoaTl1MRIl5o4CUKXOwmyrCInCKqcWtvadL2SYhyASyNDJ0uIiUd6GAULDJCRiXo1CpGXDJOUjY%2BYip9DhToJA4RBLwMLCwVDfRgbBAaqqoZ1XBMHswsHtxtFaH1iqaoGNgAIxRpbFAgfPQSqpbgGBqUD1wBXeCYp1AYZ19JJOYgH1KwA4UBvQwXUBxPqVD9L3sbp2BNk2xvvFPJd%2BMFCN6HAAIKgNggY0KtEBAAh%2BQQJCgAAACwAAAAAIAAgAAAE6BDISWlSqerNpyJKhWRdlSAVoVLCWk6JKlAqAavhO9UkUHsqlE6CwO1cRdCQ8iEIfzFVTzLdRAmZX3I2SfYIDMaAFdTESJeaEDAIMxYFqrOUaNW4E4ObYcCXaiBVEgULe0NJaxxtYksjh2NLkZISgDgJhHthkpU4mW6blRiYmZOlh4JWkDqILwUGBnE6TYEbCgevr0N1gH4At7gHiRpFaLNrrq8HNgAJA70AWxQIH1%2BvsYMDAzZQPC9VCNkDWUhGkuE5PxJNwiUK4UfLzOlD4WvzAHaoG9nxPi5d%2BjYUqfAhhykOFwJWiAAAIfkECQoAAAAsAAAAACAAIAAABPAQyElpUqnqzaciSoVkXVUMFaFSwlpOCcMYlErAavhOMnNLNo8KsZsMZItJEIDIFSkLGQoQTNhIsFehRww2CQLKF0tYGKYSg%2BygsZIuNqJksKgbfgIGepNo2cIUB3V1B3IvNiBYNQaDSTtfhhx0CwVPI0UJe0%2Bbm4g5VgcGoqOcnjmjqDSdnhgEoamcsZuXO1aWQy8KAwOAuTYYGwi7w5h%2BKr0SJ8MFihpNbx%2B4Erq7BYBuzsdiH1jCAzoSfl0rVirNbRXlBBlLX%2BBP0XJLAPGzTkAuAOqb0WT5AH7OcdCm5B8TgRwSRKIHQtaLCwg1RAAAOwAAAAAAAAAAAA%3D%3D);visibility:visible;opacity:.6;transition:all .3s ease}.reveal>.overlay header{position:absolute;left:0;top:0;width:100%;padding:5px;z-index:2;box-sizing:border-box}.reveal>.overlay header a{display:inline-block;width:40px;height:40px;line-height:36px;padding:0 10px;float:right;opacity:.6;box-sizing:border-box}.reveal>.overlay header a:hover{opacity:1}.reveal>.overlay header a .icon{display:inline-block;width:20px;height:20px;background-position:50% 50%;background-size:100%;background-repeat:no-repeat}.reveal>.overlay header a.close .icon{background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAABkklEQVRYR8WX4VHDMAxG6wnoJrABZQPYBCaBTWAD2g1gE5gg6OOsXuxIlr40d81dfrSJ9V4c2VLK7spHuTJ/5wpM07QXuXc5X0opX2tEJcadjHuV80li/FgxTIEK/5QBCICBD6xEhSMGHgQPgBgLiYVAB1dpSqKDawxTohFw4JSEA3clzgIBPCURwE2JucBR7rhPJJv5OpJwDX+SfDjgx1wACQeJG1aChP9K/IMmdZ8DtESV1WyP3Bt4MwM6sj4NMxMYiqUWHQu4KYA/SYkIjOsm3BXYWMKFDwU2khjCQ4ELJUJ4SmClRArOCmSXGuKma0fYD5CbzHxFpCSGAhfAVSSUGDUk2BWZaff2g6GE15BsBQ9nwmpIGDiyHQddwNTMKkbZaf9fajXQca1EX44puJZUsnY0ObGmITE3GVLCbEhQUjGVt146j6oasWN+49Vph2w1pZ5EansNZqKBm1txbU57iRRcZ86RWMDdWtBJUHBHwoQPi1GV+JCbntmvok7iTX4/Up9mgyTc/FJYDTcndgH/AA5A/CHsyEkVAAAAAElFTkSuQmCC)}.reveal>.overlay header a.external .icon{background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAcElEQVRYR+2WSQoAIQwEzf8f7XiOMkUQxUPlGkM3hVmiQfQR9GYnH1SsAQlI4DiBqkCMoNb9y2e90IAEJPAcgdznU9+engMaeJ7Azh5Y1U67gAho4DqBqmB1buAf0MB1AlVBek83ZPkmJMGc1wAR+AAqod/B97TRpQAAAABJRU5ErkJggg==)}.reveal>.overlay .viewport{position:absolute;display:flex;top:50px;right:0;bottom:0;left:0}.reveal>.overlay.overlay-preview .viewport iframe{width:100%;height:100%;max-width:100%;max-height:100%;border:0;opacity:0;visibility:hidden;transition:all .3s ease}.reveal>.overlay.overlay-preview.loaded .viewport iframe{opacity:1;visibility:visible}.reveal>.overlay.overlay-preview.loaded .viewport-inner{position:absolute;z-index:-1;left:0;top:45%;width:100%;text-align:center;letter-spacing:normal}.reveal>.overlay.overlay-preview .x-frame-error{opacity:0;transition:opacity .3s ease .3s}.reveal>.overlay.overlay-preview.loaded .x-frame-error{opacity:1}.reveal>.overlay.overlay-preview.loaded .spinner{opacity:0;visibility:hidden;transform:scale(.2)}.reveal>.overlay.overlay-help .viewport{overflow:auto;color:#fff}.reveal>.overlay.overlay-help .viewport .viewport-inner{width:600px;margin:auto;padding:20px 20px 80px 20px;text-align:center;letter-spacing:normal}.reveal>.overlay.overlay-help .viewport .viewport-inner .title{font-size:20px}.reveal>.overlay.overlay-help .viewport .viewport-inner table{border:1px solid #fff;border-collapse:collapse;font-size:16px}.reveal>.overlay.overlay-help .viewport .viewport-inner table td,.reveal>.overlay.overlay-help .viewport .viewport-inner table th{width:200px;padding:14px;border:1px solid #fff;vertical-align:middle}.reveal>.overlay.overlay-help .viewport .viewport-inner table th{padding-top:20px;padding-bottom:20px}.reveal .playback{position:absolute;left:15px;bottom:20px;z-index:30;cursor:pointer;transition:all .4s ease;-webkit-tap-highlight-color:transparent}.reveal.overview .playback{opacity:0;visibility:hidden}.reveal .hljs{min-height:100%}.reveal .hljs table{margin:initial}.reveal .hljs-ln-code,.reveal .hljs-ln-numbers{padding:0;border:0}.reveal .hljs-ln-numbers{opacity:.6;padding-right:.75em;text-align:right;vertical-align:top}.reveal .hljs.has-highlights tr:not(.highlight-line){opacity:.4}.reveal .hljs.has-highlights.fragment{transition:all .2s ease}.reveal .hljs:not(:first-child).fragment{position:absolute;top:0;left:0;width:100%;box-sizing:border-box}.reveal pre[data-auto-animate-target]{overflow:hidden}.reveal pre[data-auto-animate-target] code{height:100%}.reveal .roll{display:inline-block;line-height:1.2;overflow:hidden;vertical-align:top;perspective:400px;perspective-origin:50% 50%}.reveal .roll:hover{background:0 0;text-shadow:none}.reveal .roll span{display:block;position:relative;padding:0 2px;pointer-events:none;transition:all .4s ease;transform-origin:50% 0;transform-style:preserve-3d;backface-visibility:hidden}.reveal .roll:hover span{background:rgba(0,0,0,.5);transform:translate3d(0,0,-45px) rotateX(90deg)}.reveal .roll span:after{content:attr(data-title);display:block;position:absolute;left:0;top:0;padding:0 2px;backface-visibility:hidden;transform-origin:50% 0;transform:translate3d(0,110%,0) rotateX(-90deg)}.reveal aside.notes{display:none}.reveal .speaker-notes{display:none;position:absolute;width:33.3333333333%;height:100%;top:0;left:100%;padding:14px 18px 14px 18px;z-index:1;font-size:18px;line-height:1.4;border:1px solid rgba(0,0,0,.05);color:#222;background-color:#f5f5f5;overflow:auto;box-sizing:border-box;text-align:left;font-family:Helvetica,sans-serif;-webkit-overflow-scrolling:touch}.reveal .speaker-notes .notes-placeholder{color:#ccc;font-style:italic}.reveal .speaker-notes:focus{outline:0}.reveal .speaker-notes:before{content:"Speaker notes";display:block;margin-bottom:10px;opacity:.5}.reveal.show-notes{max-width:75%;overflow:visible}.reveal.show-notes .speaker-notes{display:block}@media screen and (min-width:1600px){.reveal .speaker-notes{font-size:20px}}@media screen and (max-width:1024px){.reveal.show-notes{border-left:0;max-width:none;max-height:70%;max-height:70vh;overflow:visible}.reveal.show-notes .speaker-notes{top:100%;left:0;width:100%;height:30vh;border:0}}@media screen and (max-width:600px){.reveal.show-notes{max-height:60%;max-height:60vh}.reveal.show-notes .speaker-notes{top:100%;height:40vh}.reveal .speaker-notes{font-size:14px}}.reveal .jump-to-slide{position:absolute;top:15px;left:15px;z-index:30;font-size:32px;-webkit-tap-highlight-color:transparent}.reveal .jump-to-slide-input{background:0 0;padding:8px;font-size:inherit;color:currentColor;border:0}.reveal .jump-to-slide-input::placeholder{color:currentColor;opacity:.5}.reveal.has-dark-background .jump-to-slide-input{color:#fff}.reveal.has-light-background .jump-to-slide-input{color:#222}.reveal .jump-to-slide-input:focus{outline:0}.zoomed .reveal *,.zoomed .reveal :after,.zoomed .reveal :before{backface-visibility:visible!important}.zoomed .reveal .controls,.zoomed .reveal .progress{opacity:0}.zoomed .reveal .roll span{background:0 0}.zoomed .reveal .roll span:after{visibility:hidden}.reveal-viewport.loading-scroll-mode{visibility:hidden}.reveal-viewport.reveal-scroll{margin:0 auto;overflow:auto;overflow-x:hidden;overflow-y:auto;z-index:1;--r-scrollbar-width:7px;--r-scrollbar-trigger-size:5px;--r-controls-spacing:8px}@media screen and (max-width:500px){.reveal-viewport.reveal-scroll{--r-scrollbar-width:3px;--r-scrollbar-trigger-size:3px}}.reveal-viewport.reveal-scroll .backgrounds,.reveal-viewport.reveal-scroll .controls,.reveal-viewport.reveal-scroll .playback,.reveal-viewport.reveal-scroll .progress,.reveal-viewport.reveal-scroll .slide-number,.reveal-viewport.reveal-scroll .speaker-notes{display:none!important}.reveal-viewport.reveal-scroll .overlay,.reveal-viewport.reveal-scroll .pause-overlay{position:fixed}.reveal-viewport.reveal-scroll .reveal{overflow:visible;touch-action:manipulation}.reveal-viewport.reveal-scroll .slides{position:static;pointer-events:initial;left:auto;top:auto;width:100%!important;margin:0;padding:0;overflow:visible;display:block;perspective:none;perspective-origin:50% 50%}.reveal-viewport.reveal-scroll .scroll-page{position:relative;width:100%;height:calc(var(--page-height) + var(--page-scroll-padding));z-index:1;overflow:visible}.reveal-viewport.reveal-scroll .scroll-page-sticky{position:sticky;height:var(--page-height);top:0}.reveal-viewport.reveal-scroll .scroll-page-content{position:absolute;top:0;left:0;width:100%;height:100%;overflow:hidden}.reveal-viewport.reveal-scroll .scroll-page section{visibility:visible!important;display:block!important;position:absolute!important;width:var(--slide-width)!important;height:var(--slide-height)!important;top:50%!important;left:50%!important;opacity:1!important;transform:scale(var(--slide-scale)) translate(-50%,-50%)!important;transform-style:flat!important;transform-origin:0 0!important}.reveal-viewport.reveal-scroll .slide-background{display:block!important;position:absolute;top:0;left:0;width:100%;height:100%;z-index:auto!important;visibility:visible;opacity:1;touch-action:manipulation}.reveal-viewport.reveal-scroll[data-scrollbar=auto]::-webkit-scrollbar,.reveal-viewport.reveal-scroll[data-scrollbar=true]::-webkit-scrollbar{display:none}.reveal-viewport.reveal-scroll[data-scrollbar=auto],.reveal-viewport.reveal-scroll[data-scrollbar=true]{scrollbar-width:none}.reveal-viewport.has-dark-background,.reveal.has-dark-background{--r-overlay-element-bg-color:240,240,240;--r-overlay-element-fg-color:0,0,0}.reveal-viewport.has-light-background,.reveal.has-light-background{--r-overlay-element-bg-color:0,0,0;--r-overlay-element-fg-color:240,240,240}.reveal-viewport.reveal-scroll .scrollbar{position:sticky;top:50%;z-index:20;opacity:0;transition:all .3s ease}.reveal-viewport.reveal-scroll .scrollbar.visible,.reveal-viewport.reveal-scroll .scrollbar:hover{opacity:1}.reveal-viewport.reveal-scroll .scrollbar .scrollbar-inner{position:absolute;width:var(--r-scrollbar-width);height:calc(var(--viewport-height) - var(--r-controls-spacing) * 2);right:var(--r-controls-spacing);top:0;transform:translateY(-50%);border-radius:var(--r-scrollbar-width);z-index:10}.reveal-viewport.reveal-scroll .scrollbar .scrollbar-playhead{position:absolute;width:var(--r-scrollbar-width);height:var(--r-scrollbar-width);top:0;left:0;border-radius:var(--r-scrollbar-width);background-color:rgba(var(--r-overlay-element-bg-color),1);z-index:11;transition:background-color .2s ease}.reveal-viewport.reveal-scroll .scrollbar .scrollbar-slide{position:absolute;width:100%;background-color:rgba(var(--r-overlay-element-bg-color),.2);box-shadow:0 0 0 1px rgba(var(--r-overlay-element-fg-color),.1);border-radius:var(--r-scrollbar-width);transition:background-color .2s ease}.reveal-viewport.reveal-scroll .scrollbar .scrollbar-slide:after{content:"";position:absolute;width:200%;height:100%;top:0;left:-50%;background:rgba(0,0,0,0);z-index:-1}.reveal-viewport.reveal-scroll .scrollbar .scrollbar-slide.active,.reveal-viewport.reveal-scroll .scrollbar .scrollbar-slide:hover{background-color:rgba(var(--r-overlay-element-bg-color),.4)}.reveal-viewport.reveal-scroll .scrollbar .scrollbar-trigger{position:absolute;width:100%;transition:background-color .2s ease}.reveal-viewport.reveal-scroll .scrollbar .scrollbar-slide.active.has-triggers{background-color:rgba(var(--r-overlay-element-bg-color),.4);z-index:10}.reveal-viewport.reveal-scroll .scrollbar .scrollbar-slide.active .scrollbar-trigger:after{content:"";position:absolute;width:var(--r-scrollbar-trigger-size);height:var(--r-scrollbar-trigger-size);border-radius:20px;top:50%;left:50%;transform:translate(-50%,-50%);background-color:rgba(var(--r-overlay-element-bg-color),1);transition:transform .2s ease,opacity .2s ease;opacity:.4}.reveal-viewport.reveal-scroll .scrollbar .scrollbar-slide.active .scrollbar-trigger.active:after,.reveal-viewport.reveal-scroll .scrollbar .scrollbar-slide.active .scrollbar-trigger.active~.scrollbar-trigger:after{opacity:1}.reveal-viewport.reveal-scroll .scrollbar .scrollbar-slide.active .scrollbar-trigger~.scrollbar-trigger.active:after{transform:translate(calc(var(--r-scrollbar-width) * -2),0);background-color:rgba(var(--r-overlay-element-bg-color),1)}html.reveal-print *{-webkit-print-color-adjust:exact}html.reveal-print{width:100%;height:100%;overflow:visible}html.reveal-print body{margin:0 auto!important;border:0;padding:0;float:none!important;overflow:visible}html.reveal-print .nestedarrow,html.reveal-print .reveal .controls,html.reveal-print .reveal .playback,html.reveal-print .reveal .progress,html.reveal-print .reveal.overview,html.reveal-print .state-background{display:none!important}html.reveal-print .reveal pre code{overflow:hidden!important}html.reveal-print .reveal{width:auto!important;height:auto!important;overflow:hidden!important}html.reveal-print .reveal .slides{position:static;width:100%!important;height:auto!important;zoom:1!important;pointer-events:initial;left:auto;top:auto;margin:0!important;padding:0!important;overflow:visible;display:block;perspective:none;perspective-origin:50% 50%}html.reveal-print .reveal .slides .pdf-page{position:relative;overflow:hidden;z-index:1;page-break-after:always}html.reveal-print .reveal .slides .pdf-page:last-of-type{page-break-after:avoid}html.reveal-print .reveal .slides section{visibility:visible!important;display:block!important;position:absolute!important;margin:0!important;padding:0!important;box-sizing:border-box!important;min-height:1px;opacity:1!important;transform-style:flat!important;transform:none!important}html.reveal-print .reveal section.stack{position:relative!important;margin:0!important;padding:0!important;page-break-after:avoid!important;height:auto!important;min-height:auto!important}html.reveal-print .reveal img{box-shadow:none}html.reveal-print .reveal .backgrounds{display:none}html.reveal-print .reveal .slide-background{display:block!important;position:absolute;top:0;left:0;width:100%;height:100%;z-index:auto!important}html.reveal-print .reveal.show-notes{max-width:none;max-height:none}html.reveal-print .reveal .speaker-notes-pdf{display:block;width:100%;height:auto;max-height:none;top:auto;right:auto;bottom:auto;left:auto;z-index:100}html.reveal-print .reveal .speaker-notes-pdf[data-layout=separate-page]{position:relative;color:inherit;background-color:transparent;padding:20px;page-break-after:always;border:0}html.reveal-print .reveal .slide-number-pdf{display:block;position:absolute;font-size:14px;visibility:visible}html.reveal-print .aria-status{display:none}@media print{html:not(.print-pdf){overflow:visible;width:auto;height:auto}html:not(.print-pdf) body{margin:0;padding:0;overflow:visible}html:not(.print-pdf) .reveal{background:#fff;font-size:20pt}html:not(.print-pdf) .reveal .backgrounds,html:not(.print-pdf) .reveal .controls,html:not(.print-pdf) .reveal .progress,html:not(.print-pdf) .reveal .slide-number,html:not(.print-pdf) .reveal .state-background{display:none!important}html:not(.print-pdf) .reveal li,html:not(.print-pdf) .reveal p,html:not(.print-pdf) .reveal td{font-size:20pt!important;color:#000}html:not(.print-pdf) .reveal h1,html:not(.print-pdf) .reveal h2,html:not(.print-pdf) .reveal h3,html:not(.print-pdf) .reveal h4,html:not(.print-pdf) .reveal h5,html:not(.print-pdf) .reveal h6{color:#000!important;height:auto;line-height:normal;text-align:left;letter-spacing:normal}html:not(.print-pdf) .reveal h1{font-size:28pt!important}html:not(.print-pdf) .reveal h2{font-size:24pt!important}html:not(.print-pdf) .reveal h3{font-size:22pt!important}html:not(.print-pdf) .reveal h4{font-size:22pt!important;font-variant:small-caps}html:not(.print-pdf) .reveal h5{font-size:21pt!important}html:not(.print-pdf) .reveal h6{font-size:20pt!important;font-style:italic}html:not(.print-pdf) .reveal a:link,html:not(.print-pdf) .reveal a:visited{color:#000!important;font-weight:700;text-decoration:underline}html:not(.print-pdf) .reveal div,html:not(.print-pdf) .reveal ol,html:not(.print-pdf) .reveal p,html:not(.print-pdf) .reveal ul{visibility:visible;position:static;width:auto;height:auto;display:block;overflow:visible;margin:0;text-align:left!important}html:not(.print-pdf) .reveal pre,html:not(.print-pdf) .reveal table{margin-left:0;margin-right:0}html:not(.print-pdf) .reveal pre code{padding:20px}html:not(.print-pdf) .reveal blockquote{margin:20px 0}html:not(.print-pdf) .reveal .slides{position:static!important;width:auto!important;height:auto!important;left:0!important;top:0!important;margin-left:0!important;margin-top:0!important;padding:0!important;zoom:1!important;transform:none!important;overflow:visible!important;display:block!important;text-align:left!important;perspective:none;perspective-origin:50% 50%}html:not(.print-pdf) .reveal .slides section{visibility:visible!important;position:static!important;width:auto!important;height:auto!important;display:block!important;overflow:visible!important;left:0!important;top:0!important;margin-left:0!important;margin-top:0!important;padding:60px 20px!important;z-index:auto!important;opacity:1!important;page-break-after:always!important;transform-style:flat!important;transform:none!important;transition:none!important}html:not(.print-pdf) .reveal .slides section.stack{padding:0!important}html:not(.print-pdf) .reveal .slides section:last-of-type{page-break-after:avoid!important}html:not(.print-pdf) .reveal .slides section .fragment{opacity:1!important;visibility:visible!important;transform:none!important}html:not(.print-pdf) .reveal .r-fit-text{white-space:normal!important}html:not(.print-pdf) .reveal section img{display:block;margin:15px 0;background:#fff;border:1px solid #666;box-shadow:none}html:not(.print-pdf) .reveal section small{font-size:.8em}html:not(.print-pdf) .reveal .hljs{max-height:100%;white-space:pre-wrap;word-wrap:break-word;word-break:break-word;font-size:15pt}html:not(.print-pdf) .reveal .hljs .hljs-ln-numbers{white-space:nowrap}html:not(.print-pdf) .reveal .hljs td{font-size:inherit!important;color:inherit!important}}
+
+:root{
+  --ink:#15142E; --paper:#F6F6FB; --card:#FDFDFF; --body:#46455F; --muted:#6B6A88;
+  --line:#E1E1EC; --accent:#4F46E5; --accent-ink:#3F37C9; --accent-soft:#A5B4FC; --on-dark:#C9C8E8;
+  --green:#047857; --amber:#B45309;
+}
+html, body { height:100%; background:var(--paper); color:var(--ink); }
+.reveal-viewport { background:var(--paper); }
+.reveal { font-family:'DM Sans', Arial, sans-serif; font-size:24px; color:var(--ink); }
+.reveal .slides { text-align:left; }
+.reveal .slides section { box-sizing:border-box; height:100%; padding:48px 64px 56px; }
+/* A vertical stack is only a container: padding it would push every slide in it sideways. */
+.reveal .slides section.stack { padding:0; }
+.frame { height:100%; display:flex; flex-direction:column; gap:28px; }
+.reveal h1, .reveal h2, .reveal h3 { font-family:'DM Sans', Arial, sans-serif; color:inherit; text-transform:none; margin:0; text-wrap:balance; }
+.reveal h1 { font-size:76px; font-weight:700; line-height:1.04; letter-spacing:-0.025em; }
+.reveal h2 { font-size:46px; font-weight:700; line-height:1.1; letter-spacing:-0.02em; }
+.reveal h3 { font-size:26px; font-weight:700; line-height:1.25; }
+.reveal p, .reveal li { margin:0; line-height:1.45; }
+.reveal ul { margin:0; padding-left:1.1em; display:flex; flex-direction:column; gap:10px; }
+.reveal li::marker { color:var(--accent); }
+.eyebrow { font-family:'JetBrains Mono', 'Courier New', monospace; font-size:16px; letter-spacing:0.14em; text-transform:uppercase; color:var(--accent-ink); }
+.lead { font-size:26px; color:var(--body); max-width:34em; }
+.small { font-size:19px; color:var(--muted); }
+.head { display:flex; flex-direction:column; gap:10px; }
+
+/* Section openers: dark, name the chapter and say how deep it goes. */
+.opener { color:var(--paper); }
+.opener .eyebrow { color:var(--accent-soft); }
+.opener .frame { justify-content:space-between; }
+.opener .lead { color:var(--on-dark); }
+.down { display:inline-flex; align-items:center; gap:10px; font-family:'JetBrains Mono', 'Courier New', monospace; font-size:17px; color:var(--on-dark); border:1px solid rgba(201,200,232,0.35); border-radius:999px; padding:8px 16px; align-self:flex-start; }
+.down b { color:var(--paper); font-weight:600; }
+
+.row { display:flex; gap:22px; align-items:stretch; }
+.row > * { flex:1; min-width:0; }
+.tile { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:24px 26px; display:flex; flex-direction:column; gap:10px; }
+.tile p { font-size:21px; color:var(--body); }
+.opener .tile { background:rgba(255,255,255,0.07); border-color:rgba(201,200,232,0.22); }
+.opener .tile p { color:var(--on-dark); }
+.opener .tile h3 { color:var(--paper); }
+.k { font-family:'JetBrains Mono', 'Courier New', monospace; font-size:15px; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); }
+.opener .k { color:var(--accent-soft); }
+
+.shot { border:1px solid var(--line); border-radius:14px; box-shadow:0 14px 40px rgba(21,20,46,0.12); background:#fff; display:block; }
+.tile .big, .big { font-size:64px; font-weight:700; letter-spacing:-0.03em; line-height:1; color:var(--accent-ink); font-variant-numeric:tabular-nums; }
+
+.reveal table { border-collapse:collapse; width:100%; font-size:20px; }
+.reveal table th { text-align:left; font-family:'JetBrains Mono', 'Courier New', monospace; font-size:14px; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); font-weight:600; padding:0 16px 10px 0; border-bottom:2px solid var(--ink); }
+.reveal table td { padding:12px 16px 12px 0; border-bottom:1px solid var(--line); vertical-align:top; color:var(--body); line-height:1.35; }
+.reveal table td:first-child { color:var(--ink); font-weight:600; }
+
+.quote { font-size:34px; font-weight:700; line-height:1.25; }
+.darkbox { background:var(--ink); color:var(--paper); border-radius:16px; padding:28px 30px; display:flex; flex-direction:column; gap:12px; }
+.darkbox .k { color:var(--accent-soft); }
+.darkbox p { color:var(--paper); font-size:26px; line-height:1.35; }
+
+.reveal pre { width:100%; margin:0; box-shadow:none; font-size:14.5px; }
+.reveal pre code { font-family:'JetBrains Mono', 'Courier New', monospace; background:#1B1A33; color:#E6E6F5; border-radius:14px; padding:20px 22px; line-height:1.5; max-height:none; white-space:pre; overflow-x:auto; display:block; }
+.c { color:#8F8EB5; } .s { color:#A7F3D0; } .n { color:#FCD34D; } .kw { color:#A5B4FC; }
+
+.arrow { flex:0 0 auto; align-self:center; font-size:34px; color:var(--accent); }
+.chip { display:inline-block; font-family:'JetBrains Mono', 'Courier New', monospace; font-size:15px; padding:3px 10px; border-radius:999px; background:#ECEBFD; color:var(--accent-ink); }
+.pass { color:var(--green); font-weight:700; }
+.reveal table td.pass { color:var(--green); }
+
+.reveal .controls { color:var(--accent); }
+.reveal .progress { color:var(--accent); height:4px; }
+.reveal .slide-number a { text-decoration:none; color:inherit; }
+.reveal .slide-number { font-family:'JetBrains Mono', 'Courier New', monospace; font-size:14px; background:transparent; color:var(--muted); right:auto; left:20px; bottom:14px; }
+.reveal a { color:var(--accent-ink); }
+.opener a { color:var(--accent-soft); }
+.reveal :focus-visible { outline:3px solid var(--accent); outline-offset:3px; }
+@media (prefers-reduced-motion: reduce) { .reveal .slides section { transition:none !important; } }
+
+/* ---- NTU / CCDS: the university's navy and red as a quiet signature. Names
+   and colours only; no crest, which is the university's own mark. ---- */
+:root { --ntu-navy:#1b2a6b; --ntu-red:#d71440; }
+.campus__bar { display:inline-block; width:28px; height:6px; margin-right:10px; vertical-align:middle; border-radius:3px;
+  background:linear-gradient(90deg, var(--ntu-navy) 0 50%, var(--ntu-red) 50% 100%); }
+.campus__who { display:flex; flex-direction:column; gap:8px; }
+.campus__name { font-size:26px; font-weight:600; color:var(--paper); }
+.campus__affil { font-size:18px; line-height:1.45; color:var(--on-dark); }
+.campus__affil--short { position:relative; font-size:17px; }
+.campus__band { position:absolute; left:-240px; right:-240px; bottom:-150px; height:190px; pointer-events:none;
+  transform:rotate(-7deg);
+  background:linear-gradient(90deg, rgba(27,42,107,0) 0%, rgba(27,42,107,0.75) 22%, rgba(215,20,64,0.55) 62%, rgba(215,20,64,0) 100%);
+  filter:blur(18px); opacity:0.9; }
+.campus .frame { position:relative; }
+.affil-mark { position:fixed; left:18px; bottom:34px; z-index:30; display:flex; align-items:center;
+  font:600 11px 'JetBrains Mono', 'Courier New', monospace; letter-spacing:0.14em; color:var(--muted); opacity:0.85; pointer-events:none; }
+.affil-mark .campus__bar { width:18px; height:4px; margin-right:8px; }
+.reveal.has-dark-background .affil-mark { color:rgba(226,225,245,0.75); }
+@media print { .affil-mark { position:absolute; } }
+
+/* Official NTU marks: the full logo on the cover, the crest as a watermark on
+   every dark chapter slide and as the small mark on every slide. CCDS has no
+   crest of its own; like the college's own pages, it is the NTU logo with the
+   college's name beside it. */
+.crest { height:22px; width:auto; margin-right:10px; vertical-align:-5px; }
+.affil-mark .crest { height:16px; margin-right:7px; vertical-align:-3px; }
+.campus__lockup { position:absolute; top:-14px; right:0; display:flex; align-items:center; gap:16px;
+  padding:12px 18px; border-radius:14px; background:#ffffff; box-shadow:0 10px 30px rgba(0,0,0,0.25); }
+.campus__lockup img { height:64px; width:auto; }
+.campus__lockup span { padding-left:16px; border-left:2px solid #d71440; font:600 15px/1.3 'DM Sans', Arial, sans-serif; color:#1b2a6b; }
+.reveal .opener .frame::after { content:""; position:absolute; right:-40px; bottom:-70px; width:340px; height:440px;
+  background:url(img/ntu-crest.svg) no-repeat center / contain; opacity:0.05; filter:grayscale(1) brightness(3.5); pointer-events:none; }
+/* The closing slide already has the floating cards on that side. */
+.reveal .finale .frame::after { display:none; }
+
+/* ---- colour: chapter titles as gradients, the point of each heading tinted ---- */
+.reveal h1, .reveal h2, .reveal h3 { text-wrap:balance; }
+.reveal p, .reveal li, .reveal td { text-wrap:pretty; }
+.reveal .grad { -webkit-background-clip:text; background-clip:text; color:transparent; -webkit-text-fill-color:transparent; }
+.reveal .g-cover   { background-image:linear-gradient(95deg, #ffffff 0%, #e0e3ff 45%, #f0abfc 100%); }
+.reveal .g-white   { background-image:linear-gradient(95deg, #ffffff 0%, #fde68a 100%); }
+.reveal .g-sky     { background-image:linear-gradient(95deg, #a5b4fc 0%, #7dd3fc 100%); }
+.reveal .g-violet  { background-image:linear-gradient(95deg, #c4b5fd 0%, #f9a8d4 100%); }
+.reveal .g-teal    { background-image:linear-gradient(95deg, #7dd3fc 0%, #6ee7b7 100%); }
+.reveal .g-amber   { background-image:linear-gradient(95deg, #fcd34d 0%, #f9a8d4 100%); }
+.reveal .g-emerald { background-image:linear-gradient(95deg, #6ee7b7 0%, #a5b4fc 100%); }
+.hl-amber { color:#fcd34d; }
+.hl-indigo { color:#4f46e5; }
+.hl-pink { color:#db2777; }
+.hl-emerald { color:#047857; }
+.hl-amber-ink { color:#b45309; }
+/* ---- closing slide: the product's own colours, in motion ---- */
+.finale .frame { position:relative; justify-content:center; gap:26px; }
+.finale__glow { position:absolute; inset:-120px -140px; pointer-events:none;
+  background:
+    radial-gradient(420px 300px at 12% 18%, rgba(99,102,241,0.55), transparent 70%),
+    radial-gradient(380px 280px at 88% 22%, rgba(236,72,153,0.40), transparent 70%),
+    radial-gradient(420px 300px at 80% 92%, rgba(16,185,129,0.35), transparent 70%),
+    radial-gradient(360px 260px at 18% 95%, rgba(245,158,11,0.35), transparent 70%); }
+.reveal .finale__title { position:relative; font-size:120px !important; letter-spacing:-0.035em;
+  background:linear-gradient(100deg, #a5b4fc 0%, #f0abfc 35%, #fcd34d 65%, #6ee7b7 100%);
+  -webkit-background-clip:text; background-clip:text; color:transparent; -webkit-text-fill-color:transparent; }
+.finale__cards { position:absolute; right:0; top:10px; width:470px; height:500px; }
+.mini { position:absolute; display:flex; flex-direction:column; gap:6px; width:230px; padding:14px 16px;
+  border-radius:16px; background:rgba(255,255,255,0.96); color:#18172e; font-size:15px;
+  box-shadow:0 18px 40px rgba(0,0,0,0.35); border-top:5px solid var(--c);
+  animation:mini-float 6s ease-in-out infinite; }
+.mini b { font-size:17px; }
+.mini__tag { align-self:flex-start; font:600 11px 'JetBrains Mono', monospace; letter-spacing:0.12em; text-transform:uppercase;
+  padding:2px 8px; border-radius:999px; background:color-mix(in srgb, var(--c) 16%, white); color:var(--c-ink); }
+.mini__big { font-size:34px !important; letter-spacing:-0.02em; color:var(--c-ink); }
+.mini__pill { align-self:flex-start; font-size:12px; font-weight:600; padding:1px 9px; border-radius:999px;
+  background:color-mix(in srgb, var(--c) 14%, white); color:var(--c-ink); }
+.mini__bars { display:flex; align-items:flex-end; gap:6px; height:40px; }
+.mini__bars i { display:block; width:26px; border-radius:4px 4px 0 0; background:var(--c); }
+.mini__bars i:nth-child(1) { height:45%; } .mini__bars i:nth-child(2) { height:95%; } .mini__bars i:nth-child(3) { height:68%; }
+.mini--progress { --c:#6366f1; --c-ink:#4338ca; left:10px;  top:20px;  transform:rotate(-6deg); animation-delay:0s; }
+.mini--metric   { --c:#10b981; --c-ink:#047857; left:235px; top:0px;   transform:rotate(5deg);  animation-delay:-1.5s; }
+.mini--image    { --c:#f59e0b; --c-ink:#b45309; left:40px;  top:220px; transform:rotate(4deg);  animation-delay:-3s; }
+.mini--share    { --c:#ec4899; --c-ink:#be185d; left:250px; top:250px; transform:rotate(-4deg); animation-delay:-4.5s; }
+@keyframes mini-float { 0%, 100% { translate:0 0; } 50% { translate:0 -12px; } }
+.reveal .finale__stats { position:relative; display:flex; flex-direction:row; flex-wrap:wrap; gap:12px; margin:0; padding:0; list-style:none; max-width:680px; }
+.reveal .finale__stats li::marker { content:none; }
+.reveal .finale__stats li { flex:0 0 auto; padding:8px 16px; border-radius:999px; font-size:20px; color:#fff; border:1px solid rgba(255,255,255,0.18); }
+.finale__stats b { font-size:24px; margin-right:6px; font-variant-numeric:tabular-nums; }
+.finale__stats .s1 { background:rgba(99,102,241,0.35); } .finale__stats .s2 { background:rgba(16,185,129,0.30); }
+.finale__stats .s3 { background:rgba(236,72,153,0.30); } .finale__stats .s4 { background:rgba(245,158,11,0.32); }
+.finale__links { position:relative; display:flex; flex-direction:column; gap:8px; font-size:18px; color:var(--on-dark); }
+/* One line each: the links sit below the floating cards, so they have the full width. */
+.finale__links p { white-space:nowrap; }
+@media (prefers-reduced-motion: reduce) { .mini { animation:none; } }
+
+
+</style>
+</head>
+<body>
+<div class="reveal"><div class="affil-mark" aria-hidden="true"><img class="crest" src="img/ntu-crest.svg" alt="">NTU · CCDS</div><div class="slides">
+<section data-background-gradient="linear-gradient(135deg, #15142E 0%, #262168 62%, #4F46E5 100%)" class="opener campus"><div class="frame">
+<div class="campus__band" aria-hidden="true"></div>
+<div class="campus__lockup"><img src="img/ntu-logo.svg" alt="Nanyang Technological University, Singapore"><span>College of Computing<br>and Data Science</span></div>
+<p class="eyebrow">Take-home assessment · September 2026</p>
+<div class="head" style="gap:22px"><h1 class="grad g-cover" style="font-size:92px">Project Reporting Builder</h1>
+<p class="lead" style="font-size:30px;max-width:none">From raw project notes to <span class="hl-amber">snippet cards</span> you can paste into email&nbsp;and&nbsp;chat</p></div>
+<div class="row" style="align-items:flex-end"><div class="campus__who"><p class="campus__name">Zhang Dingpu</p>
+<p class="campus__affil"><img class="crest" src="img/ntu-crest.svg" alt="">Master of Computing in Applied AI<br>College of Computing and Data Science<br>Nanyang Technological University, Singapore</p></div>
+<p class="small" style="color:var(--on-dark);text-align:right">→ chapters &nbsp;·&nbsp; ↓ detail within a chapter</p></div>
+</div>
+<aside class="notes">[0:00] Hi, I'm Dingpu, a Master's student in Applied AI at NTU. This is Project Reporting Builder: it turns project notes into cards you can share.</aside>
+</section>
+<section>
+<section data-background-color="#15142E" class="opener"><div class="frame">
+<p class="eyebrow">Chapter 1</p>
+<div class="head" style="gap:18px"><h1 class="grad g-sky">The problem</h1><p class="lead">Weekly status reports are rebuilt by hand, from scattered inputs, for channels that each want a different format.</p></div>
+
+<p class="down">↓ <b>2 slides</b> below</p>
+</div>
+<aside class="notes">[0:15] [Advance. Nothing to say.]</aside>
+</section>
+<section><div class="frame">
+<div class="head"><p class="eyebrow">The problem</p><h2>Three inputs, three channels, <span class="hl-amber-ink">one ambiguity</span></h2></div>
+<div class="row">
+<div class="tile"><p class="k">Inputs</p><h3>Scattered</h3><p>Notes in a doc, numbers in a spreadsheet, a screenshot in a chat thread.</p></div>
+<div class="tile"><p class="k">Channels</p><h3>Each wants its own format</h3><p>Email renders HTML, chat wants plain text, a slide wants an image.</p></div>
+<div class="tile"><p class="k">Numbers</p><h3>Easy to state wrongly</h3><p>“+12%” can mean twelve percentage points or a twelve percent change. Different claims.</p></div>
+</div>
+</div>
+<aside class="notes">[0:15] Status updates come from notes, spreadsheets and screenshots. Each channel wants a different format. And “plus twelve percent” can mean two different things.</aside>
+</section>
+<section><div class="frame">
+<div class="head"><p class="eyebrow">What it does</p><h2>Three kinds of input, <span class="hl-indigo">one kind of output</span></h2></div>
+<div class="row" style="gap:36px;align-items:center">
+<ul style="flex:0 0 360px;font-size:22px;color:var(--body)">
+<li>Progress notes, metrics and images, in any mix</li>
+<li>AI drafts cards from notes or an image, for review</li>
+<li>Live preview, rendered by the server</li>
+<li>Share one card or the whole report; drafts survive a reload</li>
+</ul>
+<img class="shot" src="img/editor.png" alt="The editor: header, toolbar, and a progress card with its form beside a live preview" style="flex:1;min-width:0;max-height:520px;object-fit:contain">
+</div>
+</div>
+<aside class="notes">[0:40] So: three inputs, one kind of card. AI drafts, a person reviews. Share one card or the whole report.</aside>
+</section>
+</section>
+<section data-background-color="#4F46E5" class="opener"><div class="frame">
+<p class="eyebrow" style="color:#E0E3FF">Chapter 2 · about four minutes</p>
+<h1 class="grad g-white">Live demo</h1>
+<div class="row">
+<div class="tile"><p class="k" style="color:#E0E3FF">Step 1</p><h3>A metric card: 67 → 79</h3></div>
+<div class="tile"><p class="k" style="color:#E0E3FF">Step 2</p><h3>Paste notes or drop an image, draft with AI</h3></div>
+<div class="tile"><p class="k" style="color:#E0E3FF">Step 3</p><h3>Review what the model could not confirm</h3></div>
+<div class="tile"><p class="k" style="color:#E0E3FF">Step 4</p><h3>Copy, PNG, <span style="white-space:nowrap">whole-report</span> export</h3></div>
+</div>
+</div>
+<aside class="notes">[1:05] Let me show you. [Step 1 · Metric card · 1:05 to 2:00] DO: (1) Click Add metric card. (2) Metric name: Onboarding completion. (3) Current value: 79. (4) Previous value: 67. (5) Unit: choose Percentage (it defaults to Number). (6) Point at the preview: 79%, +12 percentage points, +17.91% relative change. SAY: Two numbers in, four out. Percentage points and relative change are different, so the card names both. [Step 2 · Notes to cards with AI · 2:00 to 3:30] DO: (1) Click Paste notes, draft with AI. (2) Paste the Sprint 24 notes into Project notes. (3) Click Generate draft; about 4 to 10 seconds. WHILE IT RUNS: The rules and the notes are sent separately, so the notes can't change the rules. WHEN THE DRAFT APPEARS DO: (4) Point at the yellow Generated text warning. (5) Scroll to Metric cards found in the text; point at the New users line. SAY: The notes say “847, up 23 percent”. The model did not calculate last sprint. That number isn't in the notes. DO: (6) Tick two metric proposals. (7) Status: choose In Progress. (8) Click Create card. [Step 3 · An image instead of notes · 3:30 to 4:30, skip if late] DO: (1) Click Paste notes, draft with AI again. (2) Copy the Q3 revenue chart from the demo materials and press Cmd+V in the dialog. (3) Click Generate draft; if it says busy, wait twenty seconds. (4) Scroll to Numbers read from the image. (5) Choose a status: Create card stays disabled until the box is ticked. (6) Click Cancel. SAY: It also reads images. Every number it reads must be checked before the card is created. [Step 4 · Share · 4:30 to 5:05] DO: (1) Click Copy rich on the progress card and paste into the email draft. (2) Click Download PNG. (3) Tick the checkbox on two cards: the bar shows 2 of 3 selected. (4) Click Download selected. SAY: One card to email or chat, or pick the cards you want and export just those. </aside>
+</section>
+<section>
+<section data-background-color="#15142E" class="opener"><div class="frame">
+<p class="eyebrow">Chapter 3</p>
+<div class="head" style="gap:18px"><h1 class="grad g-violet">Design decisions</h1><p class="lead">Where the AI stops, how it reads images, the one calculation the tool makes, and why every export matches the preview.</p></div>
+
+<p class="down">↓ <b>6 slides</b> below</p>
+</div>
+<aside class="notes">[5:05] [Advance. Nothing to say.]</aside>
+</section>
+<section><div class="frame">
+<div class="head"><p class="eyebrow">AI assistance</p><h2>The AI drafts. <span class="hl-indigo">The person decides.</span></h2></div>
+<div class="row" style="gap:32px;align-items:center">
+<img class="shot" src="img/ai-draft.png" alt="The AI draft panel with editable fields and unticked metric proposals" style="flex:1.35;min-width:0;max-height:500px;object-fit:contain">
+<div style="display:flex;flex-direction:column;gap:22px">
+<div><h3>The model never sets the status</h3><p class="small">Create stays disabled until the person picks one.</p></div>
+<div><h3>Every draft is flagged for review</h3><p class="small">With a list of what the model could not confirm.</p></div>
+<div><h3>Metric cards are opt-in</h3><p class="small">Each proposal starts unticked.</p></div>
+<div><h3>Rules and notes travel apart</h3><p class="small">Prompt in <code>instructions</code>, notes in <code>input</code>, strict JSON schema out.</p></div>
+</div></div>
+</div>
+<aside class="notes">[5:05] The AI drafts; the person decides. The model never sets the status. Every draft lists what it could not confirm. Metric proposals start unticked.</aside>
+</section>
+<section><div class="frame">
+<div class="head"><p class="eyebrow">The boundary</p><h2>The model copies numbers. <span class="hl-pink">It never derives them.</span></h2></div>
+<div class="row">
+<div class="tile" style="justify-content:center"><p class="k">The notes said</p><p class="quote" style="color:var(--ink)">“New users: 847, up 23% from last sprint.”</p></div>
+<div class="darkbox" style="justify-content:center"><p class="k">The live model wrote</p><p>“…does not provide the previous new-user count; previous is therefore null.”</p></div>
+</div>
+<p class="lead">847 ÷ 1.23 ≈ 688 is a number the notes never state. It appears nowhere in the output, and a browser test asserts that it never does.</p>
+</div>
+<aside class="notes">[5:35] The rule is not “no numbers”. It is “no invented numbers”. A test checks that 688 never appears.</aside>
+</section>
+<section><div class="frame">
+<div class="head"><p class="eyebrow">Reading images</p><h2>A screenshot is <span class="hl-emerald">often all someone has</span></h2></div>
+<div class="row" style="gap:32px;align-items:center">
+<img class="shot" src="img/notes-image.png" alt="The notes panel with an image attached: choose, drag or paste, with a thumbnail and Remove" style="flex:1.1;min-width:0;max-height:500px;object-fit:contain">
+<div style="display:flex;flex-direction:column;gap:20px">
+<div><h3>Two ways in</h3><p class="small">An image with the notes drafts a progress card. On an image card, AI drafts its alt text and caption, so a chart survives a text export.</p></div>
+<div><h3>The one exception to “images stay local”</h3><p class="small">Sent only on request, after the image is shown, as a JPEG of at most 1024 px. Never stored or logged.</p></div>
+<div><h3>Same rules as text</h3><p class="small">Copy what is visible, never calculate; text inside the image is data, not instructions.</p></div>
+</div></div>
+</div>
+<aside class="notes">[5:50] An image can go with the notes, or on an image card. It leaves the browser only when you ask, as a small copy, and is never stored.</aside>
+</section>
+<section><div class="frame">
+<div class="head"><p class="eyebrow">The finding</p><h2>The model misread small print, <span class="hl-amber-ink">and did not say so</span></h2></div>
+<div class="row" style="gap:32px;align-items:center">
+<div style="flex:1;display:flex;flex-direction:column;gap:16px">
+<table><tr><th>Label on the chart</th><th>What the live model wrote</th></tr>
+<tr><td>$1644.0k</td><td>$1464.0k, $1464.0k, $1044.0k</td></tr>
+<tr><td>$2466.0k</td><td>$2496.0k, today, while making this slide</td></tr></table>
+<p style="font-size:22px;color:var(--body)">Wrong digits in most runs, usually with no review note; once it claimed it had “copied exactly”. A stricter prompt helped one time in three.</p>
+<p style="font-size:22px"><b>So the page, not the model, lists every figure it drafted, and Create waits until the person has checked them.</b></p>
+</div>
+<img class="shot" src="img/figure-check.png" alt="The draft from the chart: figures 1644 k, 3562 k and 2496 k listed, and Create disabled until they are checked" style="flex:1.05;min-width:0;max-height:510px;object-fit:contain">
+</div>
+</div>
+<aside class="notes">[6:10] This is my key finding. On tiny labels, the model read 1644 as 1464, and 2466 as 2496, with no warning. So the page, not the model, lists every number, and a person must check them before the card is created.</aside>
+</section>
+<section><div class="frame">
+<div class="head"><p class="eyebrow">Metric cards</p><h2>The one place the tool <span class="hl-emerald">does arithmetic</span></h2></div>
+<div class="row" style="gap:40px;align-items:center">
+<img class="shot" src="img/card-metric.png" alt="Metric card: Onboarding completion 79%, +12 percentage points, +17.91% relative change" style="flex:1.1;min-width:0;object-fit:contain">
+<div style="display:flex;flex-direction:column;gap:18px">
+<p style="font-size:26px"><b>67% → 79%</b> is +12 percentage points <i>and</i> +17.91% relative change. Both shown, each named.</p>
+<p class="small">A pure function on the server, covered by an 11-row table: zero baselines, negatives, decimals, non-finite input.</p>
+</div></div>
+</div>
+<aside class="notes">[6:55 · skip if short on time] [Skip: already shown in the demo.]</aside>
+</section>
+<section><div class="frame">
+<div class="head"><p class="eyebrow">Sharing</p><h2>One render, <span class="hl-emerald">five ways out</span></h2></div>
+<div class="row" style="gap:40px;align-items:flex-start">
+<div style="flex:1.4;display:flex;flex-direction:column;gap:20px">
+<table><tr><th>Format</th><th>Where it goes</th></tr>
+<tr><td>Plain text</td><td>Chat, any client</td></tr>
+<tr><td>Rich text</td><td>Email, inline styles only</td></tr>
+<tr><td>PNG</td><td>One card, editing controls removed</td></tr>
+<tr><td>HTML file</td><td>The whole report, self-contained</td></tr>
+<tr><td>PDF</td><td>Browser print, with a print stylesheet</td></tr></table>
+<p class="small">Every export is assembled from what the server already rendered, so it cannot differ from the preview.</p>
+</div>
+<img class="shot" src="img/card-progress.png" alt="Exported progress card: Sprint 24, Payments team, In Progress" style="flex:1;min-width:0;max-height:500px;object-fit:contain">
+</div>
+</div>
+<aside class="notes">[6:55] Every export comes from the same server render, so what you share matches what you saw.</aside>
+</section>
+</section>
+<section>
+<section data-background-color="#15142E" class="opener"><div class="frame">
+<p class="eyebrow">Chapter 4</p>
+<div class="head" style="gap:18px"><h1 class="grad g-teal">Architecture</h1><p class="lead">A thin browser, one server, one model, deployed by a script you can read in one sitting.</p></div>
+
+<p class="down">↓ <b>2 slides</b> below</p>
+</div>
+<aside class="notes">[7:10] [Advance. Nothing to say.]</aside>
+</section>
+<section><div class="frame">
+<div class="head"><p class="eyebrow">System</p><h2>Three parts, <span class="hl-indigo">one direction of trust</span></h2></div>
+<div class="row" style="gap:14px">
+<div class="tile"><p class="k">Browser</p><h3>Editor and state</h3><p>ES modules, no build step · IndexedDB for drafts and images · images downscaled before they are sent</p></div>
+<p class="arrow" aria-hidden="true">→</p>
+<div class="tile"><p class="k">FastAPI</p><h3>Validate and render</h3><p>Pydantic v2 card models · Jinja2 renders preview, email and text · one error envelope</p></div>
+<p class="arrow" aria-hidden="true">→</p>
+<div class="tile"><p class="k">Azure OpenAI</p><h3>Draft only</h3><p>gpt-5-mini, text and image input · strict JSON schema · behind a provider interface</p></div>
+</div>
+<div class="tile" style="flex-direction:row;gap:28px;flex-wrap:wrap"><p><b>Docker</b>, non-root uid 10001, one worker</p><p><b>Azure Container Apps</b>, one replica, scales to zero</p><p><b>Key</b> held as a secret reference</p></div>
+</div>
+<aside class="notes">[7:10] A simple browser, a FastAPI server that validates and renders, and one model behind an interface. Deployed as a container on Azure.</aside>
+</section>
+<section><div class="frame">
+<div class="head"><p class="eyebrow">Decisions</p><h2>Choices <span class="hl-indigo">I would defend in review</span></h2></div>
+<table><tr><th style="width:36%">Decision</th><th>Why</th></tr>
+<tr><td>The server renders every preview</td><td>One source of truth for screen, email and text, so exports cannot drift</td></tr>
+<tr><td>No frontend build step</td><td>Fewer moving parts; the UI kit (Basecoat) ships precompiled, so the rule held</td></tr>
+<tr><td>Images leave the browser only on request</td><td>Nothing stored or retained; the one exception is shown, opt-in and downscaled</td></tr>
+<tr><td>Reasoning effort: low</td><td>Measured on one note: minimal 2.3 s, low 4.4 s, default 11.6 s, same facts. A setting, not a constant</td></tr>
+<tr><td>Scale to zero, one replica</td><td>Measured cold start 2.3 s; the rate limiter lives in one process</td></tr></table>
+</div>
+<aside class="notes">[7:35 · skip if short on time] [Skip if short on time.]</aside>
+</section>
+</section>
+<section>
+<section data-background-color="#15142E" class="opener"><div class="frame">
+<p class="eyebrow">Chapter 5</p>
+<div class="head" style="gap:18px"><h1 class="grad g-amber">Security</h1><p class="lead">Public, no login, and every AI call costs money. So the question is what an attacker would try, not what the tool does.</p></div>
+
+<p class="down">↓ <b>3 slides</b> below</p>
+</div>
+<aside class="notes">[7:35] It's public, with no login, and every AI call costs money. So I looked at it like an attacker.</aside>
+</section>
+<section><div class="frame">
+<div class="head"><p class="eyebrow">Threat model</p><h2>What an attacker would try, <span class="hl-pink">and what stops it</span></h2></div>
+<table><tr><th style="width:34%">Attack</th><th>Control</th></tr>
+<tr><td>An endless request body</td><td>Counted as it arrives; 413 at 64 KiB (1.5 MiB with an image)</td></tr>
+<tr><td>One visitor using up the AI for everyone</td><td>Per client: 6 a minute, 1 in flight</td></tr>
+<tr><td>Many addresses running up the bill</td><td>App ceiling: 30 a minute. Azure deployment capped at 10K tokens a minute</td></tr>
+<tr><td>A spend spike nobody notices</td><td>Azure alert emails me over 200K tokens in an hour</td></tr>
+<tr><td>A forged X-Forwarded-For</td><td>Only the address the Azure ingress appended counts</td></tr>
+<tr><td>Script injection</td><td>Autoescaping, text-only insertion, CSP <code>script-src 'self'</code></td></tr>
+<tr><td>Prompt injection, in text or an image</td><td>Rules and content sent apart, strict schema, no tools, human review</td></tr>
+<tr><td>A stolen key</td><td>Secret reference; never in the image, the page or an error</td></tr></table>
+</div>
+<aside class="notes">[7:50] Nothing is stored on the server. The real risks are memory, cost, and injected script. Each has a control.</aside>
+</section>
+<section><div class="frame">
+<div class="head"><p class="eyebrow">Cost controls on Azure</p><h2>Layers between an attacker <span class="hl-amber-ink">and the bill</span></h2></div>
+<table><tr><th style="width:40%">Layer</th><th style="width:44%">What it does</th><th>Status</th></tr>
+<tr><td>App rate limit</td><td>6 a minute per visitor, 30 in total</td><td class="pass">Done</td></tr>
+<tr><td>Azure deployment cap</td><td>10K tokens a minute, down from 100K; holds even if the app is bypassed</td><td class="pass">Done</td></tr>
+<tr><td>Cap reached</td><td>Shown as “busy, try again in a minute”, not “unreachable”</td><td class="pass">Done</td></tr>
+<tr><td>Token-usage alert</td><td>Email when usage passes 200K tokens in an hour</td><td class="pass">Done</td></tr>
+<tr><td>Subscription spending limit</td><td>Credit exhausted stops resources; no card is charged</td><td class="pass">On</td></tr>
+<tr><td>Budget alert</td><td>Monthly budget with email at 50, 80 and 100%</td><td>Next</td></tr>
+<tr><td>Front Door WAF</td><td>Per-IP rate rules at the edge; from about $35 a month</td><td>Production</td></tr></table>
+</div>
+<aside class="notes">[8:10] Cost has layers: a per-visitor limit in the app, a hard token cap on Azure, and an email alert. A budget alert and a WAF come next.</aside>
+</section>
+<section><div class="frame">
+<div class="head"><p class="eyebrow">What the review found</p><h2>Four real problems, <span class="hl-pink">each fixed with a test that fails without it</span></h2></div>
+<table><tr><th style="width:36%">Found</th><th>Evidence and fix</th></tr>
+<tr><td>A 10 MiB body with no length was read whole</td><td>Raw-socket test on a real server; now refused at the limit</td></tr>
+<tr><td>Starlette 0.41.3: eight advisories, one reachable</td><td>CVE-2025-62727 via <code>/static</code>; upgraded, pip-audit on every push and weekly</td></tr>
+<tr><td>No security headers on the live site</td><td>CSP and six more on every response; every browser test fails on a CSP violation</td></tr>
+<tr><td>One shared AI rate limit</td><td>Per client; seven forged addresses tried live, refused from the sixth</td></tr></table>
+<p class="small">Azure-side cost controls are on the previous slide. Left for production: login and a WAF.</p>
+</div>
+<aside class="notes">[8:40] The review found four real problems. A huge request was read into memory; now it stops at the limit. The framework had known vulnerabilities; upgraded, and scanned weekly. No security headers; now a strict policy. And one shared rate limit; now per visitor.</aside>
+</section>
+</section>
+<section>
+<section data-background-color="#15142E" class="opener"><div class="frame">
+<p class="eyebrow">Chapter 6 · the brief asked for this</p>
+<div class="head" style="gap:18px"><h1 class="grad g-emerald">Engineering excellence</h1><p class="lead">Four practices, each with evidence you can open in the repository.</p></div>
+<div class="row">
+<div class="tile"><p class="k">Documentation</p><h3>4 documents</h3><p>96 references from code</p></div>
+<div class="tile"><p class="k">Configuration</p><h3>0 hard-coded</h3><p>model settings, secrets as references</p></div>
+<div class="tile"><p class="k">Testing</p><h3>251 tests</h3><p>13 security tests, 11 live checks</p></div>
+<div class="tile"><p class="k">Conventions</p><h3>7 rule sets</h3><p>ruff lint and format, enforced in CI</p></div>
+</div>
+<p class="down">↓ <b>5 slides</b> below</p>
+</div>
+<aside class="notes">[9:25] The brief asked for engineering excellence. Four areas, each with evidence.</aside>
+</section>
+<section><div class="frame">
+<div class="head"><p class="eyebrow">Documentation</p><h2>Four documents, <span class="hl-indigo">each with one job</span></h2></div>
+<div class="row">
+<div class="tile"><p class="k">scope.md</p><h3>What, and what not</h3><p>Card types, AI limits, sharing rules, out of scope</p></div>
+<div class="tile"><p class="k">architecture.md</p><h3>How</h3><p>14 sections: models, API, state, persistence, security</p></div>
+<div class="tile"><p class="k">test_plan.md</p><h3>What to prove</h3><p>12 sections, written before the code</p></div>
+<div class="tile"><p class="k">test-report.md</p><h3>What was proven</h3><p>Dated; a check not run is never recorded as passed</p></div>
+</div>
+<ul style="font-size:22px;color:var(--body)">
+<li>Code cites the rule it implements: <b>96</b> section references such as <code>docs/architecture.md §7</code></li>
+<li>README splits <i>What works today</i> from <i>Planned, not built</i></li>
+<li>Before submitting, every document was checked against the code: a stale file tree, a feature described but never built, and two mis-cited sections were fixed</li>
+</ul>
+</div>
+<aside class="notes">[9:40] Four documents, each with one job. The code cites them ninety-six times, and I checked every document against the code.</aside>
+</section>
+<section><div class="frame">
+<div class="head"><p class="eyebrow">Configuration</p><h2>Nothing about the model <span class="hl-pink">is hard-coded</span></h2></div>
+<div class="row" style="gap:32px;align-items:flex-start">
+<pre style="flex:1.3;min-width:0"><code><span class="kw">class</span> Settings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file=<span class="s">".env"</span>, extra=<span class="s">"ignore"</span>)
+
+    ai_enabled: bool = <span class="n">False</span>
+    azure_openai_api_version: str = <span class="s">"2025-04-01-preview"</span>
+    <span class="c"># On a reasoning model this budget covers reasoning</span>
+    <span class="c"># tokens as well as the answer: measured against</span>
+    <span class="c"># gpt-5-mini, 900 was spent entirely on reasoning</span>
+    <span class="c"># and returned an empty, incomplete response.</span>
+    ai_max_output_tokens: int = <span class="n">2_000</span>
+    <span class="c"># "minimal" 2.3s, "low" 4.4s, model default 11.6s.</span>
+    <span class="c"># All three extracted the same facts, so this</span>
+    <span class="c"># defaults to the cheap end.</span>
+    ai_reasoning_effort: str = <span class="s">"low"</span></code></pre>
+<ul style="font-size:21px;color:var(--body)">
+<li>One <code>Settings</code> class, read once; <code>.env.example</code> documents every variable</li>
+<li>Safe default: AI off, the app still works, the AI endpoint returns 503</li>
+<li>Each default carries the measurement behind it</li>
+<li>The key is a Container Apps secret reference; a check fails if it is a literal or appears in the page</li>
+<li>Dependencies locked; vendored browser files listed with version, source, licence and sha256</li>
+</ul>
+</div>
+</div>
+<aside class="notes">[10:05] One settings class. Nothing about the model is hard-coded, and each default records why.</aside>
+</section>
+<section><div class="frame">
+<div class="head"><p class="eyebrow">Testing</p><h2>251 tests, <span class="hl-emerald">and proof that they bite</span></h2></div>
+<div class="row">
+<div class="tile"><p class="big">89</p><h3>unit</h3><p>Metric table, card models, AI and image schemas</p></div>
+<div class="tile"><p class="big">75</p><h3>integration</h3><p>API, templates, errors, 13 security tests</p></div>
+<div class="tile"><p class="big">87</p><h3>browser</h3><p>Workflows and axe scans; each one also a CSP check</p></div>
+<div class="tile"><p class="big">11</p><h3>live checks</h3><p>verify.sh against the deployed URL</p></div>
+</div>
+<ul style="font-size:21px;color:var(--body)">
+<li>A fake provider: the suite needs no credentials and spends nothing; the real model is covered by live cases and the deployment check</li>
+<li>Fixes are proven to bite: remove the guard and the test goes red (export guard, figure check, forged-header limit, blank-PNG check)</li>
+<li>CI runs four jobs on every push and weekly: lint and tests · browser and accessibility · dependency audit · Docker build with header and non-root checks</li>
+</ul>
+</div>
+<aside class="notes">[10:25] 251 tests, plus 11 checks on the live site. My rule: after a fix, I remove it and watch the test fail. Otherwise the test proves nothing.</aside>
+</section>
+<section><div class="frame">
+<div class="head"><p class="eyebrow">Coding conventions</p><h2>Rules a machine enforces, <span class="hl-emerald">reasons a person can read</span></h2></div>
+<div class="row" style="gap:32px;align-items:flex-start">
+<pre style="flex:1.2;min-width:0"><code><span class="kw">[tool.ruff]</span>
+line-length = <span class="n">100</span>
+target-version = <span class="s">"py313"</span>
+
+<span class="kw">[tool.ruff.lint]</span>
+select = [<span class="s">"E"</span>, <span class="s">"F"</span>, <span class="s">"I"</span>, <span class="s">"UP"</span>, <span class="s">"B"</span>, <span class="s">"SIM"</span>, <span class="s">"S"</span>]
+
+<span class="kw">[tool.ruff.lint.per-file-ignores]</span>
+<span class="c"># assert is the point of a test</span>
+<span class="s">"tests/*"</span> = [<span class="s">"S101"</span>]
+<span class="c"># Depends() in a default is how FastAPI</span>
+<span class="c"># declares dependencies</span>
+<span class="s">"app/main.py"</span> = [<span class="s">"B008"</span>]</code></pre>
+<ul style="font-size:21px;color:var(--body)">
+<li>Ruff lint and format in CI, including the <code>S</code> security rules; every exception states its reason</li>
+<li>Pydantic discriminated union: a card is progress, metric or image; unknown fields are rejected</li>
+<li>One error envelope, <code>{error: {code, message, fields}}</code>, never echoing input</li>
+<li>Model output reaches the page through <code>textContent</code>, never <code>innerHTML</code></li>
+<li>Commit messages explain why, not only what</li>
+</ul>
+</div>
+</div>
+<aside class="notes">[10:55 · skip if short on time] [Skip if short on time.]</aside>
+</section>
+<section><div class="frame">
+<div class="head"><p class="eyebrow">What the tests caught</p><h2>Four failures, <span class="hl-amber-ink">and what each one changed</span></h2></div>
+<table><tr><th style="width:28%">What broke</th><th style="width:32%">How it was found</th><th>What changed</th></tr>
+<tr><td>PNG exports were blank</td><td>Size assertions passed; opening the file did not</td><td>A bytes-per-pixel check that fails if the bug returns</td></tr>
+<tr><td>A 900-token budget returned nothing</td><td>Live call: reasoning used the whole budget</td><td>Budget 2,000; an incomplete answer is rejected</td></tr>
+<tr><td>Small print misread: 2466 as 2496</td><td>Live model, with no warning</td><td>The page lists every figure; Create waits for a check</td></tr>
+<tr><td>Hover text at 4.2:1 contrast</td><td>CI only; local runs passed</td><td>Hover colours fixed; hover scans in both themes</td></tr></table>
+<p class="small">Also this week: an animation exposed “Saved locally” shown 400 ms before it was true, and CI caught the framework upgrade silently dropping HEAD support.</p>
+</div>
+<aside class="notes">[10:55] And the tests caught real bugs: blank PNGs, an empty AI answer, the misread numbers, and a contrast bug.</aside>
+</section>
+</section>
+<section><section><div class="frame">
+<div class="head"><p class="eyebrow">Honest limits</p><h2>What is not proven yet, <span class="hl-indigo">and what comes next</span></h2></div>
+<div class="row">
+<div class="tile"><p class="k">Not proven yet</p><ul style="font-size:22px;color:var(--body)"><li>A small live sample, text and images: not an accuracy claim</li><li>No screen-reader session; small screens and 200% zoom untested</li><li>No login or WAF, and no budget alert yet: a public POC</li></ul></div>
+<div class="tile" style="border-color:var(--accent)"><p class="k">Next</p><ul style="font-size:22px;color:var(--body)"><li>An evaluation set, text and images, with expected output per case</li><li>Front Door WAF, a budget alert, managed identity instead of a key</li><li>Client checks in Outlook, Gmail, Slack and Teams</li></ul></div>
+</div>
+</div>
+<aside class="notes">[11:15] Not proven yet: accuracy at scale, and screen readers. No login or WAF yet. Those come next.</aside>
+</section></section>
+<section data-background-color="#12112a" class="opener finale campus"><div class="frame">
+<div class="finale__glow" aria-hidden="true"></div>
+<div class="campus__band" aria-hidden="true"></div>
+<div class="finale__cards" aria-hidden="true">
+  <div class="mini mini--progress"><span class="mini__tag">Progress</span><b>Sprint 24 · Payments</b><span class="mini__pill">● In Progress</span></div>
+  <div class="mini mini--metric"><span class="mini__tag">Metric</span><b class="mini__big">79%</b><span>+12 pp · +17.91%</span></div>
+  <div class="mini mini--image"><span class="mini__tag">Image</span><span class="mini__bars"><i></i><i></i><i></i></span><span>1644 k · checked ✓</span></div>
+  <div class="mini mini--share"><span class="mini__tag">Shared</span><b>Copied for email</b><span>PNG · HTML · PDF</span></div>
+</div>
+<h1 class="finale__title">Thank you</h1>
+<ul class="finale__stats">
+  <li class="s1"><b>251</b> tests</li>
+  <li class="s2"><b>11</b> live checks</li>
+  <li class="s3"><b>4</b> security fixes</li>
+  <li class="s4"><b>1</b> misread caught live</li>
+</ul>
+<p class="campus__affil campus__affil--short"><img class="crest" src="img/ntu-crest.svg" alt="">Zhang Dingpu · NTU Singapore · College of Computing and Data Science</p>
+<div class="finale__links">
+<p>Live · <a href="https://ca-reporting-builder.kindbush-e2227a04.koreacentral.azurecontainerapps.io" target="_blank" rel="noopener">ca-reporting-builder.kindbush-e2227a04.koreacentral.azurecontainerapps.io</a></p>
+<p>Code · <a href="https://github.com/maxwellzhang-dev/project-reporting-builder" target="_blank" rel="noopener">github.com/maxwellzhang-dev/project-reporting-builder</a></p>
+</div>
+</div>
+<aside class="notes">[11:40] Thank you. I'm happy to take questions.</aside>
+</section>
+</div></div>
+<script src="reveal.min.js"></script>
+<script src="notes.min.js"></script>
+<script>
+Reveal.initialize({
+  width: 1280, height: 720, margin: 0.04, center: false, hash: true,
+  controls: true, controlsLayout: "bottom-right", controlsTutorial: true, progress: true,
+  slideNumber: "h.v", navigationMode: "default", transition: "slide", backgroundTransition: "fade",
+  transitionSpeed: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "fast" : "default",
+  // Speaker view (press S) where the notes plugin is loaded: the offline copy.
+  plugins: window.RevealNotes ? [window.RevealNotes] : []
+});
+</script>
+
+</body>
+</html>

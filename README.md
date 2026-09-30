@@ -13,6 +13,9 @@ Design documents: [`docs/scope.md`](docs/scope.md) ·
 [`docs/architecture.md`](docs/architecture.md) · [`docs/test_plan.md`](docs/test_plan.md)
 · [`docs/test-report.md`](docs/test-report.md)
 
+Presentation: [`slides (PDF)`](docs/presentation/Project-Reporting-Builder-Slides.pdf) ·
+[`reveal.js version`](docs/presentation/slides-reveal/index.html) (open locally in a browser)
+
 ## What works today
 
 | Area | State |
