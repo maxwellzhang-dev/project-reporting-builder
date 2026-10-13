@@ -4,7 +4,7 @@
   commits change documentation and code comments only)
 - Date: 2026-09-24 for the automated checks, the deployment checks and the
   interface checks; 2026-09-21 for the AI evaluation and cold start
-- Deployment URL: https://ca-reporting-builder.kindbush-e2227a04.koreacentral.azurecontainerapps.io
+- Deployment URL: not published in this repository
 - Browser / OS: Chromium 140 (Playwright) on macOS 15.6
 - Azure deployment: `gpt-5-mini`, Responses API, api-version `2025-04-01-preview`, Korea Central
 - Hosting: Azure Container Apps, Korea Central, 0.5 vCPU / 1 GiB, max 1 replica, scale to zero
